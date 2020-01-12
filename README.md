@@ -21,6 +21,8 @@ The application has the following features:
   - Aircraft registration number
   - Airline
   - Route, defined by the point of embarkation and the destination
+- Append to the database by importing records from CSV
+- Export the database to CSV
 
 Each sighting consists of the following data:
 
