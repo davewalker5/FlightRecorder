@@ -1,0 +1,67 @@
+# Flight property names
+KEY_FLIGHT_NUMBER = "number"
+KEY_EXISTING_FLIGHT = "existing_flight"
+KEY_EMBARKATION = "embarkation"
+KEY_DESTINATION = "destination"
+KEY_AIRLINE = "airline"
+KEY_NEW_AIRLINE = "new_airline"
+
+# Aircraft property names
+KEY_REGISTRATION = "registration"
+KEY_SERIAL_NUMBER = "serial_number"
+KEY_MANUFACTURER = "manufacturer"
+KEY_NEW_MANUFACTURER = "new_manufacturer"
+KEY_MODEL = "model"
+KEY_NEW_MODEL = "new_model"
+KEY_MANUFACTURED = "manufactured"
+KEY_AGE = "age"
+
+# Sighting property names
+KEY_ALTITUDE = "altitude"
+KEY_LOCATION = "location"
+KEY_NEW_LOCATION = "new_location"
+KEY_DATE = "date"
+
+# Data exchange identifiers
+KEY_RECORD = "record_number"
+KEY_STATUS = "status"
+KEY_FILENAME = "filename"
+
+# Main menu identifiers
+KEY_DATA_ENTRY_OPTIONS = "data_entry"
+KEY_DATA_QUERY_OPTIONS = "data_query"
+KEY_DATA_MAINTENANCE_OPTIONS = "data_maintenance"
+
+# Menu selection options
+OPT_CREATE_SIGHTING = "Record new sighting"
+OPT_IMPORT = "Import data"
+OPT_EXPORT = "Export data"
+
+OPT_QUERY_FLIGHT = "Flight"
+OPT_QUERY_AIRCRAFT = "Aircraft"
+OPT_QUERY_AIRLINE = "Airline"
+OPT_QUERY_ROUTE = "Route"
+
+OPT_MAINTAIN_DATABASE = "Database Location"
+OPT_MAINTAIN_AIRLINES = "Airlines"
+OPT_MAINTAIN_FLIGHTS = "Flights"
+OPT_MAINTAIN_LOCATIONS = "Locations"
+
+# Form identifiers
+FRM_SET_DATABASE_LOCATION = "SELECTDATABASELOCATION"
+FRM_MAIN = "MAIN"
+FRM_FLIGHT_DETAILS = "FLIGHTDETAILS"
+FRM_AIRCRAFT_REGISTRATION = "AIRCRAFTREGISTRATION"
+FRM_AIRCRAFT_DETAILS = "AIRCRAFTDETAILS"
+FRM_SIGHTING_DETAILS = "SIGHTINGDETAILS"
+FRM_CONFIRM_FORM = "CONFIRMDETAILS"
+FRM_IMPORT = "IMPORT"
+FRM_EXPORT = "EXPORT"
+FRM_QUERY_BY_FLIGHT = "QUERYBYFLIGHT"
+FRM_QUERY_BY_AIRCRAFT = "QUERYBYAIRCRAFT"
+FRM_QUERY_BY_AIRLINE = "QUERYBYAIRLINE"
+FRM_QUERY_BY_ROUTE = "QUERYBYROUTE"
+FRM_QUERY_SHOW_SIGHTING = "QUERYSHOWSELECTEDSIGHTING"
+
+# Database Location
+KEY_DATABASE_LOCATION = "databaselocation"
