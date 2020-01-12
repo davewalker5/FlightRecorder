@@ -7,24 +7,36 @@
 [![Language](https://img.shields.io/badge/database-SQLite-blue.svg)](https://github.com/davewalker5/FlightRecorder/)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/davewalker5/FlightRecorder)](https://github.com/davewalker5/FlightRecorder/)
 
+## About FlightRecorder
+
 FlightRecorder is a terminal-based application for recording aircraft sightings, written in Python 3 with SQLite for data storage.
 
-It provides the following features:
+## Features
 
-- Entry of flight records consisting of:
-  - Flight details
-    - Flight number
-    - Embarkation airport
-    - Destination
-    - Airline
-  - Aircraft details
-    - Registration details
-    - Manufacturer
-    - Model
-  - Sighting details
-    - Date
-    - Altitude when sighted
-    - Location
+The application has the following features:
+
+- Recording of sightings, with pre-population of data where possible to reduce data entry
+- Query the data by:
+  - Flight number
+  - Aircraft registration number
+  - Airline
+  - Route, defined by the point of embarkation and the destination
+
+Each sighting consists of the following data:
+
+- Flight details
+  - Flight number
+  - Embarkation airport
+  - Destination
+  - Airline
+- Aircraft details
+  - Registration details
+  - Manufacturer
+  - Model
+- Sighting details
+  - Date
+  - Altitude when sighted
+  - Location
 
 ## Getting Started
 
