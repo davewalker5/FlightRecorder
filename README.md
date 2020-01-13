@@ -46,6 +46,12 @@ Each sighting consists of the following data:
 
 FlightRecorder is written using Python 3.7.4 so you will need a Python 3 installation to use the application.
 
+The application makes use of the npyscreen library for the UI and so needs a copy of the curses terminal control library on the target machine. As a consequence, it will run on OS X and Linux machines and, according to the npyscreen documentation, under Cygwin on Windows.
+
+For more information, please see the npyscreen documentation:
+
+[https://npyscreen.readthedocs.io](https://npyscreen.readthedocs.io)
+
 ### First Time Configuration
 
 After cloning the repository, open a terminal window, change to the "src" folder of the working copy and run the following to complete first time configuration:
