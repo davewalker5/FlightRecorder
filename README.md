@@ -80,7 +80,7 @@ The application main screen will be displayed:
 
 ![alt text](images/first-time-startup.png "First Time Startup Screen")
 
-Details of how to use the application are provided on the Wiki.
+Details of how to use the application are provided on the [Wiki](https://github.com/davewalker5/FlightRecorder/wiki/Home).
 
 ## Authors
 
@@ -88,7 +88,7 @@ Details of how to use the application are provided on the Wiki.
 
 ## Feedback
 
-To file issues or suggestions, please use the [Issues](https://github.com/davewalker5/UdpClientServer/issues) page for this project on GitHub.
+To file issues or suggestions, please use the [Issues](https://github.com/davewalker5/FlightRecorder/issues) page for this project on GitHub.
 
 ## License
 
