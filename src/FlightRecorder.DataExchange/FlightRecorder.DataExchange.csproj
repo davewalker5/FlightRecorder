@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>FlightRecorder.DataExchange</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Dave Walker</Authors>
+    <Copyright>Copyright (c) Dave Walker 2020</Copyright>
+    <Owners>Dave Walker</Owners>
+    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <Summary>Flight Recorder Data Exchange Tools</Summary>
+    <PackageTags>FlightRecorder data exchange CSV</PackageTags>
+    <Title>Flight Recorder Data Exchange Tools</Title>
+    <Description>FlightRecorder Data Exchange Tools</Description>
+    <PackOnBuild>true</PackOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlightRecorder.Entities\FlightRecorder.Entities.csproj" />
+    <ProjectReference Include="..\FlightRecorder.BusinessLogic\FlightRecorder.BusinessLogic.csproj" />
+  </ItemGroup>
+</Project>

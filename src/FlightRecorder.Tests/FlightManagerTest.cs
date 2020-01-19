@@ -1,0 +1,100 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Data;
+using FlightRecorder.Entities.Db;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace FlightRecorder.Tests
+{
+    [TestClass]
+    public class FlightManagerTest
+    {
+        private const string FlightNumber = "U28551";
+        private const string Embarkation = "LGW";
+        private const string Destination = "RMU";
+        private const string AirlineName = "EasyJet";
+
+        private FlightRecorderFactory _factory;
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            _factory = new FlightRecorderFactory(context);
+            _factory.Flights.Add(FlightNumber, Embarkation, Destination, AirlineName);
+        }
+
+        [TestMethod]
+        public void AddDuplicateTest()
+        {
+            _factory.Flights.Add(FlightNumber, Embarkation, Destination, AirlineName);
+            Assert.AreEqual(1, _factory.Flights.List().Count());
+            Assert.AreEqual(1, _factory.Airlines.List().Count());
+        }
+
+        [TestMethod]
+        public void AddAndGetTest()
+        {
+            Flight flight = _factory.Flights.Get(a => a.Number == FlightNumber);
+
+            Assert.IsNotNull(flight);
+            Assert.IsTrue(flight.Id > 0);
+            Assert.AreEqual(FlightNumber, flight.Number);
+            Assert.AreEqual(Embarkation, flight.Embarkation);
+            Assert.AreEqual(Destination, flight.Destination);
+
+            Assert.IsNotNull(flight.Airline);
+            Assert.IsTrue(flight.Airline.Id > 0);
+            Assert.AreEqual(AirlineName, flight.Airline.Name);
+        }
+
+        [TestMethod]
+        public void GetMissingTest()
+        {
+            Flight flight = _factory.Flights.Get(a => a.Number == "Missing");
+            Assert.IsNull(flight);
+        }
+
+        [TestMethod]
+        public void ListAllTest()
+        {
+            IEnumerable<Flight> flights = _factory.Flights.List();
+            Assert.AreEqual(1, flights.Count());
+            Assert.AreEqual(FlightNumber, flights.First().Number);
+            Assert.AreEqual(AirlineName, flights.First().Airline.Name);
+        }
+
+        [TestMethod]
+        public void FilteredListTest()
+        {
+            IEnumerable<Flight> flights = _factory.Flights.List(e => e.Number == FlightNumber);
+            Assert.AreEqual(1, flights.Count());
+            Assert.AreEqual(FlightNumber, flights.First().Number);
+            Assert.AreEqual(AirlineName, flights.First().Airline.Name);
+        }
+
+        [TestMethod]
+        public void ListMissingTest()
+        {
+            IEnumerable<Flight> flights = _factory.Flights.List(e => e.Number == "Missing");
+            Assert.AreEqual(0, flights.Count());
+        }
+
+        [TestMethod]
+        public void ListByAirlineTest()
+        {
+            IEnumerable<Flight> flights = _factory.Flights.ListByAirline(AirlineName);
+            Assert.AreEqual(1, flights.Count());
+            Assert.AreEqual(FlightNumber, flights.First().Number);
+            Assert.AreEqual(AirlineName, flights.First().Airline.Name);
+        }
+
+        [TestMethod]
+        public void ListByMissingAirlineTest()
+        {
+            IEnumerable<Flight> flights = _factory.Flights.ListByAirline("Missing");
+            Assert.IsNull(flights);
+        }
+    }
+}

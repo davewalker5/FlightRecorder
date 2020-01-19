@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>FlightRecorder.BusinessLogic</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Dave Walker</Authors>
+    <Copyright>Copyright (c) Dave Walker 2020</Copyright>
+    <Owners>Dave Walker</Owners>
+    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <Summary>Flight Recorder Business Logic</Summary>
+    <PackageTags>FlightRecorder logic</PackageTags>
+    <Title>Flight Recorder Business Logic</Title>
+    <Description>FlightRecorder business logic</Description>
+    <PackOnBuild>true</PackOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlightRecorder.Entities\FlightRecorder.Entities.csproj" />
+    <ProjectReference Include="..\FlightRecorder.Data\FlightRecorder.Data.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Base\LogicBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Logic\" />
+    <Folder Include="Base\" />
+    <Folder Include="Factory\" />
+  </ItemGroup>
+</Project>
