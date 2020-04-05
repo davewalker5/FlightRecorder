@@ -10,7 +10,7 @@
 ## About FlightRecorderDb
 
 
-FlightRecorderDb implements the entities and business logic for a SQL-based drone flight logbook, providing facilities for recording and querying aircraft sightings.
+FlightRecorderDb implements the entities and business logic for a SQL-based aircraft sightings logbook.
 
 Each sighting consists of the following data:
 
