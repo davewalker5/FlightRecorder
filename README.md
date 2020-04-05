@@ -1,6 +1,8 @@
 # FlightRecorderDb
 
+[![Build Status](https://github.com/davewalker5/FlightRecorderDb/workflows/.NET%20Core%20CI%20Build/badge.svg)](https://github.com/davewalker5/FlightRecorderDb/actions)
 [![GitHub issues](https://img.shields.io/github/issues/davewalker5/FlightRecorderDb)](https://github.com/davewalker5/FlightRecorderDb/issues)
+[![Coverage Status](https://coveralls.io/repos/github/davewalker5/FlightRecorderDb/badge.svg?branch=master)](https://coveralls.io/github/davewalker5/FlightRecorderDb?branch=master)
 [![Releases](https://img.shields.io/github/v/release/davewalker5/FlightRecorderDb.svg?include_prereleases)](https://github.com/davewalker5/FlightRecorderDb/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/davewalker5/FlightRecorderDb/blob/master/LICENSE)
 [![Language](https://img.shields.io/badge/language-c%23-blue.svg)](https://github.com/davewalker5/FlightRecorderDb/)
@@ -8,7 +10,6 @@
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/davewalker5/FlightRecorderDb)](https://github.com/davewalker5/FlightRecorderDb/)
 
 ## About FlightRecorderDb
-
 
 FlightRecorderDb implements the entities and business logic for a SQL-based aircraft sightings logbook.
 
