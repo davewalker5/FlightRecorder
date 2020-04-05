@@ -13,6 +13,7 @@
     <Title>Flight Recorder Domain Models</Title>
     <Description>FlightRecorder Domain Models</Description>
     <PackOnBuild>true</PackOnBuild>
+    <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +23,7 @@
     <Folder Include="Exceptions\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Interfaces\IFlightRecorderDbContext.cs" />

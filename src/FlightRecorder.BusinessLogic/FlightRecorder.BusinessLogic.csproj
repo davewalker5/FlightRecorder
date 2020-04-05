@@ -13,6 +13,7 @@
     <Title>Flight Recorder Business Logic</Title>
     <Description>FlightRecorder business logic</Description>
     <PackOnBuild>true</PackOnBuild>
+    <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

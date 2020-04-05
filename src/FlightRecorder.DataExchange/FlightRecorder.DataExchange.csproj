@@ -13,6 +13,7 @@
     <Title>Flight Recorder Data Exchange Tools</Title>
     <Description>FlightRecorder Data Exchange Tools</Description>
     <PackOnBuild>true</PackOnBuild>
+    <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
