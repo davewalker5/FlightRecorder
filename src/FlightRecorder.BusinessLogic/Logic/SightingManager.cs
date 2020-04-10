@@ -2,22 +2,64 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using FlightRecorder.BusinessLogic.Base;
+using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Data;
 using FlightRecorder.Entities.DataExchange;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {
-    internal class SightingManager : ManagerBase<Sighting>, ISightingManager
+    internal class SightingManager : ISightingManager
     {
         private FlightRecorderFactory _factory;
 
-        internal SightingManager(FlightRecorderDbContext context, FlightRecorderFactory factory) : base(context)
+        internal SightingManager(FlightRecorderFactory factory)
         {
             _factory = factory;
+        }
+
+        /// <summary>
+        /// Get the first sighting matching the specified criteria along with the associated entites
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public Sighting Get(Expression<Func<Sighting, bool>> predicate = null)
+            => List(predicate).FirstOrDefault();
+
+        /// <summary>
+        /// Get the sightings matching the specified criteria along with the associated entities
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public IEnumerable<Sighting> List(Expression<Func<Sighting, bool>> predicate = null)
+        {
+            IEnumerable<Sighting> sightings;
+
+            if (predicate == null)
+            {
+                sightings = _factory.Context.Sightings
+                                            .Include(s => s.Location)
+                                            .Include(s => s.Flight)
+                                            .ThenInclude(f => f.Airline)
+                                            .Include(s => s.Aircraft)
+                                            .ThenInclude(a => a.Model)
+                                            .ThenInclude(m => m.Manufacturer);
+            }
+            else
+            {
+                sightings = _factory.Context.Sightings
+                                            .Include(s => s.Location)
+                                            .Include(s => s.Flight)
+                                            .ThenInclude(f => f.Airline)
+                                            .Include(s => s.Aircraft)
+                                            .ThenInclude(a => a.Model)
+                                            .ThenInclude(m => m.Manufacturer)
+                                            .Where(predicate);
+            }
+
+            return sightings;
         }
 
         /// <summary>
@@ -31,14 +73,25 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public Sighting Add(long altitude, DateTime date, long locationId, long flightId, long aircraftId)
         {
-            Sighting sighting = Add(new Sighting
+            Sighting sighting = new Sighting
             {
                 Altitude = altitude,
                 Date = date,
                 LocationId = locationId,
                 FlightId = flightId,
                 AircraftId = aircraftId
-            });
+            };
+
+            _factory.Context.Sightings.Add(sighting);
+            _factory.Context.SaveChanges();
+
+            _factory.Context.Entry(sighting).Reference(s => s.Location).Load();
+            _factory.Context.Entry(sighting).Reference(s => s.Flight).Load();
+            _factory.Context.Entry(sighting.Flight).Reference(f => f.Airline).Load();
+            _factory.Context.Entry(sighting).Reference(s => s.Aircraft).Load();
+            _factory.Context.Entry(sighting.Aircraft).Reference(a => a.Model).Load();
+            _factory.Context.Entry(sighting.Aircraft.Model).Reference(m => m.Manufacturer).Load();
+
 
             return sighting;
         }
@@ -58,50 +111,6 @@ namespace FlightRecorder.BusinessLogic.Logic
         }
 
         /// <summary>
-        /// Get the first sighting matching the specified criteria along with the associated entites
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public override Sighting Get(Expression<Func<Sighting, bool>> predicate = null)
-        {
-            Sighting sighting = base.Get(predicate);
-
-            if (sighting != null)
-            {
-                _context.Entry(sighting).Reference(m => m.Aircraft).Load();
-                _context.Entry(sighting.Aircraft).Reference(m => m.Model).Load();
-                _context.Entry(sighting.Aircraft.Model).Reference(m => m.Manufacturer).Load();
-                _context.Entry(sighting).Reference(m => m.Location).Load();
-                _context.Entry(sighting).Reference(m => m.Flight).Load();
-                _context.Entry(sighting.Flight).Reference(m => m.Airline).Load();
-            }
-
-            return sighting;
-        }
-
-        /// <summary>
-        /// Get the sightings matching the specified criteria along with the associated entities
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public override IEnumerable<Sighting> List(Expression<Func<Sighting, bool>> predicate = null)
-        {
-            IEnumerable<Sighting> sightings = base.List(predicate);
-
-            foreach (Sighting sighting in sightings)
-            {
-                _context.Entry(sighting).Reference(m => m.Aircraft).Load();
-                _context.Entry(sighting.Aircraft).Reference(m => m.Model).Load();
-                _context.Entry(sighting.Aircraft.Model).Reference(m => m.Manufacturer).Load();
-                _context.Entry(sighting).Reference(m => m.Location).Load();
-                _context.Entry(sighting).Reference(m => m.Flight).Load();
-                _context.Entry(sighting.Flight).Reference(m => m.Airline).Load();
-            }
-
-            return sightings;
-        }
-
-        /// <summary>
         /// Return a list of sightings of a specified aircraft
         /// </summary>
         /// <param name="registration"></param>
@@ -110,6 +119,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Sighting> sightings = null;
 
+            registration = registration.CleanString().ToUpper();
             Aircraft aircraft = _factory.Aircraft.Get(a => a.Registration == registration);
             if (aircraft != null)
             {
@@ -129,6 +139,8 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Sighting> sightings = null;
 
+            embarkation = embarkation.CleanString().ToUpper();
+            destination = destination.CleanString().ToUpper();
             IEnumerable<Flight> flights = _factory.Flights.List(f => (f.Embarkation == embarkation) && (f.Destination == destination));
             if ((flights != null) && flights.Any())
             {
@@ -148,6 +160,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Sighting> sightings = null;
 
+            airlineName = airlineName.CleanString();
             IEnumerable<Flight> flights = _factory.Flights.ListByAirline(airlineName);
             if ((flights != null) && flights.Any())
             {
@@ -167,6 +180,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Sighting> sightings = null;
 
+            locationName = locationName.CleanString();
             Location location = _factory.Locations.Get(a => a.Name == locationName);
             if (location != null)
             {
