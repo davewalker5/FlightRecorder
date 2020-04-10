@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using FlightRecorder.BusinessLogic.Base;
 using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
 using Microsoft.EntityFrameworkCore;

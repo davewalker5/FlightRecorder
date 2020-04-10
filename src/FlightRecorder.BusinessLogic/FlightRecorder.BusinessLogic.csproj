@@ -26,7 +26,6 @@ Added asynchronous data management methods</PackageReleaseNotes>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logic\" />
-    <Folder Include="Base\" />
     <Folder Include="Factory\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
