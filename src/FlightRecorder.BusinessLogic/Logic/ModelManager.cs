@@ -1,41 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using FlightRecorder.BusinessLogic.Base;
+using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {
-    internal class ModelManager : ManagerBase<Model>, IModelManager
+    internal class ModelManager : IModelManager
     {
         private FlightRecorderFactory _factory;
 
-        internal ModelManager(FlightRecorderDbContext context, FlightRecorderFactory factory) : base(context)
+        internal ModelManager(FlightRecorderFactory factory)
         {
             _factory = factory;
-        }
-
-        /// <summary>
-        /// Add a named model associated with the specified manufacturer, if it doesn't already exist
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="manufacturerName"></param>
-        /// <returns></returns>
-        public Model Add(string name, string manufacturerName)
-        {
-            Model model = Get(a => a.Name == name);
-
-            if (model == null)
-            {
-                Manufacturer manufacturer = _factory.Manufacturers.Add(manufacturerName);
-                model = Add(new Model { Name = name, ManufacturerId = manufacturer.Id });
-                _context.Entry(model).Reference(m => m.Manufacturer).Load();
-            }
-
-            return model;
         }
 
         /// <summary>
@@ -43,30 +26,28 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public override Model Get(Expression<Func<Model, bool>> predicate = null)
-        {
-            Model model = base.Get(predicate);
-
-            if (model != null)
-            {
-                _context.Entry(model).Reference(m => m.Manufacturer).Load();
-            }
-
-            return model;
-        }
+        public Model Get(Expression<Func<Model, bool>> predicate = null)
+            => List(predicate).FirstOrDefault();
 
         /// <summary>
         /// Get the models matching the specified criteria along with the associated manufacturers
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public override IEnumerable<Model> List(Expression<Func<Model, bool>> predicate = null)
+        public IEnumerable<Model> List(Expression<Func<Model, bool>> predicate = null)
         {
-            IEnumerable<Model> models = base.List(predicate);
+            IEnumerable<Model> models;
 
-            foreach (Model model in models)
+            if (predicate == null)
             {
-                _context.Entry(model).Reference(m => m.Manufacturer).Load();
+                models = _factory.Context.Models
+                                         .Include(m => m.Manufacturer);
+            }
+            else
+            {
+                models = _factory.Context.Models
+                                         .Include(m => m.Manufacturer)
+                                         .Where(predicate);
             }
 
             return models;
@@ -79,15 +60,34 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public IEnumerable<Model> ListByManufacturer(string manufacturerName)
         {
-            IEnumerable<Model> matches = null;
+            manufacturerName = manufacturerName.CleanString();
+            IEnumerable<Model> models = _factory.Context.Models
+                                                        .Include(m => m.Manufacturer)
+                                                        .Where(m => m.Manufacturer.Name == manufacturerName);
+            return models;
+        }
 
-            Manufacturer manufacturer = _factory.Manufacturers.Get(m => m.Name == manufacturerName);
-            if (manufacturer != null)
+        /// <summary>
+        /// Add a named model associated with the specified manufacturer, if it doesn't already exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="manufacturerName"></param>
+        /// <returns></returns>
+        public Model Add(string name, string manufacturerName)
+        {
+            name = name.CleanString();
+            Model model = Get(a => a.Name == name);
+
+            if (model == null)
             {
-                matches = List(m => m.ManufacturerId == manufacturer.Id);
+                Manufacturer manufacturer = _factory.Manufacturers.Add(manufacturerName);
+                model = new Model { Name = name, ManufacturerId = manufacturer.Id };
+                _factory.Context.Models.Add(model);
+                _factory.Context.SaveChanges();
+                _factory.Context.Entry(model).Reference(m => m.Manufacturer).Load();
             }
 
-            return matches;
+            return model;
         }
     }
 }
