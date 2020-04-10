@@ -33,7 +33,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public virtual IEnumerable<Manufacturer> List(Expression<Func<Manufacturer, bool>> predicate = null)
         {
-            IQueryable<Manufacturer> results;
+            IEnumerable<Manufacturer> results;
             if (predicate == null)
             {
                 results = _context.Manufacturers;
