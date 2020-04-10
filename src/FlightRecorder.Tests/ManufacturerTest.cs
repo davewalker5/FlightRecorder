@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
@@ -11,6 +12,7 @@ namespace FlightRecorder.Tests
     public class ManufacturerManagerTest
     {
         private const string EntityName = "Airbus";
+        private const string AsyncEntityName = "Boeing";
 
         private FlightRecorderFactory _factory;
 
@@ -32,7 +34,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void AddAndGetTest()
         {
-            Manufacturer entity = _factory.Manufacturers.Get(a => a.Name == EntityName);
+            Manufacturer entity = _factory.Manufacturers
+                                          .Get(a => a.Name == EntityName);
             Assert.IsNotNull(entity);
             Assert.IsTrue(entity.Id > 0);
             Assert.AreEqual(EntityName, entity.Name);
@@ -41,14 +44,16 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void GetMissingTest()
         {
-            Manufacturer entity = _factory.Manufacturers.Get(a => a.Name == "Missing");
+            Manufacturer entity = _factory.Manufacturers
+                                          .Get(a => a.Name == "Missing");
             Assert.IsNull(entity);
         }
 
         [TestMethod]
         public void ListAllTest()
         {
-            IEnumerable<Manufacturer> entities = _factory.Manufacturers.List();
+            IEnumerable<Manufacturer> entities = _factory.Manufacturers
+                                                         .List();
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
@@ -56,7 +61,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void FilteredListTest()
         {
-            IEnumerable<Manufacturer> entities = _factory.Manufacturers.List(e => e.Name == EntityName);
+            IEnumerable<Manufacturer> entities = _factory.Manufacturers
+                                                         .List(e => e.Name == EntityName);
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
@@ -64,7 +70,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListMissingTest()
         {
-            IEnumerable<Manufacturer> entities = _factory.Manufacturers.List(e => e.Name == "Missing");
+            IEnumerable<Manufacturer> entities = _factory.Manufacturers
+                                                         .List(e => e.Name == "Missing");
             Assert.AreEqual(0, entities.Count());
         }
     }

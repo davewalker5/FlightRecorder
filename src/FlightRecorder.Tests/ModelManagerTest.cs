@@ -90,7 +90,7 @@ namespace FlightRecorder.Tests
         public void ListByMissingManufacturerTest()
         {
             IEnumerable<Model> models = _factory.Models.ListByManufacturer("Missing");
-            Assert.IsNull(models);
+            Assert.IsFalse(models.Any());
         }
     }
 }
