@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
@@ -52,6 +53,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public Airline Add(string name)
         {
+            name = name.CleanString();
             Airline airline = Get(a => a.Name == name);
 
             if (airline == null)

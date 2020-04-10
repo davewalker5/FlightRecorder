@@ -32,7 +32,7 @@ namespace FlightRecorder.BusinessLogic.Factory
             _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(context));
             _models = new Lazy<IModelManager>(() => new ModelManager(this));
             _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(this));
-            _flights = new Lazy<IFlightManager>(() => new FlightManager(context, this));
+            _flights = new Lazy<IFlightManager>(() => new FlightManager(this));
             _sightings = new Lazy<ISightingManager>(() => new SightingManager(context, this));
         }
     }

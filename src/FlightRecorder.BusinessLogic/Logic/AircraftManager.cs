@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
@@ -61,6 +62,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Aircraft> matches = null;
 
+            modelName = modelName.CleanString();
             Model model = _factory.Models.Get(m => m.Name == modelName);
             if (model != null)
             {
@@ -79,6 +81,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Aircraft> matches = null;
 
+            manufacturerName = manufacturerName.CleanString();
             Manufacturer manufacturer = _factory.Manufacturers
                                                 .Get(m => m.Name == manufacturerName);
             if (manufacturer != null)
@@ -106,6 +109,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public Aircraft Add(string registration, string serialNumber, long yearOfManufacture, string modelName, string manufacturerName)
         {
+            registration = registration.CleanString().ToUpper();
             Aircraft aircraft = Get(a => a.Registration == registration);
 
             if (aircraft == null)
@@ -115,7 +119,7 @@ namespace FlightRecorder.BusinessLogic.Logic
                 aircraft = new Aircraft
                 {
                     Registration = registration,
-                    SerialNumber = serialNumber,
+                    SerialNumber = serialNumber.CleanString().ToUpper(),
                     Manufactured = yearOfManufacture,
                     ModelId = model.Id
                 };
