@@ -42,6 +42,17 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
+        public async Task AddAndGetAsyncTest()
+        {
+            await _factory.Manufacturers.AddAsync(AsyncEntityName);
+            Manufacturer entity = await _factory.Manufacturers
+                                                .GetAsync(m => m.Name == AsyncEntityName);
+            Assert.IsNotNull(entity);
+            Assert.IsTrue(entity.Id > 0);
+            Assert.AreEqual(AsyncEntityName, entity.Name);
+        }
+
+        [TestMethod]
         public void GetMissingTest()
         {
             Manufacturer entity = _factory.Manufacturers
@@ -59,10 +70,30 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
+        public async Task ListAllAsyncTest()
+        {
+            List<Manufacturer> entities = await _factory.Manufacturers
+                                                        .ListAsync()
+                                                        .ToListAsync();
+            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(EntityName, entities.First().Name);
+        }
+
+        [TestMethod]
         public void FilteredListTest()
         {
             IEnumerable<Manufacturer> entities = _factory.Manufacturers
                                                          .List(e => e.Name == EntityName);
+            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(EntityName, entities.First().Name);
+        }
+
+        [TestMethod]
+        public async Task FilteredListAsyncTest()
+        {
+            List<Manufacturer> entities = await _factory.Manufacturers
+                                                        .ListAsync(e => e.Name == EntityName)
+                                                        .ToListAsync();
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
