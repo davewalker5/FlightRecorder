@@ -22,16 +22,18 @@ namespace FlightRecorder.BusinessLogic.Factory
         public IAircraftManager Aircraft { get { return _aircraft.Value; } }
         public IFlightManager Flights { get { return _flights.Value; } }
         public ISightingManager Sightings { get { return _sightings.Value; } }
+        public FlightRecorderDbContext Context { get; private set; }
 
         public FlightRecorderFactory(FlightRecorderDbContext context)
         {
+            Context = context;
             _airlines = new Lazy<IAirlineManager>(() => new AirlineManager(context));
             _locations = new Lazy<ILocationManager>(() => new LocationManager(context));
             _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(context));
-            _models = new Lazy<IModelManager>(() => new ModelManager(context, this));
-            _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(context, this));
-            _flights = new Lazy<IFlightManager>(() => new FlightManager(context, this));
-            _sightings = new Lazy<ISightingManager>(() => new SightingManager(context, this));
+            _models = new Lazy<IModelManager>(() => new ModelManager(this));
+            _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(this));
+            _flights = new Lazy<IFlightManager>(() => new FlightManager(this));
+            _sightings = new Lazy<ISightingManager>(() => new SightingManager(this));
         }
     }
 }

@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>FlightRecorder.BusinessLogic</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackageVersion>1.0.0.1</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020</Copyright>
     <Owners>Dave Walker</Owners>
-    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <PackageReleaseNotes>Refactored base class for business logic
+Added asynchronous data management methods</PackageReleaseNotes>
     <Summary>Flight Recorder Business Logic</Summary>
     <PackageTags>FlightRecorder logic</PackageTags>
     <Title>Flight Recorder Business Logic</Title>
@@ -25,7 +26,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logic\" />
-    <Folder Include="Base\" />
     <Folder Include="Factory\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
   </ItemGroup>
 </Project>
