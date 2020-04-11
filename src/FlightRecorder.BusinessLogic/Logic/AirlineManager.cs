@@ -29,7 +29,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             => List(predicate).FirstOrDefault();
 
         /// <summary>
-        /// Get the first model matching the specified criteria along with the associated manufacturer
+        /// Get the first airline matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
