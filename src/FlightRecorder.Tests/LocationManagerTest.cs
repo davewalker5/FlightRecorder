@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
@@ -11,6 +12,7 @@ namespace FlightRecorder.Tests
     public class LocationManagerTest
     {
         private const string EntityName = "Gatwick Airport";
+        private const string AsyncEntityName = "Heathrow Airport";
 
         private FlightRecorderFactory _factory;
 
@@ -39,6 +41,16 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
+        public async Task AddAndGetAsyncTest()
+        {
+            await _factory.Locations.AddAsync(AsyncEntityName);
+            Location entity = await _factory.Locations.GetAsync(a => a.Name == EntityName);
+            Assert.IsNotNull(entity);
+            Assert.IsTrue(entity.Id > 0);
+            Assert.AreEqual(EntityName, entity.Name);
+        }
+
+        [TestMethod]
         public void GetMissingTest()
         {
             Location entity = _factory.Locations.Get(a => a.Name == "Missing");
@@ -54,9 +66,29 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
+        public async Task ListAllAsyncTest()
+        {
+            List<Location> entities = await _factory.Locations
+                                                    .ListAsync()
+                                                    .ToListAsync();
+            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(EntityName, entities.First().Name);
+        }
+
+        [TestMethod]
         public void FilteredListTest()
         {
             IEnumerable<Location> entities = _factory.Locations.List(e => e.Name == EntityName);
+            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(EntityName, entities.First().Name);
+        }
+
+        [TestMethod]
+        public async Task FilteredListAsyncTest()
+        {
+            List<Location> entities = await _factory.Locations
+                                                    .ListAsync(e => e.Name == EntityName)
+                                                    .ToListAsync();
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }

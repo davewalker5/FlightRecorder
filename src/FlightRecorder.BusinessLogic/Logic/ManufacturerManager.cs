@@ -46,7 +46,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public virtual IEnumerable<Manufacturer> List(Expression<Func<Manufacturer, bool>> predicate = null)
+        public IEnumerable<Manufacturer> List(Expression<Func<Manufacturer, bool>> predicate = null)
         {
             IEnumerable<Manufacturer> results;
             if (predicate == null)
@@ -66,7 +66,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public virtual IAsyncEnumerable<Manufacturer> ListAsync(Expression<Func<Manufacturer, bool>> predicate = null)
+        public IAsyncEnumerable<Manufacturer> ListAsync(Expression<Func<Manufacturer, bool>> predicate = null)
         {
             IAsyncEnumerable<Manufacturer> results;
             if (predicate == null)
