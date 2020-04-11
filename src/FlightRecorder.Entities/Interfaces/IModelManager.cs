@@ -10,7 +10,7 @@ namespace FlightRecorder.Entities.Interfaces
     {
         Model Add(string name, string manufacturerName);
         Task<Model> AddAsync(string name, string manufacturerName);
-        Model Get(Expression<Func<Model, bool>> predicate = null);
+        Model Get(Expression<Func<Model, bool>> predicate);
         Task<Model> GetAsync(Expression<Func<Model, bool>> predicate);
         IEnumerable<Model> List(Expression<Func<Model, bool>> predicate = null);
         IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate = null);
