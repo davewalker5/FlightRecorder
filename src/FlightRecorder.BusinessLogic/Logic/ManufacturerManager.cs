@@ -114,7 +114,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             if (manufacturer == null)
             {
                 manufacturer = new Manufacturer { Name = name };
-                _context.Manufacturers.Add(manufacturer);
+                await _context.Manufacturers.AddAsync(manufacturer);
                 await _context.SaveChangesAsync();
             }
 

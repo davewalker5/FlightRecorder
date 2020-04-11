@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
@@ -24,8 +25,21 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public Model Get(Expression<Func<Model, bool>> predicate = null)
+        public Model Get(Expression<Func<Model, bool>> predicate)
             => List(predicate).FirstOrDefault();
+
+        /// <summary>
+        /// Get the first model matching the specified criteria along with the associated manufacturer
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<Model> GetAsync(Expression<Func<Model, bool>> predicate)
+        {
+            List<Model> models = await _factory.Context.Models
+                                                       .Where(predicate)
+                                                       .ToListAsync();
+            return models.FirstOrDefault();
+        }
 
         /// <summary>
         /// Get the models matching the specified criteria along with the associated manufacturers
@@ -52,6 +66,32 @@ namespace FlightRecorder.BusinessLogic.Logic
         }
 
         /// <summary>
+        /// Get the models matching the specified criteria along with the associated manufacturers
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate = null)
+        {
+            IAsyncEnumerable<Model> models;
+
+            if (predicate == null)
+            {
+                models = _factory.Context.Models
+                                         .Include(m => m.Manufacturer)
+                                         .AsAsyncEnumerable();
+            }
+            else
+            {
+                models = _factory.Context.Models
+                                         .Include(m => m.Manufacturer)
+                                         .Where(predicate)
+                                         .AsAsyncEnumerable();
+            }
+
+            return models;
+        }
+
+        /// <summary>
         /// Get the models for a named manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
@@ -62,6 +102,21 @@ namespace FlightRecorder.BusinessLogic.Logic
             IEnumerable<Model> models = _factory.Context.Models
                                                         .Include(m => m.Manufacturer)
                                                         .Where(m => m.Manufacturer.Name == manufacturerName);
+            return models;
+        }
+
+        /// <summary>
+        /// Get the models for a named manufacturer
+        /// </summary>
+        /// <param name="manufacturerName"></param>
+        /// <returns></returns>
+        public IAsyncEnumerable<Model> ListByManufacturerAsync(string manufacturerName)
+        {
+            manufacturerName = manufacturerName.CleanString();
+            IAsyncEnumerable<Model> models = _factory.Context.Models
+                                                             .Include(m => m.Manufacturer)
+                                                             .Where(m => m.Manufacturer.Name == manufacturerName)
+                                                             .AsAsyncEnumerable();
             return models;
         }
 
@@ -83,6 +138,29 @@ namespace FlightRecorder.BusinessLogic.Logic
                 _factory.Context.Models.Add(model);
                 _factory.Context.SaveChanges();
                 _factory.Context.Entry(model).Reference(m => m.Manufacturer).Load();
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Add a named model associated with the specified manufacturer, if it doesn't already exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="manufacturerName"></param>
+        /// <returns></returns>
+        public async Task<Model> AddAsync(string name, string manufacturerName)
+        {
+            name = name.CleanString();
+            Model model = await GetAsync(a => a.Name == name);
+
+            if (model == null)
+            {
+                Manufacturer manufacturer = await _factory.Manufacturers.AddAsync(manufacturerName);
+                model = new Model { Name = name, ManufacturerId = manufacturer.Id };
+                await _factory.Context.Models.AddAsync(model);
+                await _factory.Context.SaveChangesAsync();
+                await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
             }
 
             return model;
