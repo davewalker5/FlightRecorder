@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using FlightRecorder.Entities.DataExchange;
 
 namespace FlightRecorder.Entities.Db
 {
+    [ExcludeFromCodeCoverage]
     public partial class Sighting
     {
         [Key]
