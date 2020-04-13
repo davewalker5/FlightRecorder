@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRecorder.BusinessLogi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRecorder.DataExchange", "FlightRecorder.DataExchange\FlightRecorder.DataExchange.csproj", "{2337BD55-D981-459A-ACD9-F0CFE5DCC1AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRecorder.Migrations", "FlightRecorder.Migrations\FlightRecorder.Migrations.csproj", "{C900A267-3486-430A-ABB5-1D25292BE450}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRecorder.Migrations", "FlightRecorder.Migrations\FlightRecorder.Migrations.csproj", "{67B116B7-F37B-492C-B6A8-767617CC89E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRecorder.Users", "FlightRecorder.Users\FlightRecorder.Users.csproj", "{B17F7264-1B0D-48AA-829F-83E0E0A13670}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightRecorder.Users", "FlightRecorder.Users\FlightRecorder.Users.csproj", "{5C0B6862-4FC3-42DC-9CF0-ECBB5929A09B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,13 +41,13 @@ Global
 		{2337BD55-D981-459A-ACD9-F0CFE5DCC1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2337BD55-D981-459A-ACD9-F0CFE5DCC1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2337BD55-D981-459A-ACD9-F0CFE5DCC1AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C900A267-3486-430A-ABB5-1D25292BE450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C900A267-3486-430A-ABB5-1D25292BE450}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C900A267-3486-430A-ABB5-1D25292BE450}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C900A267-3486-430A-ABB5-1D25292BE450}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B17F7264-1B0D-48AA-829F-83E0E0A13670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B17F7264-1B0D-48AA-829F-83E0E0A13670}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B17F7264-1B0D-48AA-829F-83E0E0A13670}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B17F7264-1B0D-48AA-829F-83E0E0A13670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67B116B7-F37B-492C-B6A8-767617CC89E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67B116B7-F37B-492C-B6A8-767617CC89E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67B116B7-F37B-492C-B6A8-767617CC89E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67B116B7-F37B-492C-B6A8-767617CC89E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C0B6862-4FC3-42DC-9CF0-ECBB5929A09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C0B6862-4FC3-42DC-9CF0-ECBB5929A09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C0B6862-4FC3-42DC-9CF0-ECBB5929A09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C0B6862-4FC3-42DC-9CF0-ECBB5929A09B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
