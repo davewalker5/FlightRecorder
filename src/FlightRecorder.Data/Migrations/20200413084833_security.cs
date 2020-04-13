@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FlightRecorder.Data.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class security : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
