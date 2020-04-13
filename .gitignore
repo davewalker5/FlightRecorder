@@ -405,3 +405,4 @@ ASALocalRun/
 .localhistory/
 bin
 obj
+.DS_Store
