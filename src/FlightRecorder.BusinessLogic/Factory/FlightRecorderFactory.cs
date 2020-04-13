@@ -14,6 +14,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IAircraftManager> _aircraft = null;
         private readonly Lazy<IFlightManager> _flights = null;
         private readonly Lazy<ISightingManager> _sightings = null;
+        private readonly Lazy<IUserManager> _users = null;
 
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -22,6 +23,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         public IAircraftManager Aircraft { get { return _aircraft.Value; } }
         public IFlightManager Flights { get { return _flights.Value; } }
         public ISightingManager Sightings { get { return _sightings.Value; } }
+        public IUserManager Users { get { return _users.Value; } }
         public FlightRecorderDbContext Context { get; private set; }
 
         public FlightRecorderFactory(FlightRecorderDbContext context)
@@ -34,6 +36,7 @@ namespace FlightRecorder.BusinessLogic.Factory
             _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(this));
             _flights = new Lazy<IFlightManager>(() => new FlightManager(this));
             _sightings = new Lazy<ISightingManager>(() => new SightingManager(this));
+            _users = new Lazy<IUserManager>(() => new UserManager(context));
         }
     }
 }

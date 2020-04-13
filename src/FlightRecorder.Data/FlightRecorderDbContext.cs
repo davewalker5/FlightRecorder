@@ -14,6 +14,7 @@ namespace FlightRecorder.Data
         public virtual DbSet<Manufacturer> Manufacturers { get; set; }
         public virtual DbSet<Model> Models { get; set; }
         public virtual DbSet<Sighting> Sightings { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         public FlightRecorderDbContext(DbContextOptions<FlightRecorderDbContext> options) : base(options)
         {
@@ -176,6 +177,26 @@ namespace FlightRecorder.Data
                 entity.HasOne(d => d.Location)
                     .WithMany(p => p.Sighting)
                     .HasForeignKey(d => d.LocationId);
+            });
+
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("USER");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.UserName)
+                    .IsRequired()
+                    .HasColumnName("UserName")
+                    .HasColumnType("VARCHAR(50)");
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasColumnName("Password")
+                    .HasColumnType("VARCHAR(1000)");
             });
         }
     }
