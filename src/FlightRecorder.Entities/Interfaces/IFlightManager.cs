@@ -12,9 +12,9 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Flight> AddAsync(string number, string embarkation, string destination, string airlineName);
         Flight Get(Expression<Func<Flight, bool>> predicate = null);
         Task<Flight> GetAsync(Expression<Func<Flight, bool>> predicate);
-        IEnumerable<Flight> List(Expression<Func<Flight, bool>> predicate = null);
-        IAsyncEnumerable<Flight> ListAsync(Expression<Func<Flight, bool>> predicate = null);
-        IEnumerable<Flight> ListByAirline(string airlineName);
-        Task<IAsyncEnumerable<Flight>> ListByAirlineAsync(string airlineName);
+        IEnumerable<Flight> List(Expression<Func<Flight, bool>> predicate, int pageNumber, int pageSize);
+        IAsyncEnumerable<Flight> ListAsync(Expression<Func<Flight, bool>> predicate, int pageNumber, int pageSize);
+        IEnumerable<Flight> ListByAirline(string airlineName, int pageNumber, int pageSize);
+        Task<IAsyncEnumerable<Flight>> ListByAirlineAsync(string airlineName, int pageNumber, int pageSize);
     }
 }

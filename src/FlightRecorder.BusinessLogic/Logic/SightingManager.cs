@@ -14,6 +14,8 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class SightingManager : ISightingManager
     {
+        private const int AllFlightsPageSize = 1000000;
+
         private FlightRecorderFactory _factory;
 
         internal SightingManager(FlightRecorderFactory factory)
@@ -255,9 +257,11 @@ namespace FlightRecorder.BusinessLogic.Logic
         {
             IEnumerable<Sighting> sightings = null;
 
+            // Note that the "List" method uses an arbitrary maximum number of flights. This is
+            // more than enough to cover a hobbyist flight log!
             embarkation = embarkation.CleanString().ToUpper();
             destination = destination.CleanString().ToUpper();
-            IEnumerable<Flight> flights = _factory.Flights.List(f => (f.Embarkation == embarkation) && (f.Destination == destination));
+            IEnumerable<Flight> flights = _factory.Flights.List(f => (f.Embarkation == embarkation) && (f.Destination == destination), 1, AllFlightsPageSize);
             if ((flights != null) && flights.Any())
             {
                 IEnumerable<long> flightIds = flights.Select(f => f.Id);
@@ -281,7 +285,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             destination = destination.CleanString().ToUpper();
             List<Flight> flights = await _factory.Flights
                                                  .ListAsync(f => (f.Embarkation == embarkation) &&
-                                                                 (f.Destination == destination))
+                                                                 (f.Destination == destination), 1, AllFlightsPageSize)
                                                  .ToListAsync();
             if (flights.Any())
             {
@@ -302,7 +306,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             IEnumerable<Sighting> sightings = null;
 
             airlineName = airlineName.CleanString();
-            IEnumerable<Flight> flights = _factory.Flights.ListByAirline(airlineName);
+            IEnumerable<Flight> flights = _factory.Flights.ListByAirline(airlineName, 1, AllFlightsPageSize);
             if ((flights != null) && flights.Any())
             {
                 IEnumerable<long> flightIds = flights.Select(f => f.Id);
@@ -322,7 +326,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             IAsyncEnumerable<Sighting> sightings = null;
 
             airlineName = airlineName.CleanString();
-            IAsyncEnumerable<Flight> matches = await _factory.Flights.ListByAirlineAsync(airlineName);
+            IAsyncEnumerable<Flight> matches = await _factory.Flights.ListByAirlineAsync(airlineName, 1, AllFlightsPageSize);
             if (matches != null)
             {
                 List<Flight> flights = await matches.ToListAsync();

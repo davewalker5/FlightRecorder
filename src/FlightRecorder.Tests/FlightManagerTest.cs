@@ -33,7 +33,7 @@ namespace FlightRecorder.Tests
         public void AddDuplicateTest()
         {
             _factory.Flights.Add(FlightNumber, Embarkation, Destination, AirlineName);
-            Assert.AreEqual(1, _factory.Flights.List().Count());
+            Assert.AreEqual(1, _factory.Flights.List(null, 1, 100).Count());
             Assert.AreEqual(1, _factory.Airlines.List(null, 1, 100).Count());
         }
 
@@ -80,7 +80,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListAllTest()
         {
-            IEnumerable<Flight> flights = _factory.Flights.List();
+            IEnumerable<Flight> flights = _factory.Flights.List(null, 1, 100);
             Assert.AreEqual(1, flights.Count());
             Assert.AreEqual(FlightNumber, flights.First().Number);
             Assert.AreEqual(AirlineName, flights.First().Airline.Name);
@@ -90,7 +90,7 @@ namespace FlightRecorder.Tests
         public async Task ListAllAsyncTest()
         {
             List<Flight> flights = await _factory.Flights
-                                                 .ListAsync()
+                                                 .ListAsync(null, 1, 100)
                                                  .ToListAsync();
             Assert.AreEqual(1, flights.Count());
             Assert.AreEqual(FlightNumber, flights.First().Number);
@@ -100,7 +100,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void FilteredListTest()
         {
-            IEnumerable<Flight> flights = _factory.Flights.List(e => e.Number == FlightNumber);
+            IEnumerable<Flight> flights = _factory.Flights.List(e => e.Number == FlightNumber, 1, 100);
             Assert.AreEqual(1, flights.Count());
             Assert.AreEqual(FlightNumber, flights.First().Number);
             Assert.AreEqual(AirlineName, flights.First().Airline.Name);
@@ -110,7 +110,7 @@ namespace FlightRecorder.Tests
         public async Task FilteredListAsyncTest()
         {
             List<Flight> flights = await _factory.Flights
-                                                 .ListAsync(e => e.Number == FlightNumber)
+                                                 .ListAsync(e => e.Number == FlightNumber, 1, 100)
                                                  .ToListAsync();
             Assert.AreEqual(1, flights.Count());
             Assert.AreEqual(FlightNumber, flights.First().Number);
@@ -120,14 +120,14 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListMissingTest()
         {
-            IEnumerable<Flight> flights = _factory.Flights.List(e => e.Number == "Missing");
+            IEnumerable<Flight> flights = _factory.Flights.List(e => e.Number == "Missing", 1, 100);
             Assert.AreEqual(0, flights.Count());
         }
 
         [TestMethod]
         public void ListByAirlineTest()
         {
-            IEnumerable<Flight> flights = _factory.Flights.ListByAirline(AirlineName);
+            IEnumerable<Flight> flights = _factory.Flights.ListByAirline(AirlineName, 1, 100);
             Assert.AreEqual(1, flights.Count());
             Assert.AreEqual(FlightNumber, flights.First().Number);
             Assert.AreEqual(AirlineName, flights.First().Airline.Name);
@@ -137,7 +137,7 @@ namespace FlightRecorder.Tests
         public async Task ListByAirlineAsyncTest()
         {
             IAsyncEnumerable<Flight> matches = await _factory.Flights
-                                                             .ListByAirlineAsync(AirlineName);
+                                                             .ListByAirlineAsync(AirlineName, 1, 100);
             List<Flight> flights = await matches.ToListAsync();
             Assert.AreEqual(1, flights.Count());
             Assert.AreEqual(FlightNumber, flights.First().Number);
@@ -147,7 +147,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListByMissingAirlineTest()
         {
-            IEnumerable<Flight> flights = _factory.Flights.ListByAirline("Missing");
+            IEnumerable<Flight> flights = _factory.Flights.ListByAirline("Missing", 1, 100);
             Assert.IsNull(flights);
         }
     }
