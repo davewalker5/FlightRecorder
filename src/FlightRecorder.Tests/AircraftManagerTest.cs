@@ -81,7 +81,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListAllTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List();
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(null, 1, 100);
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
@@ -92,7 +92,7 @@ namespace FlightRecorder.Tests
         public async Task ListAllAsyncTest()
         {
             List<Aircraft> aircraft = await _factory.Aircraft
-                                                    .ListAsync()
+                                                    .ListAsync(null, 1, 100)
                                                     .ToListAsync();
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
@@ -103,7 +103,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void FilteredListTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(e => e.Registration == Registration);
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(e => e.Registration == Registration, 1, 100);
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
@@ -114,7 +114,7 @@ namespace FlightRecorder.Tests
         public async Task FilteredListAsyncTest()
         {
             List<Aircraft> aircraft = await _factory.Aircraft
-                                                    .ListAsync(e => e.Registration == Registration)
+                                                    .ListAsync(e => e.Registration == Registration, 1, 100)
                                                     .ToListAsync();
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
@@ -125,7 +125,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void FilterByModelTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByModel(ModelName);
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByModel(ModelName, 1, 100);
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
@@ -136,7 +136,7 @@ namespace FlightRecorder.Tests
         public async Task FilterByModelAsyncTest()
         {
             IAsyncEnumerable<Aircraft> matches = await _factory.Aircraft
-                                                               .ListByModelAsync(ModelName);
+                                                               .ListByModelAsync(ModelName, 1, 100);
             List<Aircraft> aircraft = await matches.ToListAsync();
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
@@ -147,7 +147,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void FilterByManufacturerTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer(ManufacturerName);
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer(ManufacturerName, 1, 100);
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
@@ -158,7 +158,7 @@ namespace FlightRecorder.Tests
         public async Task FilterByManufacturerAsyncTest()
         {
             IAsyncEnumerable<Aircraft> matches = await _factory.Aircraft
-                                                               .ListByManufacturerAsync(ManufacturerName);
+                                                               .ListByManufacturerAsync(ManufacturerName, 1, 100);
             List<Aircraft> aircraft = await matches.ToListAsync();
             Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
@@ -169,21 +169,21 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListMissingTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(e => e.Registration == "Missing");
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(e => e.Registration == "Missing", 1, 100);
             Assert.AreEqual(0, aircraft.Count());
         }
 
         [TestMethod]
         public void ListByMissingModelTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByModel("Missing");
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByModel("Missing", 1, 100);
             Assert.IsNull(aircraft);
         }
 
         [TestMethod]
         public void ListByMissingManufacturerTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer("Missing");
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer("Missing", 1, 100);
             Assert.IsNull(aircraft);
         }
 
@@ -191,7 +191,7 @@ namespace FlightRecorder.Tests
         public void ListByManufacturerWithNoModelsTest()
         {
             _factory.Manufacturers.Add("Boeing");
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer("Boeing");
+            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer("Boeing", 1, 100);
             Assert.IsNull(aircraft);
         }
     }
