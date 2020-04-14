@@ -56,14 +56,18 @@ namespace FlightRecorder.BusinessLogic.Logic
             {
                 aircraft = _factory.Context.Aircraft
                                            .Include(a => a.Model)
-                                           .ThenInclude(m => m.Manufacturer);
+                                           .ThenInclude(m => m.Manufacturer)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize);
             }
             else
             {
                 aircraft = _factory.Context.Aircraft
                                            .Include(a => a.Model)
                                            .ThenInclude(m => m.Manufacturer)
-                                           .Where(predicate);
+                                           .Where(predicate)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize);
             }
 
             return aircraft;
