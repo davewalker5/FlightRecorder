@@ -12,9 +12,9 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Model> AddAsync(string name, string manufacturerName);
         Model Get(Expression<Func<Model, bool>> predicate);
         Task<Model> GetAsync(Expression<Func<Model, bool>> predicate);
-        IEnumerable<Model> List(Expression<Func<Model, bool>> predicate = null);
-        IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate = null);
-        IEnumerable<Model> ListByManufacturer(string manufacturerName);
-        IAsyncEnumerable<Model> ListByManufacturerAsync(string manufacturerName);
+        IEnumerable<Model> List(Expression<Func<Model, bool>> predicate, int pageNumber, int pageSize);
+        IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate, int pageNumber, int pageSize);
+        IEnumerable<Model> ListByManufacturer(string manufacturerName, int pageNumber, int pageSize);
+        IAsyncEnumerable<Model> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize);
     }
 }

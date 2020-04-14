@@ -13,6 +13,8 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class AircraftManager : IAircraftManager
     {
+        private const int AllModelsPageSize = 1000000;
+
         private FlightRecorderFactory _factory;
 
         internal AircraftManager(FlightRecorderFactory factory)
@@ -165,8 +167,9 @@ namespace FlightRecorder.BusinessLogic.Logic
                                                 .Get(m => m.Name == manufacturerName);
             if (manufacturer != null)
             {
+                // Model retrieval uses an arbitrarily large page size to retrieve all models
                 IEnumerable<long> modelIds = _factory.Models
-                                                     .List(m => m.ManufacturerId == manufacturer.Id)
+                                                     .List(m => m.ManufacturerId == manufacturer.Id, 1, AllModelsPageSize)
                                                      .Select(m => m.Id);
                 if (modelIds.Any())
                 {
@@ -193,8 +196,9 @@ namespace FlightRecorder.BusinessLogic.Logic
                                                       .GetAsync(m => m.Name == manufacturerName);
             if (manufacturer != null)
             {
+                // Model retrieval uses an arbitrarily large page size to retrieve all models
                 List<long> modelIds = await _factory.Models
-                                                    .ListAsync(m => m.ManufacturerId == manufacturer.Id)
+                                                    .ListAsync(m => m.ManufacturerId == manufacturer.Id, 1, AllModelsPageSize)
                                                     .Select(m => m.Id)
                                                     .ToListAsync();
                 if (modelIds.Any())

@@ -29,7 +29,7 @@ namespace FlightRecorder.Tests
         public void AddDuplicateTest()
         {
             _factory.Models.Add(ModelName, ManufacturerName);
-            Assert.AreEqual(1, _factory.Models.List().Count());
+            Assert.AreEqual(1, _factory.Models.List(null, 1, 100).Count());
             Assert.AreEqual(1, _factory.Manufacturers.List(null, 1, 100).Count());
         }
 
@@ -72,7 +72,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListAllTest()
         {
-            IEnumerable<Model> models = _factory.Models.List();
+            IEnumerable<Model> models = _factory.Models.List(null, 1, 100);
             Assert.AreEqual(1, models.Count());
             Assert.AreEqual(ModelName, models.First().Name);
             Assert.AreEqual(ManufacturerName, models.First().Manufacturer.Name);
@@ -82,7 +82,7 @@ namespace FlightRecorder.Tests
         public async Task ListAllAsyncTest()
         {
             List<Model> models = await _factory.Models
-                                               .ListAsync()
+                                               .ListAsync(null, 1, 100)
                                                .ToListAsync();
             Assert.AreEqual(1, models.Count());
             Assert.AreEqual(ModelName, models.First().Name);
@@ -93,7 +93,7 @@ namespace FlightRecorder.Tests
         public void FilteredListTest()
         {
             IEnumerable<Model> models = _factory.Models
-                                                .List(e => e.Name == ModelName);
+                                                .List(e => e.Name == ModelName, 1, 100);
             Assert.AreEqual(1, models.Count());
             Assert.AreEqual(ModelName, models.First().Name);
             Assert.AreEqual(ManufacturerName, models.First().Manufacturer.Name);
@@ -103,7 +103,7 @@ namespace FlightRecorder.Tests
         public async Task FilteredListAsyncTest()
         {
             List<Model> models = await _factory.Models
-                                               .ListAsync(e => e.Name == ModelName)
+                                               .ListAsync(e => e.Name == ModelName, 1, 100)
                                                .ToListAsync();
             Assert.AreEqual(1, models.Count());
             Assert.AreEqual(ModelName, models.First().Name);
@@ -113,14 +113,14 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListMissingTest()
         {
-            IEnumerable<Model> models = _factory.Models.List(e => e.Name == "Missing");
+            IEnumerable<Model> models = _factory.Models.List(e => e.Name == "Missing", 1, 100);
             Assert.AreEqual(0, models.Count());
         }
 
         [TestMethod]
         public void ListByManufacturerTest()
         {
-            IEnumerable<Model> models = _factory.Models.ListByManufacturer(ManufacturerName);
+            IEnumerable<Model> models = _factory.Models.ListByManufacturer(ManufacturerName, 1, 100);
             Assert.AreEqual(1, models.Count());
             Assert.AreEqual(ModelName, models.First().Name);
             Assert.AreEqual(ManufacturerName, models.First().Manufacturer.Name);
@@ -130,7 +130,7 @@ namespace FlightRecorder.Tests
         public async Task ListByManufacturerAsyncTest()
         {
             List<Model> models = await _factory.Models
-                                               .ListByManufacturerAsync(ManufacturerName)
+                                               .ListByManufacturerAsync(ManufacturerName, 1, 100)
                                                .ToListAsync();
             Assert.AreEqual(1, models.Count());
             Assert.AreEqual(ModelName, models.First().Name);
@@ -140,7 +140,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListByMissingManufacturerTest()
         {
-            IEnumerable<Model> models = _factory.Models.ListByManufacturer("Missing");
+            IEnumerable<Model> models = _factory.Models.ListByManufacturer("Missing", 1, 100);
             Assert.IsFalse(models.Any());
         }
     }

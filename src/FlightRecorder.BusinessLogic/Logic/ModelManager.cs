@@ -26,7 +26,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="predicate"></param>
         /// <returns></returns>
         public Model Get(Expression<Func<Model, bool>> predicate)
-            => List(predicate).FirstOrDefault();
+            => List(predicate, 1, 1).FirstOrDefault();
 
         /// <summary>
         /// Get the first model matching the specified criteria along with the associated manufacturer
@@ -45,20 +45,26 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the models matching the specified criteria along with the associated manufacturers
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Model> List(Expression<Func<Model, bool>> predicate = null)
+        public IEnumerable<Model> List(Expression<Func<Model, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Model> models;
 
             if (predicate == null)
             {
                 models = _factory.Context.Models
-                                         .Include(m => m.Manufacturer);
+                                         .Include(m => m.Manufacturer)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize);
             }
             else
             {
                 models = _factory.Context.Models
                                          .Include(m => m.Manufacturer)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize)
                                          .Where(predicate);
             }
 
@@ -69,8 +75,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the models matching the specified criteria along with the associated manufacturers
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate = null)
+        public IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Model> models;
 
@@ -78,6 +86,8 @@ namespace FlightRecorder.BusinessLogic.Logic
             {
                 models = _factory.Context.Models
                                          .Include(m => m.Manufacturer)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize)
                                          .AsAsyncEnumerable();
             }
             else
@@ -85,6 +95,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                 models = _factory.Context.Models
                                          .Include(m => m.Manufacturer)
                                          .Where(predicate)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize)
                                          .AsAsyncEnumerable();
             }
 
@@ -95,13 +107,17 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the models for a named manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Model> ListByManufacturer(string manufacturerName)
+        public IEnumerable<Model> ListByManufacturer(string manufacturerName, int pageNumber, int pageSize)
         {
             manufacturerName = manufacturerName.CleanString();
             IEnumerable<Model> models = _factory.Context.Models
                                                         .Include(m => m.Manufacturer)
-                                                        .Where(m => m.Manufacturer.Name == manufacturerName);
+                                                        .Where(m => m.Manufacturer.Name == manufacturerName)
+                                                        .Skip((pageNumber - 1) * pageSize)
+                                                        .Take(pageSize);
             return models;
         }
 
@@ -109,13 +125,17 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the models for a named manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Model> ListByManufacturerAsync(string manufacturerName)
+        public IAsyncEnumerable<Model> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize)
         {
             manufacturerName = manufacturerName.CleanString();
             IAsyncEnumerable<Model> models = _factory.Context.Models
                                                              .Include(m => m.Manufacturer)
                                                              .Where(m => m.Manufacturer.Name == manufacturerName)
+                                                             .Skip((pageNumber - 1) * pageSize)
+                                                             .Take(pageSize)
                                                              .AsAsyncEnumerable();
             return models;
         }
