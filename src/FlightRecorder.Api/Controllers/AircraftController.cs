@@ -42,7 +42,6 @@ namespace FlightRecorder.Api.Controllers
         [Route("model/{modelId}")]
         public async Task<ActionResult<List<Aircraft>>> GetAircraftByModelAsync(int modelId)
         {
-            // TODO : This logic should be in the business logic
             List<Aircraft> aircraft = await _factory.Aircraft
                                                     .ListAsync(a => a.ModelId == modelId)
                                                     .ToListAsync();
@@ -59,10 +58,9 @@ namespace FlightRecorder.Api.Controllers
         [Route("registration/{registration}")]
         public async Task<ActionResult<Aircraft>> GetAircraftByRegistrationAsync(string registration)
         {
-            // TODO : Get method does not return related entities
             string decodedRegistration = HttpUtility.UrlDecode(registration).ToUpper();
             Aircraft aircraft = await _factory.Aircraft
-                                              .GetAsync(a => a.Registration == registration);
+                                              .GetAsync(a => a.Registration == decodedRegistration);
 
             if (aircraft == null)
             {
@@ -80,7 +78,6 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Aircraft>> GetAircraftByIdAsync(int id)
         {
-            // TODO : Get method does not return related entities
             Aircraft aircraft = await _factory.Aircraft.GetAsync(a => a.Id == id);
 
             if (aircraft == null)
