@@ -48,6 +48,9 @@ namespace FlightRecorder.Api.Controllers
                 return NotFound();
             }
 
+            // TODO : This logic should be in the business logic
+            await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+
             return model;
         }
 
