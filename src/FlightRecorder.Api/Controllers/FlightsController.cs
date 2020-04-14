@@ -95,6 +95,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Flight>> UpdateFlightAsync([FromBody] Flight template)
         {
+            // TODO This logic should be in the business logic
             Flight flight = await _factory.Flights.GetAsync(f => f.Id == template.Id);
             if (flight == null)
             {
