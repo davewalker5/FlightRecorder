@@ -45,17 +45,24 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Manufacturer> List(Expression<Func<Manufacturer, bool>> predicate = null)
+        public IEnumerable<Manufacturer> List(Expression<Func<Manufacturer, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Manufacturer> results;
             if (predicate == null)
             {
                 results = _context.Manufacturers;
+                results = results.Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize);
             }
             else
             {
-                results = _context.Manufacturers.Where(predicate);
+                results = _context.Manufacturers
+                                  .Where(predicate)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize);
             }
 
             return results;
@@ -65,17 +72,26 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Manufacturer> ListAsync(Expression<Func<Manufacturer, bool>> predicate = null)
+        public IAsyncEnumerable<Manufacturer> ListAsync(Expression<Func<Manufacturer, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Manufacturer> results;
             if (predicate == null)
             {
-                results = _context.Manufacturers.AsAsyncEnumerable();
+                results = _context.Manufacturers;
+                results = results.Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize)
+                                 .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.Manufacturers.Where(predicate).AsAsyncEnumerable();
+                results = _context.Manufacturers
+                                  .Where(predicate)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .AsAsyncEnumerable();
             }
 
             return results;

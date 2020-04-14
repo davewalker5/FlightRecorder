@@ -28,7 +28,7 @@ namespace FlightRecorder.Tests
         public void AddDuplicateTest()
         {
             _factory.Manufacturers.Add(EntityName);
-            Assert.AreEqual(1, _factory.Manufacturers.List().Count());
+            Assert.AreEqual(1, _factory.Manufacturers.List(null, 1, 100).Count());
         }
 
         [TestMethod]
@@ -64,7 +64,7 @@ namespace FlightRecorder.Tests
         public void ListAllTest()
         {
             IEnumerable<Manufacturer> entities = _factory.Manufacturers
-                                                         .List();
+                                                         .List(null, 1, 100);
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
@@ -73,7 +73,7 @@ namespace FlightRecorder.Tests
         public async Task ListAllAsyncTest()
         {
             List<Manufacturer> entities = await _factory.Manufacturers
-                                                        .ListAsync()
+                                                        .ListAsync(null, 1, 100)
                                                         .ToListAsync();
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
@@ -83,7 +83,7 @@ namespace FlightRecorder.Tests
         public void FilteredListTest()
         {
             IEnumerable<Manufacturer> entities = _factory.Manufacturers
-                                                         .List(e => e.Name == EntityName);
+                                                         .List(e => e.Name == EntityName, 1, 100);
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
@@ -92,7 +92,7 @@ namespace FlightRecorder.Tests
         public async Task FilteredListAsyncTest()
         {
             List<Manufacturer> entities = await _factory.Manufacturers
-                                                        .ListAsync(e => e.Name == EntityName)
+                                                        .ListAsync(e => e.Name == EntityName, 1, 100)
                                                         .ToListAsync();
             Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
@@ -102,7 +102,7 @@ namespace FlightRecorder.Tests
         public void ListMissingTest()
         {
             IEnumerable<Manufacturer> entities = _factory.Manufacturers
-                                                         .List(e => e.Name == "Missing");
+                                                         .List(e => e.Name == "Missing", 1, 100);
             Assert.AreEqual(0, entities.Count());
         }
     }

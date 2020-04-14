@@ -30,7 +30,7 @@ namespace FlightRecorder.Tests
         {
             _factory.Models.Add(ModelName, ManufacturerName);
             Assert.AreEqual(1, _factory.Models.List().Count());
-            Assert.AreEqual(1, _factory.Manufacturers.List().Count());
+            Assert.AreEqual(1, _factory.Manufacturers.List(null, 1, 100).Count());
         }
 
         [TestMethod]
