@@ -107,6 +107,8 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft of a specified model
         /// </summary>
         /// <param name="modelName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
         public IEnumerable<Aircraft> ListByModel(string modelName, int pageNumber, int pageSize)
         {
@@ -126,6 +128,8 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft of a specified model
         /// </summary>
         /// <param name="modelName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<IAsyncEnumerable<Aircraft>> ListByModelAsync(string modelName, int pageNumber, int pageSize)
         {
@@ -145,6 +149,8 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft manufactured by a given manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
         public IEnumerable<Aircraft> ListByManufacturer(string manufacturerName, int pageNumber, int pageSize)
         {
@@ -171,6 +177,8 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft manufactured by a given manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<IAsyncEnumerable<Aircraft>> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize)
         {

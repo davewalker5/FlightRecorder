@@ -34,7 +34,7 @@ namespace FlightRecorder.Tests
         {
             _factory.Flights.Add(FlightNumber, Embarkation, Destination, AirlineName);
             Assert.AreEqual(1, _factory.Flights.List().Count());
-            Assert.AreEqual(1, _factory.Airlines.List().Count());
+            Assert.AreEqual(1, _factory.Airlines.List(null, 1, 100).Count());
         }
 
         [TestMethod]
