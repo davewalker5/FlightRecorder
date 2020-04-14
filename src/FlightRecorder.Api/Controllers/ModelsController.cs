@@ -53,7 +53,7 @@ namespace FlightRecorder.Api.Controllers
 
         [HttpPut]
         [Route("")]
-        public async Task<ActionResult<Model>> UpdateLocationAsync([FromBody] Model template)
+        public async Task<ActionResult<Model>> UpdateModelAsync([FromBody] Model template)
         {
             // TODO : Move this functionality to the Business Logic assembly
             Model model = await _factory.Models
@@ -73,13 +73,14 @@ namespace FlightRecorder.Api.Controllers
             model.Name = template.Name;
             model.ManufacturerId = template.ManufacturerId;
             await _factory.Context.SaveChangesAsync();
+            await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
 
             return model;
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Model>> CreateLocationAsync([FromBody] Model template)
+        public async Task<ActionResult<Model>> CreateModelAsync([FromBody] Model template)
         {
             // TODO : Should have an add method using the manufacturer ID
             Model location = await _factory.Models.AddAsync(template.Name, template.Manufacturer.Name);
