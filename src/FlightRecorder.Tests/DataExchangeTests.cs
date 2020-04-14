@@ -89,7 +89,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void FlattenCollectionTest()
         {
-            IEnumerable<FlattenedSighting> flattened = _factory.Sightings.List().Flatten();
+            IEnumerable<FlattenedSighting> flattened = _factory.Sightings.List(null, 1, 100).Flatten();
             Assert.AreEqual(1, flattened.Count());
             Assert.AreEqual(FlightNumber, flattened.First().FlightNumber);
             Assert.AreEqual(AirlineName, flattened.First().Airline);

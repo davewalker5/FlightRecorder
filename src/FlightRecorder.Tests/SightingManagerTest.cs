@@ -130,7 +130,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListAllTest()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.List();
+            IEnumerable<Sighting> sightings = _factory.Sightings.List(null, 1, 100);
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
@@ -139,7 +139,7 @@ namespace FlightRecorder.Tests
         public async Task ListAllAsyncTest()
         {
             List<Sighting> sightings = await _factory.Sightings
-                                                     .ListAsync()
+                                                     .ListAsync(null, 1, 100)
                                                      .ToListAsync();
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
@@ -148,7 +148,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public void ListByAircraftTest()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAircraft(Registration);
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAircraft(Registration, 1, 100);
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
@@ -157,7 +157,7 @@ namespace FlightRecorder.Tests
         public async Task ListByAircraftAsyncTest()
         {
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
-                                                               .ListByAircraftAsync(Registration);
+                                                               .ListByAircraftAsync(Registration, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
@@ -167,21 +167,21 @@ namespace FlightRecorder.Tests
         public void ListByAircraftWithNoSightingsTest()
         {
             _factory.Aircraft.Add("G-EZEH", "2184", 2004, ModelName, ManufacturerName);
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAircraft("G-EZEH");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAircraft("G-EZEH", 1, 100);
             Assert.AreEqual(0, sightings.Count());
         }
 
         [TestMethod]
         public void ListByMissingAircraftTest()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAircraft("Missing");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAircraft("Missing", 1, 100);
             Assert.IsNull(sightings);
         }
 
         [TestMethod]
         public void ListByRouteTest()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByRoute(Embarkation, Destination);
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByRoute(Embarkation, Destination, 1, 100);
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
@@ -190,7 +190,7 @@ namespace FlightRecorder.Tests
         public async Task ListByRouteAsyncTest()
         {
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
-                                                               .ListByRouteAsync(Embarkation, Destination);
+                                                               .ListByRouteAsync(Embarkation, Destination, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
@@ -200,21 +200,21 @@ namespace FlightRecorder.Tests
         public void ListByRouteWithNoSightingsTest()
         {
             _factory.Flights.Add("BA92", "YYZ", "LHR", "British Airways");
-            IEnumerable <Sighting> sightings = _factory.Sightings.ListByRoute("YYZ", "LHR");
+            IEnumerable <Sighting> sightings = _factory.Sightings.ListByRoute("YYZ", "LHR", 1, 100);
             Assert.AreEqual(0, sightings.Count());
         }
 
         [TestMethod]
         public void ListByMissingRoute()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByRoute("RMU", "MAN");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByRoute("RMU", "MAN", 1, 100);
             Assert.IsNull(sightings);
         }
 
         [TestMethod]
         public void ListByAirlineTest()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAirline(AirlineName);
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAirline(AirlineName, 1, 100);
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
@@ -223,7 +223,7 @@ namespace FlightRecorder.Tests
         public async Task ListByAirlineAsyncTest()
         {
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
-                                                               .ListByAirlineAsync(AirlineName);
+                                                               .ListByAirlineAsync(AirlineName, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
@@ -233,21 +233,21 @@ namespace FlightRecorder.Tests
         public void ListByAirlineWithNoSightingsTest()
         {
             _factory.Airlines.Add("British Airways");
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAirline("British Airways");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAirline("British Airways", 1, 100);
             Assert.IsNull(sightings);
         }
 
         [TestMethod]
         public void ListByMissingAirline()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAirline("Missing");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByAirline("Missing", 1, 100);
             Assert.IsNull(sightings);
         }
 
         [TestMethod]
         public void ListByLocationTest()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByLocation(LocationName);
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByLocation(LocationName, 1, 100);
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
@@ -256,7 +256,7 @@ namespace FlightRecorder.Tests
         public async Task ListByLocationAsyncTest()
         {
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
-                                                               .ListByLocationAsync(LocationName);
+                                                               .ListByLocationAsync(LocationName, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
             Assert.AreEqual(1, sightings.Count());
             Assert.AreEqual(_sightingId, sightings.First().Id);
@@ -266,14 +266,14 @@ namespace FlightRecorder.Tests
         public void ListByLocationWithNoSightingsTest()
         {
             _factory.Airlines.Add("Gatwick Airport");
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByLocation("Gatwick Airport");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByLocation("Gatwick Airport", 1, 100);
             Assert.IsNull(sightings);
         }
 
         [TestMethod]
         public void ListByMissingLocation()
         {
-            IEnumerable<Sighting> sightings = _factory.Sightings.ListByLocation("Missing");
+            IEnumerable<Sighting> sightings = _factory.Sightings.ListByLocation("Missing", 1, 100);
             Assert.IsNull(sightings);
         }
     }

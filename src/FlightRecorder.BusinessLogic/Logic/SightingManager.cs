@@ -29,7 +29,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="predicate"></param>
         /// <returns></returns>
         public Sighting Get(Expression<Func<Sighting, bool>> predicate)
-            => List(predicate).FirstOrDefault();
+            => List(predicate, 1, 1).FirstOrDefault();
 
         /// <summary>
         /// Get the first sighting matching the specified criteria along with the associated entities
@@ -48,8 +48,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the sightings matching the specified criteria along with the associated entities
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Sighting> List(Expression<Func<Sighting, bool>> predicate = null)
+        public IEnumerable<Sighting> List(Expression<Func<Sighting, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Sighting> sightings;
 
@@ -61,7 +63,9 @@ namespace FlightRecorder.BusinessLogic.Logic
                                             .ThenInclude(f => f.Airline)
                                             .Include(s => s.Aircraft)
                                             .ThenInclude(a => a.Model)
-                                            .ThenInclude(m => m.Manufacturer);
+                                            .ThenInclude(m => m.Manufacturer)
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Take(pageSize);
             }
             else
             {
@@ -72,6 +76,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                                             .Include(s => s.Aircraft)
                                             .ThenInclude(a => a.Model)
                                             .ThenInclude(m => m.Manufacturer)
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Take(pageSize)
                                             .Where(predicate);
             }
 
@@ -82,8 +88,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the sightings matching the specified criteria along with the associated entities
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Sighting> ListAsync(Expression<Func<Sighting, bool>> predicate = null)
+        public IAsyncEnumerable<Sighting> ListAsync(Expression<Func<Sighting, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Sighting> sightings;
 
@@ -96,6 +104,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                                             .Include(s => s.Aircraft)
                                             .ThenInclude(a => a.Model)
                                             .ThenInclude(m => m.Manufacturer)
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Take(pageSize)
                                             .AsAsyncEnumerable();
             }
             else
@@ -108,6 +118,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                                             .ThenInclude(a => a.Model)
                                             .ThenInclude(m => m.Manufacturer)
                                             .Where(predicate)
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Take(pageSize)
                                             .AsAsyncEnumerable();
             }
 
@@ -213,8 +225,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return a list of sightings of a specified aircraft
         /// </summary>
         /// <param name="registration"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Sighting> ListByAircraft(string registration)
+        public IEnumerable<Sighting> ListByAircraft(string registration, int pageNumber, int pageSize)
         {
             IEnumerable<Sighting> sightings = null;
 
@@ -222,7 +236,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Aircraft aircraft = _factory.Aircraft.Get(a => a.Registration == registration);
             if (aircraft != null)
             {
-                sightings = List(s => s.AircraftId == aircraft.Id);
+                sightings = List(s => s.AircraftId == aircraft.Id, pageNumber, pageSize);
             }
 
             return sightings;
@@ -232,8 +246,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return a list of sightings of a specified aircraft
         /// </summary>
         /// <param name="registration"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Sighting>> ListByAircraftAsync(string registration)
+        public async Task<IAsyncEnumerable<Sighting>> ListByAircraftAsync(string registration, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Sighting> sightings = null;
 
@@ -241,7 +257,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Aircraft aircraft = await _factory.Aircraft.GetAsync(a => a.Registration == registration);
             if (aircraft != null)
             {
-                sightings = ListAsync(s => s.AircraftId == aircraft.Id);
+                sightings = ListAsync(s => s.AircraftId == aircraft.Id, pageNumber, pageSize);
             }
 
             return sightings;
@@ -252,8 +268,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Sighting> ListByRoute(string embarkation, string destination)
+        public IEnumerable<Sighting> ListByRoute(string embarkation, string destination, int pageNumber, int pageSize)
         {
             IEnumerable<Sighting> sightings = null;
 
@@ -265,7 +283,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             if ((flights != null) && flights.Any())
             {
                 IEnumerable<long> flightIds = flights.Select(f => f.Id);
-                sightings = List(s => flightIds.Contains(s.FlightId));
+                sightings = List(s => flightIds.Contains(s.FlightId), pageNumber, pageSize);
             }
 
             return sightings;
@@ -276,8 +294,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Sighting>> ListByRouteAsync(string embarkation, string destination)
+        public async Task<IAsyncEnumerable<Sighting>> ListByRouteAsync(string embarkation, string destination, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Sighting> sightings = null;
 
@@ -290,7 +310,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             if (flights.Any())
             {
                 IEnumerable<long> flightIds = flights.Select(f => f.Id);
-                sightings = ListAsync(s => flightIds.Contains(s.FlightId));
+                sightings = ListAsync(s => flightIds.Contains(s.FlightId), pageNumber, pageSize);
             }
 
             return sightings;
@@ -300,8 +320,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return a list of sightings for a specified airline
         /// </summary>
         /// <param name="airlineName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Sighting> ListByAirline(string airlineName)
+        public IEnumerable<Sighting> ListByAirline(string airlineName, int pageNumber, int pageSize)
         {
             IEnumerable<Sighting> sightings = null;
 
@@ -310,7 +332,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             if ((flights != null) && flights.Any())
             {
                 IEnumerable<long> flightIds = flights.Select(f => f.Id);
-                sightings = List(s => flightIds.Contains(s.FlightId));
+                sightings = List(s => flightIds.Contains(s.FlightId), pageNumber, pageSize);
             }
 
             return sightings;
@@ -320,8 +342,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return a list of sightings for a specified airline
         /// </summary>
         /// <param name="airlineName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Sighting>> ListByAirlineAsync(string airlineName)
+        public async Task<IAsyncEnumerable<Sighting>> ListByAirlineAsync(string airlineName, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Sighting> sightings = null;
 
@@ -333,7 +357,7 @@ namespace FlightRecorder.BusinessLogic.Logic
                 if (flights.Any())
                 {
                     IEnumerable<long> flightIds = flights.Select(f => f.Id);
-                    sightings = ListAsync(s => flightIds.Contains(s.FlightId));
+                    sightings = ListAsync(s => flightIds.Contains(s.FlightId), pageNumber, pageSize);
                 }
             }
 
@@ -344,8 +368,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return a list of sightings at a specified location
         /// </summary>
         /// <param name="locationName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Sighting> ListByLocation(string locationName)
+        public IEnumerable<Sighting> ListByLocation(string locationName, int pageNumber, int pageSize)
         {
             IEnumerable<Sighting> sightings = null;
 
@@ -353,7 +379,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Location location = _factory.Locations.Get(a => a.Name == locationName);
             if (location != null)
             {
-                sightings = List(s => s.LocationId == location.Id);
+                sightings = List(s => s.LocationId == location.Id, pageNumber, pageSize);
             }
 
             return sightings;
@@ -363,8 +389,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return a list of sightings at a specified location
         /// </summary>
         /// <param name="locationName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Sighting>> ListByLocationAsync(string locationName)
+        public async Task<IAsyncEnumerable<Sighting>> ListByLocationAsync(string locationName, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Sighting> sightings = null;
 
@@ -372,7 +400,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Location location = await _factory.Locations.GetAsync(a => a.Name == locationName);
             if (location != null)
             {
-                sightings = ListAsync(s => s.LocationId == location.Id);
+                sightings = ListAsync(s => s.LocationId == location.Id, pageNumber, pageSize);
             }
 
             return sightings;
