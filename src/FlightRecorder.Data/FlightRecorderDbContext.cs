@@ -47,10 +47,6 @@ namespace FlightRecorder.Data
                     .IsRequired()
                     .HasColumnName("serial_number")
                     .HasColumnType("VARCHAR(50)");
-
-                entity.HasOne(d => d.Model)
-                    .WithMany(p => p.Aircraft)
-                    .HasForeignKey(d => d.ModelId);
             });
 
             modelBuilder.Entity<Airline>(entity =>
@@ -91,10 +87,6 @@ namespace FlightRecorder.Data
                     .IsRequired()
                     .HasColumnName("number")
                     .HasColumnType("VARCHAR(50)");
-
-                entity.HasOne(d => d.Airline)
-                    .WithMany(p => p.Flight)
-                    .HasForeignKey(d => d.AirlineId);
             });
 
             modelBuilder.Entity<Location>(entity =>
@@ -139,10 +131,6 @@ namespace FlightRecorder.Data
                     .IsRequired()
                     .HasColumnName("name")
                     .HasColumnType("VARCHAR(100)");
-
-                entity.HasOne(d => d.Manufacturer)
-                    .WithMany(p => p.Model)
-                    .HasForeignKey(d => d.ManufacturerId);
             });
 
             modelBuilder.Entity<Sighting>(entity =>
@@ -165,18 +153,6 @@ namespace FlightRecorder.Data
                 entity.Property(e => e.FlightId).HasColumnName("flight_id");
 
                 entity.Property(e => e.LocationId).HasColumnName("location_id");
-
-                entity.HasOne(d => d.Aircraft)
-                    .WithMany(p => p.Sighting)
-                    .HasForeignKey(d => d.AircraftId);
-
-                entity.HasOne(d => d.Flight)
-                    .WithMany(p => p.Sighting)
-                    .HasForeignKey(d => d.FlightId);
-
-                entity.HasOne(d => d.Location)
-                    .WithMany(p => p.Sighting)
-                    .HasForeignKey(d => d.LocationId);
             });
 
 

@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>FlightRecorder.Entities</PackageId>
-    <PackageVersion>1.0.0.2</PackageVersion>
+    <PackageVersion>1.0.0.3</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020</Copyright>
     <Owners>Dave Walker</Owners>
-    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <PackageReleaseNotes>Updates for REST service implementation</PackageReleaseNotes>
     <Summary>Flight Recorder Domain Models</Summary>
     <PackageTags>FlightRecorder domain models entities</PackageTags>
     <Title>Flight Recorder Domain Models</Title>

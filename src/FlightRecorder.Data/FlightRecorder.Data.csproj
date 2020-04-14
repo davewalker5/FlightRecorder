@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>FlightRecorder.Data</PackageId>
-    <PackageVersion>1.0.0.1</PackageVersion>
+    <PackageVersion>1.0.0.2</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020</Copyright>
     <Owners>Dave Walker</Owners>
-    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <PackageReleaseNotes>Modifications for service implementation</PackageReleaseNotes>
     <Summary>Flight Recorder EF Core Database Layer</Summary>
     <PackageTags>FlightRecorder database</PackageTags>
     <Title>Flight Recorder EF Core Database Layer</Title>
