@@ -23,14 +23,14 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("route/{embarkation}/{destination}")]
-        public async Task<ActionResult<List<Flight>>> GetFlightsByRouteAsync(string embarkation, string destination)
+        [Route("route/{embarkation}/{destination}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Flight>>> GetFlightsByRouteAsync(string embarkation, string destination, int pageNumber, int pageSize)
         {
             string decodedEmbarkation = HttpUtility.UrlDecode(embarkation).ToUpper();
             string decodedDestination = HttpUtility.UrlDecode(destination).ToUpper();
             List<Flight> flights = await _factory.Flights
                                                  .ListAsync(f => (f.Embarkation == decodedEmbarkation) &&
-                                                                 (f.Destination == decodedDestination))
+                                                                 (f.Destination == decodedDestination), pageNumber, pageSize)
                                                  .ToListAsync();
 
             if (!flights.Any())
@@ -42,11 +42,11 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("airline/{airlineId}")]
-        public async Task<ActionResult<List<Flight>>> GetFlightsByAirlineAsync(int airlineId)
+        [Route("airline/{airlineId}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Flight>>> GetFlightsByAirlineAsync(int airlineId, int pageNumber, int pageSize)
         {
             List<Flight> flights = await _factory.Flights
-                                                 .ListAsync(f => f.AirlineId == airlineId)
+                                                 .ListAsync(f => f.AirlineId == airlineId, pageNumber, pageSize)
                                                  .ToListAsync();
 
             if (!flights.Any())
@@ -58,12 +58,12 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("number/{number}")]
-        public async Task<ActionResult<List<Flight>>> GetFlightsByNumberAsync(string number)
+        [Route("number/{number}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Flight>>> GetFlightsByNumberAsync(string number, int pageNumber, int pageSize)
         {
             string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
             List<Flight> flights = await _factory.Flights
-                                                 .ListAsync(f => f.Number == decodedNumber)
+                                                 .ListAsync(f => f.Number == decodedNumber, pageNumber, pageSize)
                                                  .ToListAsync();
 
             if (!flights.Any())

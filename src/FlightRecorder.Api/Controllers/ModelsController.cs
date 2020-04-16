@@ -22,11 +22,11 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("manufacturer/{manufacturerId}")]
-        public async Task<ActionResult<List<Model>>> GetModelsAsync(int manufacturerId)
+        [Route("manufacturer/{manufacturerId}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Model>>> GetModelsAsync(int manufacturerId, int pageNumber, int pageSize)
         {
             List<Model> models = await _factory.Models
-                                               .ListAsync(m => m.ManufacturerId == manufacturerId)
+                                               .ListAsync(m => m.ManufacturerId == manufacturerId, pageNumber, pageSize)
                                                .ToListAsync();
 
             if (!models.Any())

@@ -23,11 +23,11 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("manufacturer/{manufacturerId}")]
-        public async Task<ActionResult<List<Aircraft>>> GetAircraftByManufacturerAsync(int manufacturerId)
+        [Route("manufacturer/{manufacturerId}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Aircraft>>> GetAircraftByManufacturerAsync(int manufacturerId, int pageNumber, int pageSize)
         {
             List<Aircraft> aircraft = await _factory.Aircraft
-                                                    .ListAsync(a => a.Model.ManufacturerId == manufacturerId)
+                                                    .ListAsync(a => a.Model.ManufacturerId == manufacturerId, pageNumber, pageSize)
                                                     .ToListAsync();
 
             if (!aircraft.Any())
@@ -39,11 +39,11 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("model/{modelId}")]
-        public async Task<ActionResult<List<Aircraft>>> GetAircraftByModelAsync(int modelId)
+        [Route("model/{modelId}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Aircraft>>> GetAircraftByModelAsync(int modelId, int pageNumber, int pageSize)
         {
             List<Aircraft> aircraft = await _factory.Aircraft
-                                                    .ListAsync(a => a.ModelId == modelId)
+                                                    .ListAsync(a => a.ModelId == modelId, pageNumber, pageSize)
                                                     .ToListAsync();
 
             if (!aircraft.Any())

@@ -12,8 +12,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FlightRecorder.BusinessLogic" Version="1.0.0.2" />
-    <PackageReference Include="FlightRecorder.Entities" Version="1.0.0.3" />
+    <PackageReference Include="FlightRecorder.BusinessLogic" Version="1.0.0.3" />
+    <PackageReference Include="FlightRecorder.Entities" Version="1.0.0.4" />
     <PackageReference Include="FlightRecorder.Data" Version="1.0.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.3" />

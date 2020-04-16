@@ -25,14 +25,14 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("route/{embarkation}/{destination}")]
-        public async Task<ActionResult<List<Sighting>>> GetSightingsByRouteAsync(string embarkation, string destination)
+        [Route("route/{embarkation}/{destination}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Sighting>>> GetSightingsByRouteAsync(string embarkation, string destination, int pageNumber, int pageSize)
         {
             string decodedEmbarkation = HttpUtility.UrlDecode(embarkation).ToUpper();
             string decodedDestination = HttpUtility.UrlDecode(destination).ToUpper();
             List<Sighting> sightings = await _factory.Sightings
                                                      .ListAsync(s => (s.Flight.Embarkation == decodedEmbarkation) &&
-                                                                     (s.Flight.Destination == decodedDestination))
+                                                                     (s.Flight.Destination == decodedDestination), pageNumber, pageSize)
                                                      .ToListAsync();
 
             if (!sightings.Any())
@@ -44,12 +44,12 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("flight/{number}")]
-        public async Task<ActionResult<List<Sighting>>> GetSightingsByFlightAsync(string number)
+        [Route("flight/{number}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Sighting>>> GetSightingsByFlightAsync(string number, int pageNumber, int pageSize)
         {
             string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
             List<Sighting> sightings = await _factory.Sightings
-                                                     .ListAsync(s => s.Flight.Number == decodedNumber)
+                                                     .ListAsync(s => s.Flight.Number == decodedNumber, pageNumber, pageSize)
                                                      .ToListAsync();
 
             if (!sightings.Any())
@@ -61,11 +61,11 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("airline/{airlineId}")]
-        public async Task<ActionResult<List<Sighting>>> GetSightingsByAirlineAsync(int airlineId)
+        [Route("airline/{airlineId}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Sighting>>> GetSightingsByAirlineAsync(int airlineId, int pageNumber, int pageSize)
         {
             List<Sighting> sightings = await _factory.Sightings
-                                                     .ListAsync(s => s.Flight.AirlineId == airlineId)
+                                                     .ListAsync(s => s.Flight.AirlineId == airlineId, pageNumber, pageSize)
                                                      .ToListAsync();
 
             if (!sightings.Any())
@@ -77,11 +77,11 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("aircraft/{aircraftId}")]
-        public async Task<ActionResult<List<Sighting>>> GetSightingsByAircraftAsync(int aircraftId)
+        [Route("aircraft/{aircraftId}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Sighting>>> GetSightingsByAircraftAsync(int aircraftId, int pageNumber, int pageSize)
         {
             List<Sighting> sightings = await _factory.Sightings
-                                                     .ListAsync(s => s.AircraftId == aircraftId)
+                                                     .ListAsync(s => s.AircraftId == aircraftId, pageNumber, pageSize)
                                                      .ToListAsync();
 
             if (!sightings.Any())
@@ -93,15 +93,15 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("date/{start}/{end}")]
-        public async Task<ActionResult<List<Sighting>>> GetSightingsByDateAsync(string start, string end)
+        [Route("date/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Sighting>>> GetSightingsByDateAsync(string start, string end, int pageNumber, int pageSize)
         {
             DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
             DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
 
             List<Sighting> sightings = await _factory.Sightings
                                                      .ListAsync(s => (s.Date >= startDate) &&
-                                                                     (s.Date <= endDate))
+                                                                     (s.Date <= endDate), pageNumber, pageSize)
                                                      .ToListAsync();
 
             if (!sightings.Any())
