@@ -22,10 +22,12 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<ActionResult<List<Airline>>> GetAirlinesAsync()
+        [Route("{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Airline>>> GetAirlinesAsync(int pageNumber, int pageSize)
         {
-            List<Airline> airlines = await _factory.Airlines.ListAsync().ToListAsync();
+            List<Airline> airlines = await _factory.Airlines
+                                                   .ListAsync(null, pageNumber, pageSize)
+                                                   .ToListAsync();
 
             if (!airlines.Any())
             {
@@ -39,7 +41,8 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Airline>> GetAirlineAsync(int id)
         {
-            Airline airline = await _factory.Airlines.GetAsync(m => m.Id == id);
+            Airline airline = await _factory.Airlines
+                                            .GetAsync(m => m.Id == id);
 
             if (airline == null)
             {
@@ -54,13 +57,15 @@ namespace FlightRecorder.Api.Controllers
         public async Task<ActionResult<Airline>> UpdateAirlineAsync(int id, [FromBody] string name)
         {
             // TODO : Move this functionality to the Business Logic assembly
-            Airline airline = await _factory.Airlines.GetAsync(m => m.Name == name);
+            Airline airline = await _factory.Airlines
+                                            .GetAsync(m => m.Name == name);
             if (airline != null)
             {
                 return BadRequest();
             }
 
-            airline = await _factory.Airlines.GetAsync(m => m.Id == id);
+            airline = await _factory.Airlines
+                                    .GetAsync(m => m.Id == id);
             if (airline == null)
             {
                 return NotFound();

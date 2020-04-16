@@ -22,10 +22,12 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task<ActionResult<List<Manufacturer>>> GetManufacturersAsync()
+        [Route("{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Manufacturer>>> GetManufacturersAsync(int pageNumber, int pageSize)
         {
-            List<Manufacturer> manufacturers = await _factory.Manufacturers.ListAsync().ToListAsync();
+            List<Manufacturer> manufacturers = await _factory.Manufacturers
+                                                             .ListAsync(null, pageNumber, pageSize)
+                                                             .ToListAsync();
 
             if (!manufacturers.Any())
             {
@@ -39,7 +41,8 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Manufacturer>> GetManufacturerAsync(int id)
         {
-            Manufacturer manufacturer = await _factory.Manufacturers.GetAsync(m => m.Id == id);
+            Manufacturer manufacturer = await _factory.Manufacturers
+                                                      .GetAsync(m => m.Id == id);
 
             if (manufacturer == null)
             {
@@ -54,13 +57,15 @@ namespace FlightRecorder.Api.Controllers
         public async Task<ActionResult<Manufacturer>> UpdateManufacturerAsync(int id, [FromBody] string name)
         {
             // TODO : Move this functionality to the Business Logic assembly
-            Manufacturer manufacturer = await _factory.Manufacturers.GetAsync(m => m.Name == name);
+            Manufacturer manufacturer = await _factory.Manufacturers
+                                                      .GetAsync(m => m.Name == name);
             if (manufacturer != null)
             {
                 return BadRequest();
             }
 
-            manufacturer = await _factory.Manufacturers.GetAsync(m => m.Id == id);
+            manufacturer = await _factory.Manufacturers
+                                         .GetAsync(m => m.Id == id);
             if (manufacturer == null)
             {
                 return NotFound();
@@ -76,7 +81,8 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Manufacturer>> CreateManufacturerAsync([FromBody] string name)
         {
-            Manufacturer manufacturer = await _factory.Manufacturers.AddAsync(name);
+            Manufacturer manufacturer = await _factory.Manufacturers
+                                                      .AddAsync(name);
             return manufacturer;
         }
     }
