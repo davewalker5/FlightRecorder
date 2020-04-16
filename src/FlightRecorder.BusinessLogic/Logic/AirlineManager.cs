@@ -26,7 +26,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="predicate"></param>
         /// <returns></returns>
         public Airline Get(Expression<Func<Airline, bool>> predicate)
-            => List(predicate).FirstOrDefault();
+            => List(predicate, 1, 1).FirstOrDefault();
 
         /// <summary>
         /// Get the first airline matching the specified criteria
@@ -45,17 +45,24 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Airline> List(Expression<Func<Airline, bool>> predicate = null)
+        public IEnumerable<Airline> List(Expression<Func<Airline, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Airline> results;
             if (predicate == null)
             {
                 results = _context.Airlines;
+                results = results.Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize);
             }
             else
             {
-                results = _context.Airlines.Where(predicate);
+                results = _context.Airlines
+                                  .Where(predicate)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize); ;
             }
 
             return results;
@@ -65,13 +72,18 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Airline> ListAsync(Expression<Func<Airline, bool>> predicate = null)
+        public IAsyncEnumerable<Airline> ListAsync(Expression<Func<Airline, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Airline> results;
             if (predicate == null)
             {
-                results = _context.Airlines.AsAsyncEnumerable();
+                results = _context.Airlines;
+                results = results.Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize)
+                                 .AsAsyncEnumerable();
             }
             else
             {

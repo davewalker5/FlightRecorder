@@ -12,7 +12,7 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Location> AddAsync(string name);
         Location Get(Expression<Func<Location, bool>> predicate);
         Task<Location> GetAsync(Expression<Func<Location, bool>> predicate);
-        IEnumerable<Location> List(Expression<Func<Location, bool>> predicate = null);
-        IAsyncEnumerable<Location> ListAsync(Expression<Func<Location, bool>> predicate = null);
+        IEnumerable<Location> List(Expression<Func<Location, bool>> predicate, int pageNumber, int pageSize);
+        IAsyncEnumerable<Location> ListAsync(Expression<Func<Location, bool>> predicate, int pageNumber, int pageSize);
     }
 }

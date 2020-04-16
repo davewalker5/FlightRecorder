@@ -26,7 +26,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="predicate"></param>
         /// <returns></returns>
         public Location Get(Expression<Func<Location, bool>> predicate)
-            => List(predicate).FirstOrDefault();
+            => List(predicate, 1, 1).FirstOrDefault();
 
         /// <summary>
         /// Return the first entity matching the specified criteria
@@ -45,17 +45,24 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public virtual IEnumerable<Location> List(Expression<Func<Location, bool>> predicate = null)
+        public virtual IEnumerable<Location> List(Expression<Func<Location, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Location> results;
             if (predicate == null)
             {
                 results = _context.Locations;
+                results = results.Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize);
             }
             else
             {
-                results = _context.Locations.Where(predicate);
+                results = _context.Locations
+                                  .Where(predicate)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize);
             }
 
             return results;
@@ -65,17 +72,26 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Return all entities matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public virtual IAsyncEnumerable<Location> ListAsync(Expression<Func<Location, bool>> predicate = null)
+        public virtual IAsyncEnumerable<Location> ListAsync(Expression<Func<Location, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Location> results;
             if (predicate == null)
             {
-                results = _context.Locations.AsAsyncEnumerable();
+                results = _context.Locations;
+                results = results.Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize)
+                                 .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.Locations.Where(predicate).AsAsyncEnumerable();
+                results = _context.Locations
+                                  .Where(predicate)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .AsAsyncEnumerable();
             }
 
             return results;

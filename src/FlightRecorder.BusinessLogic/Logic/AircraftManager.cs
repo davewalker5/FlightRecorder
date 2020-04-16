@@ -13,6 +13,8 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class AircraftManager : IAircraftManager
     {
+        private const int AllModelsPageSize = 1000000;
+
         private FlightRecorderFactory _factory;
 
         internal AircraftManager(FlightRecorderFactory factory)
@@ -26,7 +28,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="predicate"></param>
         /// <returns></returns>
         public Aircraft Get(Expression<Func<Aircraft, bool>> predicate)
-            => List(predicate).FirstOrDefault();
+            => List(predicate, 1, 1).FirstOrDefault();
 
         /// <summary>
         /// Get the first aircraft matching the specified criteria along with the associated model
@@ -45,8 +47,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft matching the specified criteria along with the associated models
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Aircraft> List(Expression<Func<Aircraft, bool>> predicate = null)
+        public IEnumerable<Aircraft> List(Expression<Func<Aircraft, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Aircraft> aircraft;
 
@@ -54,14 +58,18 @@ namespace FlightRecorder.BusinessLogic.Logic
             {
                 aircraft = _factory.Context.Aircraft
                                            .Include(a => a.Model)
-                                           .ThenInclude(m => m.Manufacturer);
+                                           .ThenInclude(m => m.Manufacturer)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize);
             }
             else
             {
                 aircraft = _factory.Context.Aircraft
                                            .Include(a => a.Model)
                                            .ThenInclude(m => m.Manufacturer)
-                                           .Where(predicate);
+                                           .Where(predicate)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize);
             }
 
             return aircraft;
@@ -71,8 +79,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft matching the specified criteria along with the associated models
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Aircraft> ListAsync(Expression<Func<Aircraft, bool>> predicate = null)
+        public IAsyncEnumerable<Aircraft> ListAsync(Expression<Func<Aircraft, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Aircraft> aircraft;
 
@@ -81,6 +91,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                 aircraft = _factory.Context.Aircraft
                                            .Include(a => a.Model)
                                            .ThenInclude(m => m.Manufacturer)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize)
                                            .AsAsyncEnumerable();
             }
             else
@@ -89,6 +101,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                                            .Include(a => a.Model)
                                            .ThenInclude(m => m.Manufacturer)
                                            .Where(predicate)
+                                           .Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize)
                                            .AsAsyncEnumerable();
             }
 
@@ -99,8 +113,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft of a specified model
         /// </summary>
         /// <param name="modelName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Aircraft> ListByModel(string modelName)
+        public IEnumerable<Aircraft> ListByModel(string modelName, int pageNumber, int pageSize)
         {
             IEnumerable<Aircraft> matches = null;
 
@@ -108,7 +124,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Model model = _factory.Models.Get(m => m.Name == modelName);
             if (model != null)
             {
-                matches = List(m => m.ModelId == model.Id);
+                matches = List(m => m.ModelId == model.Id, pageNumber, pageSize);
             }
 
             return matches;
@@ -118,8 +134,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft of a specified model
         /// </summary>
         /// <param name="modelName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Aircraft>> ListByModelAsync(string modelName)
+        public async Task<IAsyncEnumerable<Aircraft>> ListByModelAsync(string modelName, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Aircraft> matches = null;
 
@@ -127,7 +145,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Model model = await _factory.Models.GetAsync(m => m.Name == modelName);
             if (model != null)
             {
-                matches = ListAsync(m => m.ModelId == model.Id);
+                matches = ListAsync(m => m.ModelId == model.Id, pageNumber, pageSize);
             }
 
             return matches;
@@ -137,8 +155,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft manufactured by a given manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Aircraft> ListByManufacturer(string manufacturerName)
+        public IEnumerable<Aircraft> ListByManufacturer(string manufacturerName, int pageNumber, int pageSize)
         {
             IEnumerable<Aircraft> matches = null;
 
@@ -147,12 +167,13 @@ namespace FlightRecorder.BusinessLogic.Logic
                                                 .Get(m => m.Name == manufacturerName);
             if (manufacturer != null)
             {
+                // Model retrieval uses an arbitrarily large page size to retrieve all models
                 IEnumerable<long> modelIds = _factory.Models
-                                                     .List(m => m.ManufacturerId == manufacturer.Id)
+                                                     .List(m => m.ManufacturerId == manufacturer.Id, 1, AllModelsPageSize)
                                                      .Select(m => m.Id);
                 if (modelIds.Any())
                 {
-                    matches = List(a => modelIds.Contains(a.ModelId));
+                    matches = List(a => modelIds.Contains(a.ModelId), pageNumber, pageSize);
                 }
             }
 
@@ -163,8 +184,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the aircraft manufactured by a given manufacturer
         /// </summary>
         /// <param name="manufacturerName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Aircraft>> ListByManufacturerAsync(string manufacturerName)
+        public async Task<IAsyncEnumerable<Aircraft>> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Aircraft> matches = null;
 
@@ -173,13 +196,14 @@ namespace FlightRecorder.BusinessLogic.Logic
                                                       .GetAsync(m => m.Name == manufacturerName);
             if (manufacturer != null)
             {
+                // Model retrieval uses an arbitrarily large page size to retrieve all models
                 List<long> modelIds = await _factory.Models
-                                                    .ListAsync(m => m.ManufacturerId == manufacturer.Id)
+                                                    .ListAsync(m => m.ManufacturerId == manufacturer.Id, 1, AllModelsPageSize)
                                                     .Select(m => m.Id)
                                                     .ToListAsync();
                 if (modelIds.Any())
                 {
-                    matches = ListAsync(a => modelIds.Contains(a.ModelId));
+                    matches = ListAsync(a => modelIds.Contains(a.ModelId), pageNumber, pageSize);
                 }
             }
 

@@ -26,7 +26,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="predicate"></param>
         /// <returns></returns>
         public Flight Get(Expression<Func<Flight, bool>> predicate)
-            => List(predicate).FirstOrDefault();
+            => List(predicate, 1, 1).FirstOrDefault();
 
         /// <summary>
         /// Get the first flight matching the specified criteria along with the associated airline
@@ -45,21 +45,27 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the flights matching the specified criteria along with the associated airlines
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Flight> List(Expression<Func<Flight, bool>> predicate = null)
+        public IEnumerable<Flight> List(Expression<Func<Flight, bool>> predicate, int pageNumber, int pageSize)
         {
             IEnumerable<Flight> flights;
 
             if (predicate == null)
             {
                 flights = _factory.Context.Flights
-                                         .Include(m => m.Airline);
+                                         .Include(m => m.Airline)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize);
             }
             else
             {
                 flights = _factory.Context.Flights
                                          .Include(m => m.Airline)
-                                         .Where(predicate);
+                                         .Where(predicate)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize);
             }
 
             return flights;
@@ -69,8 +75,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the flights matching the specified criteria along with the associated airlines
         /// </summary>
         /// <param name="predicate"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<Flight> ListAsync(Expression<Func<Flight, bool>> predicate = null)
+        public IAsyncEnumerable<Flight> ListAsync(Expression<Func<Flight, bool>> predicate, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Flight> flights;
 
@@ -78,6 +86,8 @@ namespace FlightRecorder.BusinessLogic.Logic
             {
                 flights = _factory.Context.Flights
                                          .Include(m => m.Airline)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize)
                                          .AsAsyncEnumerable();
             }
             else
@@ -85,6 +95,8 @@ namespace FlightRecorder.BusinessLogic.Logic
                 flights = _factory.Context.Flights
                                          .Include(m => m.Airline)
                                          .Where(predicate)
+                                         .Skip((pageNumber - 1) * pageSize)
+                                         .Take(pageSize)
                                          .AsAsyncEnumerable();
             }
 
@@ -95,8 +107,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the flights for a named airline
         /// </summary>
         /// <param name="airlineName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public IEnumerable<Flight> ListByAirline(string airlineName)
+        public IEnumerable<Flight> ListByAirline(string airlineName, int pageNumber, int pageSize)
         {
             IEnumerable<Flight> matches = null;
 
@@ -104,7 +118,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             Airline airline = _factory.Airlines.Get(m => m.Name == airlineName);
             if (airline != null)
             {
-                matches = List(m => m.AirlineId == airline.Id);
+                matches = List(m => m.AirlineId == airline.Id, pageNumber, pageSize);
             }
 
             return matches;
@@ -114,8 +128,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// Get the flights for a named airline
         /// </summary>
         /// <param name="airlineName"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IAsyncEnumerable<Flight>> ListByAirlineAsync(string airlineName)
+        public async Task<IAsyncEnumerable<Flight>> ListByAirlineAsync(string airlineName, int pageNumber, int pageSize)
         {
             IAsyncEnumerable<Flight> matches = null;
 
@@ -124,7 +140,7 @@ namespace FlightRecorder.BusinessLogic.Logic
                                             .GetAsync(m => m.Name == airlineName);
             if (airline != null)
             {
-                matches = ListAsync(m => m.AirlineId == airline.Id);
+                matches = ListAsync(m => m.AirlineId == airline.Id, pageNumber, pageSize);
             }
 
             return matches;
