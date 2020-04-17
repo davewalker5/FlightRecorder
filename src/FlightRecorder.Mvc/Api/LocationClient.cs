@@ -33,7 +33,7 @@ namespace FlightRecorder.Mvc.Api
             {
                 string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllLocationsPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                locations = JsonConvert.DeserializeObject<List<Location>>(json);
+                locations = JsonConvert.DeserializeObject<List<Location>>(json).OrderBy(m => m.Name).ToList();
                 _cache.Set(CacheKey, locations, _settings.Value.CacheLifetimeSeconds);
             }
             return locations;

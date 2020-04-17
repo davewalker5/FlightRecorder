@@ -1,0 +1,42 @@
+﻿@using System.Collections.Generic
+@using FlightRecorder.Mvc.Entities
+@model List<Manufacturer>
+
+@{
+    ViewData["Title"] = "Manufacturers";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Drone Manufacturers
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the drone manufacturers registered in the log
+        </em>
+    </small>
+</p>
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th />
+    </tr>
+    @foreach (var manufacturer in Model)
+    {
+        <tr>
+            <td valign="center">@manufacturer.Name</td>
+            <td valign="center">
+                <a class="btn btn-lg" asp-area="" asp-controller="Manufacturers" asp-action="Edit" asp-route-id="@manufacturer.Id">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </td>
+        </tr>
+    }
+</table>
+
+<hr />
+<p class="text-right">
+    <a class="btn btn-primary" href="/Manufacturers/Add" role="button">Add</a>
+</p>

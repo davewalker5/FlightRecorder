@@ -47,6 +47,7 @@ namespace FlightRecorder.Mvc
             services.AddSingleton<ICacheWrapper>(s => new CacheWrapper(new MemoryCacheOptions()));
             services.AddHttpClient<AuthenticationClient>();
             services.AddHttpClient<LocationClient>();
+            services.AddHttpClient<ManufacturerClient>();
 
             // Configure session state for token storage
             services.AddSession(options =>
