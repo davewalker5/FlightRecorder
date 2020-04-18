@@ -16,6 +16,7 @@
     <Folder Include="Views\Locations\" />
     <Folder Include="Views\Manufacturers\" />
     <Folder Include="Views\Airlines\" />
+    <Folder Include="Views\Models\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
