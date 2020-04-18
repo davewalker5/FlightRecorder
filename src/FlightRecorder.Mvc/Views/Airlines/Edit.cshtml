@@ -1,0 +1,19 @@
+﻿@model FlightRecorder.Mvc.Entities.Airline
+
+@{
+    ViewData["Title"] = "Edit Airline";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Edit Airline</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @await Html.PartialAsync("Airline", Model);
+    }
+</div>

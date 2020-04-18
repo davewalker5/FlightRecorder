@@ -1,0 +1,42 @@
+﻿@using System.Collections.Generic
+@using FlightRecorder.Mvc.Entities
+@model List<Airline>
+
+@{
+    ViewData["Title"] = "Airlines";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Flight Locations
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the airlines for which flights can be registered
+        </em>
+    </small>
+</p>
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th />
+    </tr>
+    @foreach (var airline in Model)
+    {
+        <tr>
+            <td valign="center">@airline.Name</td>
+            <td valign="center">
+                <a class="btn btn-lg" asp-area="" asp-controller="Airlines" asp-action="Edit" asp-route-id="@airline.Id">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </td>
+        </tr>
+    }
+</table>
+
+<hr />
+<p class="text-right">
+    <a class="btn btn-primary" href="/Airlines/Add" role="button">Add</a>
+</p>
