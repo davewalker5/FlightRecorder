@@ -53,18 +53,11 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Model> GetModelAsync(int id)
         {
-            Model model = null;
-
-            // See if the model exists in the cached model lists
-            IEnumerable<string> keys = _cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
-            foreach (string key in keys)
-            {
-                List<Model> models = _cache.Get<List<Model>>(key);
-                model = models.FirstOrDefault(m => m.Id == id);
-            }
-
+            // See if the model exists in the cached model lists, first
+            Model model = FindCachedModelById(id);
             if (model == null)
             {
+                // It doesn't, so go to the service to get it
                 string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 model = JsonConvert.DeserializeObject<Model>(json);
@@ -106,7 +99,18 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Model> UpdateModelAsync(int id, int manufacturerId, string name)
         {
-            string key = $"{CacheKeyPrefix}.{manufacturerId}";
+            // We might've changed the manufacturer, so not only do we need to clear the
+            // current manufacturer's cached model list but we also need to identify the
+            // original manufacturer and clear the cached list of models for that, too
+            string key;
+            Model original = FindCachedModelById(id);
+            if (original != null)
+            {
+                key = $"{CacheKeyPrefix}.{original.ManufacturerId}";
+                _cache.Remove(key);
+            }
+
+            key = $"{CacheKeyPrefix}.{manufacturerId}";
             _cache.Remove(key);
 
             dynamic template = new
@@ -119,6 +123,24 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
             Model model = JsonConvert.DeserializeObject<Model>(json);
+            return model;
+        }
+
+        /// <summary>
+        /// Locate the model with the specified ID in the cached model lists
+        /// </summary>
+        /// <returns></returns>
+        private Model FindCachedModelById(int id)
+        {
+            Model model = null;
+
+            IEnumerable<string> keys = _cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
+            foreach (string key in keys)
+            {
+                List<Model> models = _cache.Get<List<Model>>(key);
+                model = models.FirstOrDefault(m => m.Id == id);
+            }
+
             return model;
         }
     }

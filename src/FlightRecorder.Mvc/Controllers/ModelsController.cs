@@ -26,13 +26,25 @@ namespace DroneFlightLog.Mvc.Controllers
         /// <summary>
         /// Serve the models list page
         /// </summary>
+        /// <param name="manufacturerId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int manufacturerId = 0)
         {
-            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            // Construct the model and assign the selected manufacturer
             ListModelsViewModel model = new ListModelsViewModel();
+            model.ManufacturerId = manufacturerId;
+
+            // Load the manufacturer list
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
             model.SetManufacturers(manufacturers);
+
+            // If we have a selected manufacturer, load the models for them
+            if (manufacturerId > 0)
+            {
+                model.Models = await _models.GetModelsAsync(manufacturerId);
+            }
+
             return View(model);
         }
 
@@ -46,6 +58,47 @@ namespace DroneFlightLog.Mvc.Controllers
         {
             List<Model> models = await _models.GetModelsAsync(manufacturerId);
             return PartialView(models);
+        }
+
+        /// <summary>
+        /// Serve the model editing page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Model aircraftModel = await _models.GetModelAsync(id);
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            EditModelViewModel model = _mapper.Map<EditModelViewModel>(aircraftModel);
+            model.SetManufacturers(manufacturers);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle POST events to save updated models
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditModelViewModel model)
+        {
+            IActionResult result;
+
+            if (ModelState.IsValid)
+            {
+                await _models.UpdateModelAsync(model.Id, model.ManufacturerId, model.Name);
+                result = RedirectToAction("Index", new { manufacturerId = model.ManufacturerId });
+            }
+            else
+            {
+                List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+                model.SetManufacturers(manufacturers);
+                result = View(model);
+            }
+
+            return result;
         }
     }
 }

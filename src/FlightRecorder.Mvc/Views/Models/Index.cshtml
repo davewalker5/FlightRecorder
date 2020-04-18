@@ -21,12 +21,16 @@
         <div class="col">
             <strong>Manufacturer</strong>
             <div class="input-group">
-                @Html.DropDownList("ManufacturerId", Model.Manufacturers, new { @class = "form-control" })
+                @Html.DropDownListFor(m => m.ManufacturerId, Model.Manufacturers, new { @class = "form-control" })
             </div>
         </div>
     </div>
     <hr/>
     <div id="ModelsList">
+        @if (Model.ManufacturerId > 0)
+        {
+            await Html.PartialAsync("List", Model.Models);
+        }
     </div>
 </div>
 
