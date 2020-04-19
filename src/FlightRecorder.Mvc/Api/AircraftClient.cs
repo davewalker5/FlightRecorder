@@ -66,7 +66,10 @@ namespace FlightRecorder.Mvc.Api
                 // It doesn't, so go to the service to get it
                 string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/registration/{registration}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+                if (!string.IsNullOrEmpty(json))
+                {
+                    aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+                }
             }
 
             return aircraft;

@@ -81,8 +81,12 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> ListByRegistration(string registration)
         {
+            List<Aircraft> viewModel = null;
             Aircraft aircraft = await _aircraft.GetAircraftByRegistrationAsync(registration);
-            List<Aircraft> viewModel = new List<Aircraft>{ aircraft };
+            if (aircraft != null)
+            {
+                viewModel = new List<Aircraft> { aircraft };
+            }
             return PartialView("List", viewModel);
         }
     }
