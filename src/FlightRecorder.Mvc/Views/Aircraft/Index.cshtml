@@ -24,20 +24,16 @@
                 @Html.TextBoxFor(m => m.Registration, new { @class = "form-control" })
             </div>
         </div>
-    </div>
-    <hr/>
-    <div class="row">
         <div class="col">
             <strong>@Html.LabelFor(m => m.ManufacturerId)</strong>
             <div class="input-group">
                 @Html.DropDownListFor(m => m.ManufacturerId, Model.Manufacturers, new { @class = "form-control" })
             </div>
         </div>
-    </div>
-    <div class="row">
         <div id="ModelsList" class="col">
         </div>
     </div>
+    <br/>
 
     <div id="AircraftList">
     </div>
@@ -139,6 +135,7 @@
         $("#ManufacturerId").change(function () {
             var manufacturerId = $("#ManufacturerId").val();
             $("#Registration").val("");
+            $("#AircraftList").html("");
             LoadModelsForManufacturer(manufacturerId);
         });
 
