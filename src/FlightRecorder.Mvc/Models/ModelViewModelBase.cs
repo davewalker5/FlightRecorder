@@ -7,7 +7,7 @@ namespace FlightRecorder.Mvc.Models
 {
     public abstract class ModelViewModelBase : Model
     {
-        public List<SelectListItem> Manufacturers { get; private set; }
+        public List<SelectListItem> Manufacturers { get; set; }
 
         /// <summary>
         /// Set the options for the manufacturers drop-down list

@@ -25,9 +25,14 @@
             </div>
         </div>
     </div>
-    <hr/>
+
     <div id="ModelsList">
     </div>
+
+    <hr />
+    <p class="text-right">
+        <a class="btn btn-primary" href="/Models/Add" role="button">Add</a>
+    </p>
 </div>
 
 <script type="text/javascript">
@@ -56,11 +61,14 @@
     }
 
     $(document).ready(function () {
+        // If the page is loaded with a manufacturer selected, load their models
         var manufacturerId = $("#ManufacturerId").val();
         if (manufacturerId > 0) {
             LoadModelsForManufacturer(manufacturerId);
         }
 
+        // Respond to change events on the manufacturer list by loading the models for
+        // the new selection
         $("#ManufacturerId").change(function () {
             var manufacturerId = $("#ManufacturerId").val();
             LoadModelsForManufacturer(manufacturerId);

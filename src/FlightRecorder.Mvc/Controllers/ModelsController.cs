@@ -61,6 +61,42 @@ namespace DroneFlightLog.Mvc.Controllers
         }
 
         /// <summary>
+        /// Serve the page to add a new model
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            AddModelViewModel model = new AddModelViewModel();
+            model.SetManufacturers(manufacturers);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle POST events to save new models
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(AddModelViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Model aircraftModel = await _models.AddModelAsync(model.Name, model.ManufacturerId);
+                ModelState.Clear();
+                model.Clear();
+                model.Message = $"Model '{aircraftModel.Name}' added successfully";
+            }
+
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            model.SetManufacturers(manufacturers);
+
+            return View(model);
+        }
+
+        /// <summary>
         /// Serve the model editing page
         /// </summary>
         /// <param name="id"></param>

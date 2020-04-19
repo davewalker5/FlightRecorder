@@ -17,9 +17,12 @@ namespace FlightRecorder.Mvc.Api
         private const string CacheKeyPrefix = "Models";
         private const int AllModelsPageSize = 1000000;
 
-        public ModelClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
+        private ManufacturerClient _manufacturers;
+
+        public ModelClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache, ManufacturerClient manufacturers)
             : base(client, settings, accessor, cache)
         {
+            _manufacturers = manufacturers;
         }
 
         /// <summary>
@@ -77,10 +80,15 @@ namespace FlightRecorder.Mvc.Api
             string key = $"{CacheKeyPrefix}.{manufacturerId}";
             _cache.Remove(key);
 
+            // TODO : When the service "TODO" list is completed, it will no longer
+            // be necessary to retrieve the manufacturer here as it will be
+            // possible to pass the manufacturer ID in the template
+            Manufacturer manufacturer = await _manufacturers.GetManufacturerAsync(manufacturerId);
+
             dynamic template = new
             {
                 Name = name,
-                ManufacturerId = manufacturerId
+                Manufacturer = manufacturer
             };
 
             string data = JsonConvert.SerializeObject(template);
