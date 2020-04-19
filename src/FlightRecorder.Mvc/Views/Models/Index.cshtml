@@ -27,38 +27,43 @@
     </div>
     <hr/>
     <div id="ModelsList">
-        @if (Model.ManufacturerId > 0)
-        {
-            await Html.PartialAsync("List", Model.Models);
-        }
     </div>
 </div>
 
 <script type="text/javascript">
+    function LoadModelsForManufacturer(manufacturerId) {
+        if (manufacturerId > 0) {
+            var route = "/Models/List?manufacturerId=" + manufacturerId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#ModelsList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#ModelsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#ModelsList").html("");
+        }
+    }
+
     $(document).ready(function () {
+        var manufacturerId = $("#ManufacturerId").val();
+        if (manufacturerId > 0) {
+            LoadModelsForManufacturer(manufacturerId);
+        }
+
         $("#ManufacturerId").change(function () {
             var manufacturerId = $("#ManufacturerId").val();
-            if (manufacturerId > 0) {
-                var route = "/Models/List?manufacturerId=" + manufacturerId;
-                $('html, body').css("cursor", "wait");
-                $.ajax({
-                    url: route,
-                    method: "GET",
-                    dataType: "html",
-                    cache: false,
-                    success: function (result) {
-                        $("#ModelsList").html(result);
-                        $('html, body').css("cursor", "auto");
-                    },
-                    error: function (xhr, status, error) {
-                        var errorMessage = xhr.status + ': ' + xhr.statusText
-                        $("#ModelsList").html(errorMessage);
-                        $('html, body').css("cursor", "auto");
-                    }
-                });
-            } else {
-                $("#ModelsList").html("");
-            }
+            LoadModelsForManufacturer(manufacturerId);
         });
     });
 </script>
