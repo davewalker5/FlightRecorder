@@ -64,11 +64,41 @@
         }
     }
 
+    function LoadAircraftForModel(modelId) {
+        if (modelId > 0) {
+            var route = "/Aircraft/List?modelId=" + modelId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#AircraftList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#AircraftList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#AircraftList").html("");
+        }
+    }
+
     $(document).ready(function () {
         // If the page is loaded with a manufacturer selected, load their models
         var manufacturerId = $("#ManufacturerId").val();
         if (manufacturerId > 0) {
             LoadModelsForManufacturer(manufacturerId);
+        }
+
+        // If the page is loaded with a model selected, load the aircraft for that model
+        var modelId = $("#ModelId").val();
+        if (modelId > 0) {
+            LoadAircraftForModel(modelId);
         }
 
         // Respond to change events on the manufacturer list by loading the models for

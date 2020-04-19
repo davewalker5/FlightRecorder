@@ -60,5 +60,17 @@ namespace FlightRecorder.Mvc.Controllers
             model.SetModels(aircraftModels);
             return PartialView(model);
         }
+
+        /// <summary>
+        /// Return a list of models for the specified manufacturer
+        /// </summary>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> List(int modelId)
+        {
+            List<Aircraft> aircraft = await _aircraft.GetAircraftByModelAsync(modelId);
+            return PartialView(aircraft);
+        }
     }
 }
