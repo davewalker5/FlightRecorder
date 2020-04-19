@@ -62,15 +62,28 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Return a list of models for the specified manufacturer
+        /// Return a list of aircraft for the specified model
         /// </summary>
         /// <param name="modelId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> List(int modelId)
+        public async Task<IActionResult> ListByModel(int modelId)
         {
             List<Aircraft> aircraft = await _aircraft.GetAircraftByModelAsync(modelId);
-            return PartialView(aircraft);
+            return PartialView("List", aircraft);
+        }
+
+        /// <summary>
+        /// Return a list of aircraft for the specified registration number
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ListByRegistration(string registration)
+        {
+            Aircraft aircraft = await _aircraft.GetAircraftByRegistrationAsync(registration);
+            List<Aircraft> viewModel = new List<Aircraft>{ aircraft };
+            return PartialView("List", viewModel);
         }
     }
 }

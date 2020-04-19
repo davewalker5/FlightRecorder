@@ -22,5 +22,7 @@ namespace FlightRecorder.Mvc.Entities
         [DisplayName("Year of Manufacture")]
         [Required(ErrorMessage = "You must provide a year of manufacture")]
         public long Manufactured { get; set; }
+
+        public Model Model { get; set; }
     }
 }

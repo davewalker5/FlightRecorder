@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FlightRecorder.Mvc.Configuration;
@@ -51,6 +53,27 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
+        /// Return the aircraft with the specified registration number
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <returns></returns>
+        public async Task<Aircraft> GetAircraftByRegistrationAsync(string registration)
+        {
+            // See if the aircraft exists in the cached aircraft lists, first
+            Aircraft aircraft = FindCachedAircraft(a => a.Registration == registration);
+            if (aircraft == null)
+            {
+                // It doesn't, so go to the service to get it
+                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/registration/{registration}/";
+                string json = await SendDirectAsync(route, null, HttpMethod.Get);
+                aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+            }
+
+            return aircraft;
+        }
+
+
+        /// <summary>
         /// Return the aircraft with the specified Id
         /// </summary>
         /// <param name="id"></param>
@@ -58,7 +81,7 @@ namespace FlightRecorder.Mvc.Api
         public async Task<Aircraft> GetAircraftByIdAsync(int id)
         {
             // See if the aircraft exists in the cached aircraft lists, first
-            Aircraft aircraft = FindCachedAircraftById(id);
+            Aircraft aircraft = FindCachedAircraft(a => a.Id == id);
             if (aircraft == null)
             {
                 // It doesn't, so go to the service to get it
@@ -114,7 +137,7 @@ namespace FlightRecorder.Mvc.Api
             // current model's cached model list but we also need to identify the
             // original model and clear the cached list of aircraft for that, too
             string key;
-            Aircraft original = FindCachedAircraftById(id);
+            Aircraft original = FindCachedAircraft(async => async.Id == id);
             if (original != null)
             {
                 key = $"{CacheKeyPrefix}.{original.ModelId}";
@@ -140,10 +163,11 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
-        /// Locate the aircraft with the specified ID in the cached lists
+        /// Locate the aircraft matching the specified expression in the cached lists
         /// </summary>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        private Aircraft FindCachedAircraftById(int id)
+        private Aircraft FindCachedAircraft(Func<Aircraft, bool> predicate)
         {
             Aircraft aircraft = null;
 
@@ -151,7 +175,7 @@ namespace FlightRecorder.Mvc.Api
             foreach (string key in keys)
             {
                 List<Aircraft> aircraftList = _cache.Get<List<Aircraft>>(key);
-                aircraft = aircraftList.FirstOrDefault(a => a.Id == id);
+                aircraft = aircraftList.FirstOrDefault(predicate);
             }
 
             return aircraft;
