@@ -39,12 +39,6 @@ namespace DroneFlightLog.Mvc.Controllers
             List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
             model.SetManufacturers(manufacturers);
 
-            // If we have a selected manufacturer, load the models for them
-            if (manufacturerId > 0)
-            {
-                model.Models = await _models.GetModelsAsync(manufacturerId);
-            }
-
             return View(model);
         }
 

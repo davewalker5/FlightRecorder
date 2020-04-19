@@ -1,7 +1,7 @@
-﻿@model FlightRecorder.Mvc.Models.ListModelsViewModel
+﻿@model FlightRecorder.Mvc.Models.ListAircraftViewModel
 
 @{
-    ViewData["Title"] = "Models";
+    ViewData["Title"] = "Aircraft";
 }
 
 <p class="text-center font-weight-bold">
@@ -11,7 +11,7 @@
     <br />
     <small class="text-muted">
         <em>
-            Manage the aircraft models for aircraft registered in the log
+            Manage the aircraft registered in the log
         </em>
     </small>
 </p>
@@ -25,20 +25,24 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div id="ModelsList" class="col">
+        </div>
+    </div>
 
-    <div id="ModelsList">
+    <div id="AircraftList">
     </div>
 
     <hr />
     <p class="text-right">
-        <a class="btn btn-primary" href="/Models/Add" role="button">Add</a>
+        <a class="btn btn-primary" href="/Aircraft/Add" role="button">Add</a>
     </p>
 </div>
 
 <script type="text/javascript">
     function LoadModelsForManufacturer(manufacturerId) {
         if (manufacturerId > 0) {
-            var route = "/Models/List?manufacturerId=" + manufacturerId;
+            var route = "/Aircraft/Models?manufacturerId=" + manufacturerId;
             $('html, body').css("cursor", "wait");
             $.ajax({
                 url: route,

@@ -1,0 +1,6 @@
+﻿@model FlightRecorder.Mvc.Models.ListAircraftViewModel
+
+<strong>@Html.LabelFor(m => m.ModelId)</strong>
+<div class="input-group">
+    @Html.DropDownListFor(m => m.ModelId, Model.Models, new { @class = "form-control" })
+</div>

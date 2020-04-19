@@ -47,6 +47,7 @@ namespace FlightRecorder.Mvc
             services.AddSingleton<ICacheWrapper>(s => new CacheWrapper(new MemoryCacheOptions()));
             services.AddHttpClient<AuthenticationClient>();
             services.AddHttpClient<AirlineClient>();
+            services.AddHttpClient<AircraftClient>();
             services.AddHttpClient<LocationClient>();
             services.AddHttpClient<ManufacturerClient>();
             services.AddHttpClient<ModelClient>();
