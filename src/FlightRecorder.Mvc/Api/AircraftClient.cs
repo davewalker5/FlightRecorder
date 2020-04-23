@@ -97,9 +97,11 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
-        /// Create a new model
+        /// Create a new aircraft
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="registration"></param>
+        /// <param name="serialNumber"></param>
+        /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
         public async Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, int yearOfManufacture, int modelId)
@@ -128,13 +130,16 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
-        /// Update an existing model
+        /// Update an existing aircraft
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="registration"></param>
+        /// <param name="serialNumber"></param>
+        /// <param name="yearOfManufacture"></param>
+        /// <param name="manufacturerId"></param>
         /// <param name="modelId"></param>
-        /// <param name="name"></param>
         /// <returns></returns>
-        public async Task<Aircraft> UpdateAircraftAsync(int id, string registration, string serialNumber, int yearOfManufacture, int modelId)
+        public async Task<Aircraft> UpdateAircraftAsync(int id, string registration, string serialNumber, int yearOfManufacture, int manufacturerId, int modelId)
         {
             // We might've changed the model, so not only do we need to clear the
             // current model's cached model list but we also need to identify the
@@ -152,10 +157,15 @@ namespace FlightRecorder.Mvc.Api
 
             dynamic template = new
             {
+                Id = id,
+                ModelId = modelId,
                 Registration = registration,
                 SerialNumber = serialNumber,
                 Manufactured = yearOfManufacture,
-                ModelId = modelId
+                Model = new Model
+                {
+                    ManufacturerId = manufacturerId
+                }
             };
 
             string data = JsonConvert.SerializeObject(template);

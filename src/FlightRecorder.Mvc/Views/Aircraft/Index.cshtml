@@ -57,6 +57,14 @@
                 success: function (result) {
                     $("#ModelsList").html(result);
                     $('html, body').css("cursor", "auto");
+
+                    // If we have a model ID, select it. This happens on page load when editing an existing
+                    // model
+                    var modelId = parseInt("@Model.ModelId");
+                    if (modelId > 0) {
+                        $("#ModelId").val(modelId);
+                        LoadAircraftForModel(modelId);
+                    }
                 },
                 error: function (xhr, status, error) {
                     var errorMessage = xhr.status + ': ' + xhr.statusText
@@ -122,12 +130,6 @@
         var manufacturerId = $("#ManufacturerId").val();
         if (manufacturerId > 0) {
             LoadModelsForManufacturer(manufacturerId);
-        }
-
-        // If the page is loaded with a model selected, load the aircraft for that model
-        var modelId = $("#ModelId").val();
-        if (modelId > 0) {
-            LoadAircraftForModel(modelId);
         }
 
         // Respond to change events on the manufacturer list by loading the models for

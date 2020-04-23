@@ -1,0 +1,43 @@
+﻿@model FlightRecorder.Mvc.Models.AircraftViewModelBase
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.ManufacturerId)</strong>
+            <div class="input-group">
+                @Html.DropDownListFor(m => m.ManufacturerId, Model.Manufacturers, new { @class = "form-control" })
+            </div>
+            <span>@Html.ValidationMessageFor(m => m.ManufacturerId, "", new { @class = "text-danger" })</span>
+        </div>
+        <div id="ModelsList" class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.Registration)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Registration, new { @class = "form-control" })
+            </div>
+            <span>@Html.ValidationMessageFor(m => m.Registration, "", new { @class = "text-danger" })</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.SerialNumber)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control" })
+            </div>
+            <span>@Html.ValidationMessageFor(m => m.SerialNumber, "", new { @class = "text-danger" })</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.Age)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Age, new { @class = "form-control" })
+            </div>
+            <span>@Html.ValidationMessageFor(m => m.Age, "", new { @class = "text-danger" })</span>
+        </div>
+    </div>
+    <br />
+</div>

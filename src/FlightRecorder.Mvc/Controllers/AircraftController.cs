@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using FlightRecorder.Mvc.Api;
@@ -88,6 +89,48 @@ namespace FlightRecorder.Mvc.Controllers
                 viewModel = new List<Aircraft> { aircraft };
             }
             return PartialView("List", viewModel);
+        }
+
+        /// <summary>
+        /// Serve the page to edit an aircraft
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Aircraft aircraft = await _aircraft.GetAircraftByIdAsync(id);
+            EditAircraftViewModel viewModel = _mapper.Map<EditAircraftViewModel>(aircraft);
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            viewModel.SetManufacturers(manufacturers);
+            return View(viewModel);
+        }
+
+        /// <summary>
+        /// Handle POST events to save updated models
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditAircraftViewModel viewModel)
+        {
+            IActionResult result;
+
+            if (ModelState.IsValid)
+            {
+                int manufactured = DateTime.Now.Year - viewModel.Age;
+                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ManufacturerId, viewModel.ModelId);
+                result = RedirectToAction("Index", new { manufacturerId = viewModel.ManufacturerId, modelId = viewModel.ModelId });
+            }
+            else
+            {
+                List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+                viewModel.SetManufacturers(manufacturers);
+                result = View(viewModel);
+            }
+
+            return result;
         }
     }
 }

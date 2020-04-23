@@ -1,12 +1,36 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using FlightRecorder.Mvc.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public abstract class AircraftViewModelBase : Aircraft
+    public abstract class AircraftViewModelBase
     {
+        public int Id { get; set; }
+
+        [DisplayName("Manufacturer")]
+        [Required(ErrorMessage = "You must provide a manufacturer")]
+        public int ManufacturerId { get; set; }
+
+        [DisplayName("Model")]
+        [Required(ErrorMessage = "You must provide a model")]
+        public int ModelId { get; set; }
+
+        [DisplayName("Registration")]
+        [Required(ErrorMessage = "You must provide a registration number")]
+        public string Registration { get; set; }
+
+        [DisplayName("Serial Number")]
+        [Required(ErrorMessage = "You must provide a serial number")]
+        public string SerialNumber { get; set; }
+
+        [DisplayName("Age")]
+        [Range(0, int.MaxValue, ErrorMessage = "You must provide an aircraft age")]
+        public int Age { get; set; }
+
         public List<SelectListItem> Manufacturers { get; set; }
         public List<SelectListItem> Models { get; set; }
 
