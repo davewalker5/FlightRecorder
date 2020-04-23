@@ -92,6 +92,44 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Serve the page to add an aircraft
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            AddAircraftViewModel viewModel = new AddAircraftViewModel();
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            viewModel.SetManufacturers(manufacturers);
+            return View(viewModel);
+        }
+
+        /// <summary>
+        /// Handle POST events to save new aircraft
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(AddAircraftViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int manufactured = DateTime.Now.Year - model.Age;
+                Aircraft aircraft = await _aircraft.AddAircraftAsync(model.Registration, model.SerialNumber, manufactured, model.ModelId);
+                ModelState.Clear();
+                model.Clear();
+                model.Message = $"Aircraft '{aircraft.Registration}' added successfully";
+            }
+
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            model.SetManufacturers(manufacturers);
+
+            return View(model);
+        }
+
+        /// <summary>
         /// Serve the page to edit an aircraft
         /// </summary>
         /// <param name="id"></param>
