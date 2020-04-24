@@ -6,7 +6,7 @@
 
 <p class="text-center font-weight-bold">
     <span style="font-size: 1.2rem">
-        Aircraft
+        Flights
     </span>
     <br />
     <small class="text-muted">
@@ -56,6 +56,11 @@
 
 <script type="text/javascript">
     function LoadFlightsForAirline(airlineId) {
+        // Clear the other filters before loading
+        $("#FlightNumber").val("");
+        $("#Embarkation").val("");
+        $("#Destination").val("");
+
         if (airlineId != "") {
             var route = "/Flights/ListByAirline?airlineId=" + airlineId;
             $('html, body').css("cursor", "wait");
@@ -80,6 +85,11 @@
     }
 
     function LoadFlightsByNumber(number) {
+        // Clear the other filters before loading
+        $("#AirlineId").val("");
+        $("#Embarkation").val("");
+        $("#Destination").val("");
+
         if (number != "") {
             var route = "/Flights/ListByFlightNumber?number=" + number;
             $('html, body').css("cursor", "wait");
@@ -104,6 +114,11 @@
     }
 
     function LoadFlightsByRoute(embarkation, destination) {
+        // Clear the other filters before loading
+        $("#AirlineId").val("");
+        $("#FlightNumber").val("");
+        $("#FlightsList").html("");
+
         if ((embarkation != "") && (destination != "")) {
             var route = "/Flights/ListByRoute?embarkation=" + embarkation + "&destination=" + destination;
             $('html, body').css("cursor", "wait");
@@ -132,11 +147,6 @@
         var embarkation = $("#Embarkation").val();
         var destination = $("#Destination").val();
 
-        // Clear the other filters and the flight list
-        $("#AirlineId").val("");
-        $("#FlightNumber").val("");
-        $("#FlightsList").html("");
-
         // If we have a fully specified route, list the flights for it
         if ((embarkation != "") && (destination != "")) {
             LoadFlightsByRoute(embarkation, destination);
@@ -144,22 +154,29 @@
     }
 
     $(document).ready(function () {
+        // If the page is loaded with filters selected, show flights based on those filters
+        var airlineId = $("#AirlineId").val();
+        var number = $("#FlightNumber").val();
+        var embarkation = $("#Embarkation").val();
+        var destination = $("#Destination").val();
+        if ((embarkation != "") && (destination != "")) {
+            LoadFlightsByRoute(embarkation, destination);
+        } else if (number != "") {
+            LoadFlightsByNumber(number);
+        } else if (airlineId != "") {
+            LoadFlightsForAirline(airlineId);
+        }
+
         // Respond to change events on the airline list by clearing the other filters and loading the flights for
         // the new selection
         $("#AirlineId").change(function () {
             var airlineId = $("#AirlineId").val();
-            $("#FlightNumber").val("");
-            $("#Embarkation").val("");
-            $("#Destination").val("");
             LoadFlightsForAirline(airlineId);
         });
 
         // Respond to a change in the flight number by clearing the other filters and loading flights with that number
         $("#FlightNumber").change(function () {
             var number = $("#FlightNumber").val();
-            $("#AirlineId").val("");
-            $("#Embarkation").val("");
-            $("#Destination").val("");
             LoadFlightsByNumber(number);
         });
 

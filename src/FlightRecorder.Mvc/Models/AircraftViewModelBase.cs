@@ -12,11 +12,11 @@ namespace FlightRecorder.Mvc.Models
         public int Id { get; set; }
 
         [DisplayName("Manufacturer")]
-        [Required(ErrorMessage = "You must provide a manufacturer")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must provide a manufacturer")]
         public int ManufacturerId { get; set; }
 
         [DisplayName("Model")]
-        [Required(ErrorMessage = "You must provide a model")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must provide a model")]
         public int ModelId { get; set; }
 
         [DisplayName("Registration")]

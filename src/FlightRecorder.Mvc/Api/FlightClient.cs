@@ -32,7 +32,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <returns></returns>
-        public async Task<List<Flight>> GetFlightsByRoute(string embarkation, string destination)
+        public async Task<List<Flight>> GetFlightsByRouteAsync(string embarkation, string destination)
         {
             string key = $"{CacheKeyPrefix}.R.{embarkation}.{destination}";
             List<Flight> flights = _cache.Get<List<Flight>>(key);
@@ -58,7 +58,7 @@ namespace FlightRecorder.Mvc.Api
         /// </summary>
         /// <param name="airlineId"></param>
         /// <returns></returns>
-        public async Task<List<Flight>> GetFlightsByAirline(int airlineId)
+        public async Task<List<Flight>> GetFlightsByAirlineAsync(int airlineId)
         {
             string key = $"{CacheKeyPrefix}.A.{airlineId}";
             List<Flight> flights = _cache.Get<List<Flight>>(key);
@@ -85,7 +85,7 @@ namespace FlightRecorder.Mvc.Api
         /// </summary>
         /// <param name="number"></param>
         /// <returns></returns>
-        public async Task<List<Flight>> GetFlightsByNumber(string number)
+        public async Task<List<Flight>> GetFlightsByNumberAsync(string number)
         {
             string key = $"{CacheKeyPrefix}.N.{number}";
             List<Flight> flights = _cache.Get<List<Flight>>(key);
@@ -178,6 +178,7 @@ namespace FlightRecorder.Mvc.Api
 
             dynamic template = new
             {
+                Id = flightId,
                 Number = number,
                 Embarkation = embarkation,
                 Destination = destination,
@@ -185,7 +186,7 @@ namespace FlightRecorder.Mvc.Api
             };
 
             string data = JsonConvert.SerializeObject(template);
-            string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
+            string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
 
             Flight flight = JsonConvert.DeserializeObject<Flight>(json);
             return flight;

@@ -58,7 +58,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> ListByAirline(int airlineId)
         {
-            List<Flight> flights = await _flights.GetFlightsByAirline(airlineId);
+            List<Flight> flights = await _flights.GetFlightsByAirlineAsync(airlineId);
             return PartialView("List", flights);
         }
 
@@ -70,7 +70,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> ListByFlightNumber(string number)
         {
-            List<Flight> flights = await _flights.GetFlightsByNumber(number);
+            List<Flight> flights = await _flights.GetFlightsByNumberAsync(number);
             return PartialView("List", flights);
         }
 
@@ -83,8 +83,55 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> ListByRoute(string embarkation, string destination)
         {
-            List<Flight> flights = await _flights.GetFlightsByRoute(embarkation, destination);
+            List<Flight> flights = await _flights.GetFlightsByRouteAsync(embarkation, destination);
             return PartialView("List", flights);
+        }
+
+        /// <summary>
+        /// Serve the page for editing an existing flight
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            Flight flight = await _flights.GetFlightByIdAsync(id);
+            EditFlightViewModel model = _mapper.Map<EditFlightViewModel>(flight);
+            List<Airline> airlines = await _airlines.GetAirlinesAsync();
+            model.SetAirlines(airlines);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle POST events to save updated flights
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditFlightViewModel model)
+        {
+            IActionResult result;
+
+            if (ModelState.IsValid)
+            {
+                await _flights.UpdateFlightAsync(model.Id, model.FlightNumber, model.Embarkation, model.Destination, model.AirlineId);
+                result = RedirectToAction("Index", new
+                {
+                    airlineId = 0,
+                    number = model.FlightNumber,
+                    embarkation = "",
+                    destination = ""
+                });
+            }
+            else
+            {
+                List<Airline> airlines = await _airlines.GetAirlinesAsync();
+                model.SetAirlines(airlines);
+                result = View(model);
+            }
+
+            return result;
         }
     }
 }

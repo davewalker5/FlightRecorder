@@ -1,6 +1,6 @@
 ﻿namespace FlightRecorder.Mvc.Models
 {
-    public class ListFlightsViewModel : FlightsViewModelBase
+    public class ListFlightsViewModel : FlightViewModelBase
     {
     }
 }
