@@ -88,6 +88,43 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Serve the page to add a new flight
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            AddFlightViewModel model = new AddFlightViewModel();
+            List<Airline> airlines = await _airlines.GetAirlinesAsync();
+            model.SetAirlines(airlines);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle POST events to save new flights
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(AddFlightViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                string number = model.FlightNumber;
+                await _flights.AddFlightAsync(number, model.Embarkation, model.Destination, model.AirlineId);
+                ModelState.Clear();
+                model.Clear();
+                model.Message = $"Flight '{number}' added successfully";
+            }
+
+            List<Airline> airlines = await _airlines.GetAirlinesAsync();
+            model.SetAirlines(airlines);
+
+            return View(model);
+        }
+
+        /// <summary>
         /// Serve the page for editing an existing flight
         /// </summary>
         /// <param name="id"></param>

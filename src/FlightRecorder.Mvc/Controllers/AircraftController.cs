@@ -94,7 +94,6 @@ namespace FlightRecorder.Mvc.Controllers
         /// <summary>
         /// Serve the page to add an aircraft
         /// </summary>
-        /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Add()

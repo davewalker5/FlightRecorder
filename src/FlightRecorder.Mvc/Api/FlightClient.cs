@@ -151,7 +151,7 @@ namespace FlightRecorder.Mvc.Api
                 Number = number,
                 Embarkation = embarkation,
                 Destination = destination,
-                Model = airline
+                Airline = airline
             };
 
             string data = JsonConvert.SerializeObject(template);
