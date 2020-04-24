@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FlightRecorder.Mvc.Configuration;
@@ -74,7 +73,6 @@ namespace FlightRecorder.Mvc.Api
 
             return aircraft;
         }
-
 
         /// <summary>
         /// Return the aircraft with the specified Id
@@ -189,6 +187,10 @@ namespace FlightRecorder.Mvc.Api
             {
                 List<Aircraft> aircraftList = _cache.Get<List<Aircraft>>(key);
                 aircraft = aircraftList.FirstOrDefault(predicate);
+                if (aircraft != null)
+                {
+                    break;
+                }
             }
 
             return aircraft;

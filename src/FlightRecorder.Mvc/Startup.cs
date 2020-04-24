@@ -48,6 +48,7 @@ namespace FlightRecorder.Mvc
             services.AddHttpClient<AuthenticationClient>();
             services.AddHttpClient<AirlineClient>();
             services.AddHttpClient<AircraftClient>();
+            services.AddHttpClient<FlightClient>();
             services.AddHttpClient<LocationClient>();
             services.AddHttpClient<ManufacturerClient>();
             services.AddHttpClient<ModelClient>();
