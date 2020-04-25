@@ -23,7 +23,7 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Serve the empty search sightings by route page
+        /// Serve the empty search sightings by flight number page
         /// </summary>
         /// <returns></returns>
         [HttpGet]

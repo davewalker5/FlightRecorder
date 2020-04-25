@@ -14,7 +14,6 @@ namespace FlightRecorder.Mvc.Api
     public class SightingsSearchClient : FlightRecorderClientBase
     {
         private const string RouteKey = "Sightings";
-        private const string CacheKeyPrefix = "Sightings";
 
         public SightingsSearchClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
             : base(client, settings, accessor, cache)
@@ -69,5 +68,22 @@ namespace FlightRecorder.Mvc.Api
             List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
             return sightings;
         }
+
+        /// <summary>
+        /// Return the specified page of sightings filtered by aircraft registration
+        /// </summary>
+        /// <param name="aircraftId"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<Sighting>> GetSightingsByAircraft(int aircraftId, int page, int pageSize)
+        {
+            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string route = $"{baseRoute}/aircraft/{aircraftId}/{page}/{pageSize}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            return sightings;
+        }
+
     }
 }

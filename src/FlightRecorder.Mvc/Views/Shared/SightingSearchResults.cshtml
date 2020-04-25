@@ -38,10 +38,14 @@
             </tr>
         }
     </table>
+    <hr />
+    <p class="text-right">
+        <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+        <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
+    </p>
 }
-
-<hr />
-<p class="text-right">
-    <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
-    <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
-</p>
+else if (Model.HasNoMatchingResults)
+{
+    <hr />
+    @Html.Raw("No matching sightings")
+}

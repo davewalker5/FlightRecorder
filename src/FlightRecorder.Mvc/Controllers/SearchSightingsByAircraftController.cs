@@ -11,32 +11,31 @@ using Microsoft.Extensions.Options;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class SearchSightingsByAirlineController : Controller
+    public class SearchSightingsByAircraftController : Controller
     {
-        private readonly AirlineClient _airlines;
         private readonly SightingsSearchClient _client;
         private readonly IOptions<AppSettings> _settings;
 
-        public SearchSightingsByAirlineController(AirlineClient airlines, SightingsSearchClient client, IOptions<AppSettings> settings)
+        private AircraftClient _aircraft;
+
+        public SearchSightingsByAircraftController(AircraftClient aircraft, SightingsSearchClient client, IOptions<AppSettings> settings)
         {
-            _airlines = airlines;
+            _aircraft = aircraft;
             _client = client;
             _settings = settings;
         }
 
         /// <summary>
-        /// Serve the empty search sightings by airline page
+        /// Serve the empty search sightings by aircraft page
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            SightingSearchByAirlineViewModel model = new SightingSearchByAirlineViewModel
+            SightingSearchByAircraftViewModel model = new SightingSearchByAircraftViewModel
             {
                 PageNumber = 1
             };
-            List<Airline> airlines = await _airlines.GetAirlinesAsync();
-            model.SetAirlines(airlines);
             return View(model);
         }
 
@@ -47,7 +46,7 @@ namespace FlightRecorder.Mvc.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(SightingSearchByAirlineViewModel model)
+        public async Task<IActionResult> Index(SightingSearchByAircraftViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -72,11 +71,24 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                List<Sighting> sightings = await _client.GetSightingsByAirline(model.AirlineId, page, _settings.Value.SearchPageSize);
-                model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
+                List<Sighting> sightings = null;
 
-                List<Airline> airlines = await _airlines.GetAirlinesAsync();
-                model.SetAirlines(airlines);
+                try
+                {
+                    // Retrieve the aircraft with the specified registration number
+                    // then, if we have a valid aircraft, retrieve its sightings
+                    Aircraft aircraft = await _aircraft.GetAircraftByRegistrationAsync(model.Registration);
+                    if (aircraft != null)
+                    {
+                        sightings = await _client.GetSightingsByAircraft(aircraft.Id, page, _settings.Value.SearchPageSize);
+                    }
+                }
+                catch
+                {
+                }
+
+                // Expose the sightings to the View
+                model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
             }
 
             return View(model);

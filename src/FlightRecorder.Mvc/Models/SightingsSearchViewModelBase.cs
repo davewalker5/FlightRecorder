@@ -10,6 +10,7 @@ namespace FlightRecorder.Mvc.Models
         public bool PreviousEnabled { get; private set; }
         public bool NextEnabled { get; private set; }
         public string Action { get; set; }
+        public bool HasNoMatchingResults { get; set; }
 
         /// <summary>
         /// Set the collection of sightings that are exposed to the view
@@ -20,6 +21,7 @@ namespace FlightRecorder.Mvc.Models
         public void SetSightings(List<Sighting> sightings, int pageNumber, int pageSize)
         {
             Sightings = sightings;
+            HasNoMatchingResults = (sightings == null);
             PageNumber = pageNumber;
             SetPreviousNextEnabled(pageNumber, pageSize);
         }
