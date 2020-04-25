@@ -68,7 +68,7 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                List<Sighting> sightings = await _client.GetSightingsByRoute(model.Embarkation, model.Destination, model.PageNumber, _settings.Value.SearchPageSize);
+                List<Sighting> sightings = await _client.GetSightingsByRoute(model.Embarkation, model.Destination, page, _settings.Value.SearchPageSize);
                 model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
             }
 
