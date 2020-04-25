@@ -20,6 +20,7 @@
     <Folder Include="Views\Aircraft\" />
     <Folder Include="Views\Flights\" />
     <Folder Include="Views\SearchSightingsByRoute\" />
+    <Folder Include="Views\SearchSightingsByFlight\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />

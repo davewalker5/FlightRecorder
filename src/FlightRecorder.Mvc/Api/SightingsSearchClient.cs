@@ -37,5 +37,21 @@ namespace FlightRecorder.Mvc.Api
             List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
             return sightings;
         }
+
+        /// <summary>
+        /// Return the specified page of sightings filtered by flight number
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<Sighting>> GetSightingsByFlight(string number, int page, int pageSize)
+        {
+            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string route = $"{baseRoute}/flight/{number}/{page}/{pageSize}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            return sightings;
+        }
     }
 }
