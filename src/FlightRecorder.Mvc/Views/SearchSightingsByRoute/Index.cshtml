@@ -1,0 +1,53 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.SightingSearchByRouteViewModel
+
+@{
+    ViewData["Title"] = "Sighting Search By Route";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Sighting Search
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Search sightings by route
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Embarkation)</strong>
+                <div class="input-group">
+                    @Html.EditorFor(m => m.Embarkation, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.Embarkation, "", new { @class = "text-danger" })</span>
+            </div>
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Destination)</strong>
+                <div class="input-group">
+                    @Html.EditorFor(m => m.Destination, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.Destination, "", new { @class = "text-danger" })</span>
+            </div>
+            <div class="col">
+                <strong><label>&nbsp;</label></strong>
+                <div class="input-group">
+                    <button type="submit" name="Action" value="@ControllerActions.ActionSearch" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        @await Html.PartialAsync("../Shared/SightingSearchResults", Model)
+    }
+</div>

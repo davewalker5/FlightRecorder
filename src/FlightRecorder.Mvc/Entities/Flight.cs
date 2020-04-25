@@ -24,5 +24,7 @@ namespace FlightRecorder.Mvc.Entities
         public string Destination { get; set; }
 
         public virtual Airline Airline { get; set; }
+
+        public string Route { get { return $"{Embarkation} - {Destination}"; } }
     }
 }
