@@ -11,5 +11,6 @@ namespace FlightRecorder.Mvc.Configuration
         public int SearchPageSize { get; set; }
         public int PropertiesPerRow { get; set; }
         public int CacheLifetimeSeconds { get; set; }
+        public string DateTimeFormat { get; set; }
     }
 }

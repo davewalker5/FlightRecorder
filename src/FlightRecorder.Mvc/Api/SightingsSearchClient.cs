@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace FlightRecorder.Mvc.Api
             string route = $"{baseRoute}/route/{embarkation}/{destination}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
             List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
-            return sightings;
+            return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace FlightRecorder.Mvc.Api
             string route = $"{baseRoute}/flight/{number}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
             List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
-            return sightings;
+            return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace FlightRecorder.Mvc.Api
             string route = $"{baseRoute}/airline/{airlineId}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
             List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
-            return sightings;
+            return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
         /// <summary>
@@ -82,8 +83,26 @@ namespace FlightRecorder.Mvc.Api
             string route = $"{baseRoute}/aircraft/{aircraftId}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
             List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
-            return sightings;
+            return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
+        /// <summary>
+        /// Return the specified page of sightings recorded within a given date range
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<Sighting>> GetSightingsByDate(DateTime from, DateTime to, int page, int pageSize)
+        {
+            string fromRouteSegment = from.ToString(_settings.Value.DateTimeFormat);
+            string toRouteSegment = to.ToString(_settings.Value.DateTimeFormat);
+            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string route = $"{baseRoute}/date/{fromRouteSegment}/{toRouteSegment}/{page}/{pageSize}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
+        }
     }
 }
