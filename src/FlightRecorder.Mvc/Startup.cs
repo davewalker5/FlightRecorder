@@ -5,6 +5,7 @@ using FlightRecorder.Mvc.Api;
 using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Controllers;
 using FlightRecorder.Mvc.Interfaces;
+using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,6 +46,7 @@ namespace FlightRecorder.Mvc
             // with "lookup" caching for performance
             services.AddMemoryCache();
             services.AddSingleton<ICacheWrapper>(s => new CacheWrapper(new MemoryCacheOptions()));
+            services.AddScoped<AddSightingWizard>();
             services.AddHttpClient<AuthenticationClient>();
             services.AddHttpClient<AirlineClient>();
             services.AddHttpClient<AircraftClient>();
@@ -52,6 +54,7 @@ namespace FlightRecorder.Mvc
             services.AddHttpClient<LocationClient>();
             services.AddHttpClient<ManufacturerClient>();
             services.AddHttpClient<ModelClient>();
+            services.AddHttpClient<SightingClient>();
             services.AddHttpClient<SightingsSearchClient>();
 
             // Configure session state for token storage

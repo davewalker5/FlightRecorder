@@ -11,7 +11,7 @@
     <Folder Include="Configuration\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Views\Login\" />
-    <Folder Include="Views\Sightings\" />
+    <Folder Include="Views\SightingDetails\" />
     <Folder Include="Entities\" />
     <Folder Include="Views\Locations\" />
     <Folder Include="Views\Manufacturers\" />
@@ -24,6 +24,10 @@
     <Folder Include="Views\SearchSightingsByAirline\" />
     <Folder Include="Views\SearchSightingsByAircraft\" />
     <Folder Include="Views\SearchSightingsByDate\" />
+    <Folder Include="Wizard\" />
+    <Folder Include="Views\FlightDetails\" />
+    <Folder Include="Views\AircraftDetails\" />
+    <Folder Include="Views\ConfirmDetails\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />

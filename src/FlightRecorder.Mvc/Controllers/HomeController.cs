@@ -15,7 +15,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return RedirectToAction("Add", "Sightings");
+            return RedirectToAction("Index", "SightingDetails");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

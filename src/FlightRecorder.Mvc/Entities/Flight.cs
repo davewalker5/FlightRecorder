@@ -7,7 +7,7 @@ namespace FlightRecorder.Mvc.Entities
     {
         public int Id { get; set; }
 
-        [DisplayName("Model")]
+        [DisplayName("Airline")]
         [Required(ErrorMessage = "You must specify an airline")]
         public int AirlineId { get; set; }
 
