@@ -29,6 +29,20 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Return a list of models for the specified manufacturer
+        /// </summary>
+        /// <param name="manufacturerId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Models(int manufacturerId)
+        {
+            ListAircraftViewModel model = new ListAircraftViewModel();
+            List<Model> aircraftModels = await _wizard.GetModelsAsync(manufacturerId);
+            model.SetModels(aircraftModels);
+            return PartialView(model);
+        }
+
+        /// <summary>
         /// Handle POST events to cache aircraft details or move back to the flight
         /// details page
         /// </summary>
@@ -59,7 +73,7 @@ namespace FlightRecorder.Mvc.Controllers
                 // Load the models for the aircraft's manufacturer
                 if (model.ManufacturerId > 0)
                 {
-                    List<Model> models = await _wizard.GetModelsAsync(model.ManufacturerId);
+                    List<Model> models = await _wizard.GetModelsAsync(model.ManufacturerId ?? 0);
                     model.SetModels(models);
                 }
 

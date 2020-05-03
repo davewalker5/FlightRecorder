@@ -64,6 +64,10 @@
                 <div class="input-group">
                     <strong>@Html.TextBoxFor(m => m.NewLocation)</strong>
                 </div>
+                @if (!string.IsNullOrEmpty(Model.LocationErrorMessage))
+                {
+                    <span class="text-danger">@Html.Raw(Model.LocationErrorMessage)</span>
+                }
             </div>
         </div>
         <br />

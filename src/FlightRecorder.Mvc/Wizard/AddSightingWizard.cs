@@ -188,7 +188,7 @@ namespace FlightRecorder.Mvc.Wizard
                 model.Age = DateTime.Now.Year - aircraft.Manufactured;
 
                 // Load the models for the aircraft's manufacturer
-                List<Model> models = await GetModelsAsync(model.ManufacturerId);
+                List<Model> models = await GetModelsAsync(model.ManufacturerId ?? 0);
                 model.SetModels(models);
             }
 
@@ -304,7 +304,7 @@ namespace FlightRecorder.Mvc.Wizard
                 // Otherwise, we need to create a new aircraft
                 if (details.AircraftId > 0)
                 {
-                    aircraft = await _aircraft.GetAircraftByIdAsync(details.AircraftId);
+                    aircraft = await _aircraft.GetAircraftByIdAsync(details.AircraftId ?? 0);
                 }
                 else
                 {
@@ -318,13 +318,13 @@ namespace FlightRecorder.Mvc.Wizard
                     else if (details.ModelId == 0)
                     {
                         // With no model selected, we're creating a new model for the selected manufacturer
-                        Model model = await _models.AddModelAsync(details.NewModel, details.ManufacturerId);
+                        Model model = await _models.AddModelAsync(details.NewModel, details.ManufacturerId ?? 0);
                         details.ModelId = model.Id;
                     }
 
                     // Create the aircraft
-                    int manufactured = DateTime.Now.Year - details.Age;
-                    aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId);
+                    int manufactured = DateTime.Now.Year - (details.Age ?? 0);
+                    aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId ?? 0);
                 }
             }
 

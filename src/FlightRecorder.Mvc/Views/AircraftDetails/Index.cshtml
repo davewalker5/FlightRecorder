@@ -1,5 +1,146 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.AircraftDetailsViewModel
+
 @{
+    ViewData["Title"] = "Log Sighting : Aircraft Details";
 }
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Registration)
+
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Log New Sighting > Aircraft Details</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Registration)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Registration, new { @class = "form-control", @disabled = "" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.SerialNumber)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @if (Model.AircraftId == null)
+                    {
+                        @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", @disabled = "" })
+                        @Html.HiddenFor(m => m.SerialNumber)
+                    }
+                    <span>@Html.ValidationMessageFor(m => m.SerialNumber, "", new { @class = "text-danger" })</span>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Age)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @if (Model.AircraftId == null)
+                    {
+                        @Html.TextBoxFor(m => m.Age, new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Age, new { @class = "form-control", @disabled = "" })
+                        @Html.HiddenFor(m => m.Age)
+                    }
+                    <span>@Html.ValidationMessageFor(m => m.Age, "", new { @class = "text-danger" })</span>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.ManufacturerId)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @if (Model.AircraftId == null)
+                    {
+                        @Html.DropDownListFor(m => m.ManufacturerId, new List<SelectListItem>(Model.Manufacturers), new { @class = "form-control" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.ManufacturerId, new List<SelectListItem>(Model.Manufacturers), new { @class = "form-control", @disabled = "" })
+                        @Html.HiddenFor(m => m.ManufacturerId)
+                    }
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div id="ModelsList" class="row">
+        </div>
+        <hr />
+
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary">Next</button>
+        </p>
+    }
+</div>
+
+<script type="text/javascript">
+    function LoadModelsForManufacturer(manufacturerId) {
+        if (manufacturerId > 0) {
+            var route = "/AircraftDetails/Models?manufacturerId=" + manufacturerId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#ModelsList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#ModelsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#ModelsList").html("");
+        }
+    }
+
+    $(document).ready(function () {
+        // If the page is loaded with a manufacturer selected, load their models
+        var manufacturerId = $("#ManufacturerId").val();
+        if (manufacturerId > 0) {
+            LoadModelsForManufacturer(manufacturerId);
+        }
+
+        // Respond to change events on the manufacturer list by clearing the current model selection
+        // and loading the models for the new selection
+        $("#ManufacturerId").change(function () {
+            var manufacturerId = $("#ManufacturerId").val();
+            $("#ModelId").val("");
+            LoadModelsForManufacturer(manufacturerId);
+        });
+    });
+</script>

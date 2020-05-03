@@ -51,9 +51,11 @@ namespace FlightRecorder.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(FlightDetailsViewModel model)
         {
-            IActionResult result = null;
+            IActionResult result;
+            string newAirline = (model.NewAirline ?? "").Trim();
+            bool haveAirline = (model.AirlineId > 0) || !string.IsNullOrEmpty(newAirline);
 
-            if (ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
+            if (haveAirline && ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
             {
                 _wizard.CacheFlightDetailsModel(model);
                 result = RedirectToAction("Index", "AircraftDetails");
@@ -65,6 +67,11 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                if (!haveAirline)
+                {
+                    model.AirlineErrorMessage = "You must select an airline or give a new airline name";
+                }
+
                 List<Flight> flights = await _wizard.GetFlightsAsync(model.FlightNumber);
                 model.SetFlights(flights);
 

@@ -9,7 +9,7 @@ namespace FlightRecorder.Mvc.Models
 {
     public class AircraftDetailsViewModel
     {
-        public int AircraftId { get; set; }
+        public int? AircraftId { get; set; }
 
         [DisplayName("Aircraft Registration")]
         [Required(ErrorMessage = "You must provide an aircraft registration")]
@@ -21,16 +21,16 @@ namespace FlightRecorder.Mvc.Models
 
         [DisplayName("Age")]
         [Range(0, int.MaxValue, ErrorMessage = "You must provide an aircraft age")]
-        public int Age { get; set; }
+        public int? Age { get; set; }
 
         [DisplayName("Manufacturer")]
-        public int ManufacturerId { get; set; }
+        public int? ManufacturerId { get; set; }
 
         [DisplayName("New Manufacturer")]
         public string NewManufacturer { get; set; }
 
         [DisplayName("Model")]
-        public int ModelId { get; set; }
+        public int? ModelId { get; set; }
 
         [DisplayName("New Model")]
         public string NewModel { get; set; }

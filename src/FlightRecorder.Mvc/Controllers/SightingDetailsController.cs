@@ -39,14 +39,21 @@ namespace FlightRecorder.Mvc.Controllers
         public async Task<IActionResult> Index(SightingDetailsViewModel model)
         {
             IActionResult result;
+            string newLocation = (model.NewLocation ?? "").Trim();
+            bool haveLocation = (model.LocationId > 0) || !string.IsNullOrEmpty(newLocation);
 
-            if (ModelState.IsValid)
+            if (haveLocation && ModelState.IsValid)
             {
                 _wizard.CacheSightingDetailsModel(model);
                 result = RedirectToAction("Index", "FlightDetails", new { number = model.FlightNumber });
             }
             else
             {
+                if (!haveLocation)
+                {
+                    model.LocationErrorMessage = "You must select a location or give a new location name";
+                }
+
                 List<Location> locations = await _wizard.GetLocationsAsync();
                 model.SetLocations(locations);
                 result = View(model);

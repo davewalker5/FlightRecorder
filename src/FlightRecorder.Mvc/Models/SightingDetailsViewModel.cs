@@ -32,8 +32,8 @@ namespace FlightRecorder.Mvc.Models
         [Required(ErrorMessage = "You must provide an aircraft registration")]
         public string Registration { get; set; }
 
+        public string LocationErrorMessage { get; set; }
         public string Action { get; set; }
-
         public List<SelectListItem> Locations { get; set; }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace FlightRecorder.Mvc.Models
             // Add the default selection, which is empty
             Locations = new List<SelectListItem>()
             {
-                new SelectListItem{ Value = "", Text = "" }
+                new SelectListItem{ Value = "0", Text = "" }
             };
 
             // Add the drones retrieved from the service

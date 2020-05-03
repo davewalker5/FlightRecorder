@@ -16,9 +16,11 @@ namespace FlightRecorder.Mvc.Models
         public int FlightId { get; set; }
 
         [DisplayName("Embarkation")]
+        [Required(ErrorMessage = "You must provide a point of embarkation")]
         public string Embarkation { get; set; }
 
         [DisplayName("Destination")]
+        [Required(ErrorMessage = "You must provide a destination airport")]
         public string Destination { get; set; }
 
         [DisplayName("Airline")]
@@ -28,7 +30,7 @@ namespace FlightRecorder.Mvc.Models
         public string NewAirline { get; set; }
 
         public string Action { get; set; }
-
+        public string AirlineErrorMessage { get; set; }
         public List<SelectListItem> Flights { get; set; }
         public List<SelectListItem> Airlines { get; set; }
 

@@ -50,6 +50,7 @@
                 <div class="input-group">
                     @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control" })
                 </div>
+                <span>@Html.ValidationMessageFor(m => m.Embarkation, "", new { @class = "text-danger" })</span>
             </div>
         </div>
         <br />
@@ -63,6 +64,7 @@
                 <div class="input-group">
                     @Html.TextBoxFor(m => m.Destination, new { @class = "form-control" })
                 </div>
+                <span>@Html.ValidationMessageFor(m => m.Destination, "", new { @class = "text-danger" })</span>
             </div>
         </div>
         <br />
@@ -87,6 +89,10 @@
                 <div class="input-group">
                     @Html.TextBoxFor(m => m.NewAirline, new { @class = "form-control" })
                 </div>
+                @if (!string.IsNullOrEmpty(Model.AirlineErrorMessage))
+                {
+                    <span class="text-danger">@Html.Raw(Model.AirlineErrorMessage)</span>
+                }
             </div>
         </div>
         <hr />
