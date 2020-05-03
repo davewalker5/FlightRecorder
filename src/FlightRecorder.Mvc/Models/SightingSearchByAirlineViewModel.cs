@@ -28,12 +28,15 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Airlines.AddRange(arlines.Select(a =>
-                                new SelectListItem
-                                {
-                                    Value = a.Id.ToString(),
-                                    Text = $"{a.Name}"
-                                }));
+            if (Airlines != null)
+            {
+                Airlines.AddRange(arlines.Select(a =>
+                                    new SelectListItem
+                                    {
+                                        Value = a.Id.ToString(),
+                                        Text = $"{a.Name}"
+                                    }));
+            }
         }
     }
 }

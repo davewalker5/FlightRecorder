@@ -85,6 +85,14 @@ namespace FlightRecorder.Mvc.Wizard
             => await _models.GetModelsAsync(manufacturerId);
 
         /// <summary>
+        /// Return the details of the flight with the specified Id
+        /// </summary>
+        /// <param name="flightId"></param>
+        /// <returns></returns>
+        public async Task<Flight> GetFlightAsync(int flightId)
+            => await _flights.GetFlightByIdAsync(flightId);
+
+        /// <summary>
         /// Retrieve or construct the sighting details model
         /// </summary>
         /// <returns></returns>
@@ -203,7 +211,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// <param name="model"></param>
         public void CacheFlightDetailsModel(FlightDetailsViewModel model)
         {
-            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            string key = GetCacheKey(FlightDetailsKeyPrefix);
             _cache.Set<FlightDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
         }
 
@@ -268,7 +276,7 @@ namespace FlightRecorder.Mvc.Wizard
                 }
 
                 // Create the sighting
-                sighting = await _sightings.AddSightingAsync(details.Date, details.Altitude, aircraft.Id, flight.Id, details.LocationId);
+                sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
             }
 
             // Clear the cached data

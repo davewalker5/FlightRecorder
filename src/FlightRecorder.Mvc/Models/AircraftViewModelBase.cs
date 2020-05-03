@@ -47,12 +47,15 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Manufacturers.AddRange(manufacturers.Select(m =>
-                                    new SelectListItem
-                                    {
-                                        Value = m.Id.ToString(),
-                                        Text = $"{m.Name}"
-                                    }));
+            if (manufacturers != null)
+            {
+                Manufacturers.AddRange(manufacturers.Select(m =>
+                                        new SelectListItem
+                                        {
+                                            Value = m.Id.ToString(),
+                                            Text = $"{m.Name}"
+                                        }));
+            }
         }
 
         /// <summary>
@@ -68,12 +71,15 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Models.AddRange(models.Select(m =>
-                            new SelectListItem
-                            {
-                                Value = m.Id.ToString(),
-                                Text = $"{m.Name}"
-                            }));
+            if (models != null)
+            {
+                Models.AddRange(models.Select(m =>
+                                new SelectListItem
+                                {
+                                    Value = m.Id.ToString(),
+                                    Text = $"{m.Name}"
+                                }));
+            }
         }
     }
 }

@@ -40,21 +40,15 @@ namespace FlightRecorder.Mvc.Controllers
         {
             IActionResult result = null;
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
             {
-                switch (model.Action)
-                {
-                    case ControllerActions.ActionPreviousPage:
-                        _wizard.ClearCachedAircraftDetailsModel();
-                        result = RedirectToAction("Index", "FlightDetails");
-                        break;
-                    case ControllerActions.ActionNextPage:
-                        _wizard.CacheAircraftDetailsModel(model);
-                        // TODO : Redirect
-                        break;
-                    default:
-                        break;
-                }
+                _wizard.CacheAircraftDetailsModel(model);
+                // TODO : Redirect
+            }
+            else if (model.Action == ControllerActions.ActionPreviousPage)
+            {
+                _wizard.ClearCachedAircraftDetailsModel();
+                result = RedirectToAction("Index", "FlightDetails");
             }
             else
             {

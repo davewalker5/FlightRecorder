@@ -12,11 +12,11 @@ namespace FlightRecorder.Mvc.Models
     {
         [DisplayName("Date")]
         [Required(ErrorMessage = "You must provide a date for the sighting")]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         [DisplayName("Altitude")]
         [Required(ErrorMessage = "You must provide an altitude")]
-        public int Altitude { get; set; }
+        public int? Altitude { get; set; }
 
         [DisplayName("Location")]
         public int LocationId { get; set; }
@@ -49,12 +49,15 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Locations.AddRange(locations.Select(x =>
-                                new SelectListItem
-                                {
-                                    Value = x.Id.ToString(),
-                                    Text = $"{x.Name}"
-                                }));
+            if (locations != null)
+            {
+                Locations.AddRange(locations.Select(x =>
+                                    new SelectListItem
+                                    {
+                                        Value = x.Id.ToString(),
+                                        Text = $"{x.Name}"
+                                    }));
+            }
         }
     }
 }

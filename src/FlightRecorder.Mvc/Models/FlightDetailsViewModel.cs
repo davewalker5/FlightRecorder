@@ -10,16 +10,15 @@ namespace FlightRecorder.Mvc.Models
     public class FlightDetailsViewModel
     {
         [DisplayName("Flight Number")]
-        [Required(ErrorMessage = "You must provide a flight number")]
         public string FlightNumber { get; set; }
 
-        [DisplayName("Flight Id")]
+        [DisplayName("Flight")]
         public int FlightId { get; set; }
 
-        [DisplayName("Registration")]
+        [DisplayName("Embarkation")]
         public string Embarkation { get; set; }
 
-        [DisplayName("Registration")]
+        [DisplayName("Destination")]
         public string Destination { get; set; }
 
         [DisplayName("Airline")]
@@ -46,19 +45,22 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Flights.AddRange(flights.Select(x =>
-                                new SelectListItem
-                                {
-                                    Value = x.Id.ToString(),
-                                    Text = $"{x.Embarkation} - {x.Destination} - {x.Airline.Name}"
-                                }));
+            if (flights != null)
+            {
+                Flights.AddRange(flights.Select(x =>
+                                    new SelectListItem
+                                    {
+                                        Value = x.Id.ToString(),
+                                        Text = $"{x.Embarkation} - {x.Destination} - {x.Airline.Name}"
+                                    }));
+            }
         }
 
         /// <summary>
         /// Set the options for the airlines drop-down list
         /// </summary>
         /// <param name="arlines"></param>
-        public void SetAirlines(List<Airline> arlines)
+        public void SetAirlines(List<Airline> airlines)
         {
             // Add the default selection, which is empty
             Airlines = new List<SelectListItem>()
@@ -67,12 +69,15 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Airlines.AddRange(arlines.Select(x =>
-                                new SelectListItem
-                                {
-                                    Value = x.Id.ToString(),
-                                    Text = $"{x.Name}"
-                                }));
+            if (airlines != null)
+            {
+                Airlines.AddRange(airlines.Select(x =>
+                                    new SelectListItem
+                                    {
+                                        Value = x.Id.ToString(),
+                                        Text = $"{x.Name}"
+                                    }));
+            }
         }
     }
 }

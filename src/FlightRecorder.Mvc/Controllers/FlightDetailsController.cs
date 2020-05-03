@@ -29,6 +29,19 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Return a JSON representation of the flight with the specified ID
+        /// </summary>
+        /// <param name="flightId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Produces("application/json")]
+        public async Task<IActionResult> FlightDetails(int flightId)
+        {
+            Flight flight = await _wizard.GetFlightAsync(flightId);
+            return Json(flight);
+        }
+
+        /// <summary>
         /// Handle POST events to cache flight details or move back to the sighting
         /// details page
         /// </summary>
@@ -40,21 +53,15 @@ namespace FlightRecorder.Mvc.Controllers
         {
             IActionResult result = null;
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
             {
-                switch (model.Action)
-                {
-                    case ControllerActions.ActionPreviousPage:
-                        _wizard.ClearCachedFlightDetailsModel();
-                        result = RedirectToAction("Index", "SightingDetails");
-                        break;
-                    case ControllerActions.ActionNextPage:
-                        _wizard.CacheFlightDetailsModel(model);
-                        result = RedirectToAction("Index", "AircraftDetails");
-                        break;
-                    default:
-                        break;
-                }
+                _wizard.CacheFlightDetailsModel(model);
+                result = RedirectToAction("Index", "AircraftDetails");
+            }
+            else if (model.Action == ControllerActions.ActionPreviousPage)
+            {
+                _wizard.ClearCachedFlightDetailsModel();
+                result = RedirectToAction("Index", "SightingDetails");
             }
             else
             {

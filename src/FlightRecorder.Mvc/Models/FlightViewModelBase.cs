@@ -32,8 +32,8 @@ namespace FlightRecorder.Mvc.Models
         /// <summary>
         /// Set the options for the airlines drop-down list
         /// </summary>
-        /// <param name="arlines"></param>
-        public void SetAirlines(List<Airline> arlines)
+        /// <param name="airlines"></param>
+        public void SetAirlines(List<Airline> airlines)
         {
             // Add the default selection, which is empty
             Airlines = new List<SelectListItem>()
@@ -42,12 +42,15 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add the drones retrieved from the service
-            Airlines.AddRange(arlines.Select(a =>
-                                new SelectListItem
-                                {
-                                    Value = a.Id.ToString(),
-                                    Text = $"{a.Name}"
-                                }));
+            if (airlines != null)
+            {
+                Airlines.AddRange(airlines.Select(a =>
+                                    new SelectListItem
+                                    {
+                                        Value = a.Id.ToString(),
+                                        Text = $"{a.Name}"
+                                    }));
+            }
         }
     }
 }
