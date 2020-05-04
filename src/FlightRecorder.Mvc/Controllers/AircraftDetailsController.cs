@@ -24,7 +24,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            AircraftDetailsViewModel model = await _wizard.GetAircraftDetailsModelAsync();
+            AircraftDetailsViewModel model = await _wizard.GetAircraftDetailsModelAsync(User.Identity.Name);
             return View(model);
         }
 
@@ -56,12 +56,12 @@ namespace FlightRecorder.Mvc.Controllers
 
             if (ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
             {
-                _wizard.CacheAircraftDetailsModel(model);
+                _wizard.CacheAircraftDetailsModel(model, User.Identity.Name);
                 result = RedirectToAction("Index", "ConfirmDetails");
             }
             else if (model.Action == ControllerActions.ActionPreviousPage)
             {
-                _wizard.ClearCachedAircraftDetailsModel();
+                _wizard.ClearCachedAircraftDetailsModel(User.Identity.Name);
                 result = RedirectToAction("Index", "FlightDetails");
             }
             else

@@ -100,17 +100,18 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Retrieve or construct the sighting details model
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync()
+        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName)
         {
             // Retrieve the model from the cache
-            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
             if (model == null)
             {
                 // Not cached, so create a new one and set the "last sighting added" message
-                string lastAdded = GetLastSightingAddedMessage();
-                ClearCachedLastSightingAddedMessage();
+                string lastAdded = GetLastSightingAddedMessage(userName);
+                ClearCachedLastSightingAddedMessage(userName);
                 model = new SightingDetailsViewModel { LastSightingAddedMessage = lastAdded };
             }
 
@@ -124,17 +125,18 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Retrieve or constuct the flight details model
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<FlightDetailsViewModel> GetFlightDetailsModelAsync()
+        public async Task<FlightDetailsViewModel> GetFlightDetailsModelAsync(string userName)
         {
             // Retrieve the model from the cache
-            string key = GetCacheKey(FlightDetailsKeyPrefix);
+            string key = GetCacheKey(FlightDetailsKeyPrefix,userName);
             FlightDetailsViewModel model = _cache.Get<FlightDetailsViewModel>(key);
             if (model == null)
             {
                 // Not cached, so create a new one, using the cached sighting details
                 // model to supply the flight number
-                key = GetCacheKey(SightingDetailsKeyPrefix);
+                key = GetCacheKey(SightingDetailsKeyPrefix, userName);
                 SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
                 model = new FlightDetailsViewModel{ FlightNumber = sighting.FlightNumber };
             }
@@ -164,17 +166,18 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Retrieve or constuct the flight details model
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<AircraftDetailsViewModel> GetAircraftDetailsModelAsync()
+        public async Task<AircraftDetailsViewModel> GetAircraftDetailsModelAsync(string userName)
         {
             // Retrieve the model from the cache
-            string key = GetCacheKey(AircraftDetailsKeyPrefix);
+            string key = GetCacheKey(AircraftDetailsKeyPrefix, userName);
             AircraftDetailsViewModel model = _cache.Get<AircraftDetailsViewModel>(key);
             if (model == null)
             {
                 // Not cached, so create a new one, using the cached sighting details
                 // model to supply the aircraft registration
-                key = GetCacheKey(SightingDetailsKeyPrefix);
+                key = GetCacheKey(SightingDetailsKeyPrefix, userName);
                 SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
                 model = new AircraftDetailsViewModel { Registration = sighting.Registration };
             }
@@ -205,22 +208,23 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Construct the model to confirm sighting details
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<ConfirmDetailsViewModel> GetConfirmDetailsModelAsync()
+        public async Task<ConfirmDetailsViewModel> GetConfirmDetailsModelAsync(string userName)
         {
             // Get the sighting, flight details and aircraft models and map them
             // into the confirm details model
             ConfirmDetailsViewModel model = new ConfirmDetailsViewModel();
 
-            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
             _mapper.Map<SightingDetailsViewModel, ConfirmDetailsViewModel>(sighting, model);
 
-            key = GetCacheKey(FlightDetailsKeyPrefix);
+            key = GetCacheKey(FlightDetailsKeyPrefix, userName);
             FlightDetailsViewModel flight = _cache.Get<FlightDetailsViewModel>(key);
             _mapper.Map<FlightDetailsViewModel, ConfirmDetailsViewModel>(flight, model);
 
-            key = GetCacheKey(AircraftDetailsKeyPrefix);
+            key = GetCacheKey(AircraftDetailsKeyPrefix, userName);
             AircraftDetailsViewModel aircraft = _cache.Get<AircraftDetailsViewModel>(key);
             _mapper.Map<AircraftDetailsViewModel, ConfirmDetailsViewModel>(aircraft, model);
 
@@ -277,97 +281,106 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Retrieve the message giving the details of the last sighting added
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        public string GetLastSightingAddedMessage()
+        public string GetLastSightingAddedMessage(string userName)
         {
-            string key = GetCacheKey(LastSightingAddedKeyPrefix);
+            string key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
             return _cache.Get<string>(key);
         }
 
         /// <summary>
         /// Cache the sighting details view model
         /// </summary>
+        /// <param name="userName"></param>
         /// <param name="model"></param>
-        public void CacheSightingDetailsModel(SightingDetailsViewModel model)
+        public void CacheSightingDetailsModel(SightingDetailsViewModel model, string userName)
         {
-            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             _cache.Set<SightingDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
         }
 
         /// <summary>
         /// Cache the flight details view model
         /// </summary>
+        /// <param name="userName"></param>
         /// <param name="model"></param>
-        public void CacheFlightDetailsModel(FlightDetailsViewModel model)
+        public void CacheFlightDetailsModel(FlightDetailsViewModel model, string userName)
         {
-            string key = GetCacheKey(FlightDetailsKeyPrefix);
+            string key = GetCacheKey(FlightDetailsKeyPrefix, userName);
             _cache.Set<FlightDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
         }
 
         /// <summary>
         /// Cache the aircraft details view model
         /// </summary>
+        /// <param name="userName"></param>
         /// <param name="model"></param>
-        public void CacheAircraftDetailsModel(AircraftDetailsViewModel model)
+        public void CacheAircraftDetailsModel(AircraftDetailsViewModel model, string userName)
         {
-            string key = GetCacheKey(AircraftDetailsKeyPrefix);
+            string key = GetCacheKey(AircraftDetailsKeyPrefix, userName);
             _cache.Set<AircraftDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
         }
 
         /// <summary>
         /// Clear the cached sighting details model
         /// </summary>
-        public void ClearCachedSightingDetailsModel()
+        /// <param name="userName"></param>
+        public void ClearCachedSightingDetailsModel(string userName)
         {
-            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             _cache.Remove(key);
         }
 
         /// <summary>
         /// Clear the cached flight details model
         /// </summary>
-        public void ClearCachedFlightDetailsModel()
+        /// <permission cref=">"
+        public void ClearCachedFlightDetailsModel(string userName)
         {
-            string key = GetCacheKey(FlightDetailsKeyPrefix);
+            string key = GetCacheKey(FlightDetailsKeyPrefix, userName);
             _cache.Remove(key);
         }
 
         /// <summary>
         /// Clear the cached flight details model
         /// </summary>
-        public void ClearCachedAircraftDetailsModel()
+        /// <param name="userName"></param>
+        public void ClearCachedAircraftDetailsModel(string userName)
         {
-            string key = GetCacheKey(AircraftDetailsKeyPrefix);
+            string key = GetCacheKey(AircraftDetailsKeyPrefix, userName);
             _cache.Remove(key);
         }
 
         /// <summary>
         /// Clear the last sighting added message from the cache
         /// </summary>
-        public void ClearCachedLastSightingAddedMessage()
+        /// <param name="userName"></param>
+        public void ClearCachedLastSightingAddedMessage(string userName)
         {
-            string key = GetCacheKey(LastSightingAddedKeyPrefix);
+            string key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
             _cache.Remove(key);
         }
 
         /// <summary>
         /// Create a new sighting
         /// </summary>
-        public async Task<Sighting> CreateSighting()
+        /// <param name="userName"></param>
+        public async Task<Sighting> CreateSighting(string userName)
         {
             Sighting sighting = null;
 
             // Clear the last sighting added message
-            ClearCachedLastSightingAddedMessage();
+            ClearCachedLastSightingAddedMessage(userName);
 
             // Retrieve the sighting details from the cache
-            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel details = _cache.Get<SightingDetailsViewModel>(key);
             if (details != null)
             {
                 // Create the aircraft and flight, first
-                Aircraft aircraft = await RetrieveOrCreateAircraft();
-                Flight flight = await RetrieveOrCreateFlight();
+                Aircraft aircraft = await RetrieveOrCreateAircraft(userName);
+                Flight flight = await RetrieveOrCreateFlight(userName);
 
                 // Create the location, if required
                 if (details.LocationId == 0)
@@ -382,12 +395,12 @@ namespace FlightRecorder.Mvc.Wizard
                                  $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
                                  $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
                                  $"has been added to the database";
-                key = GetCacheKey(LastSightingAddedKeyPrefix);
+                key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
                 _cache.Set<string>(key, message, _settings.Value.CacheLifetimeSeconds);
             }
 
             // Clear the cached data
-            Reset();
+            Reset(userName);
 
             return sighting;
         }
@@ -395,23 +408,25 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Reset the wizard by clearing the cached details models
         /// </summary>
-        public void Reset()
+        /// <param name="userName"></param>
+        public void Reset(string userName)
         {
-            ClearCachedSightingDetailsModel();
-            ClearCachedFlightDetailsModel();
-            ClearCachedAircraftDetailsModel();
+            ClearCachedSightingDetailsModel(userName);
+            ClearCachedFlightDetailsModel(userName);
+            ClearCachedAircraftDetailsModel(userName);
         }
 
         /// <summary>
         /// Either retrieve an existing aircraft or create a new one
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        private async Task<Aircraft> RetrieveOrCreateAircraft()
+        private async Task<Aircraft> RetrieveOrCreateAircraft(string userName)
         {
             Aircraft aircraft = null;
 
             // Retrieve the aircraft details from the cache
-            string key = GetCacheKey(AircraftDetailsKeyPrefix);
+            string key = GetCacheKey(AircraftDetailsKeyPrefix, userName);
             AircraftDetailsViewModel details = _cache.Get<AircraftDetailsViewModel>(key);
             if (details != null)
             {
@@ -449,13 +464,14 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Either retrieve an existing flight or create a new one
         /// </summary>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        private async Task<Flight> RetrieveOrCreateFlight()
+        private async Task<Flight> RetrieveOrCreateFlight(string userName)
         {
             Flight flight = null;
 
             // Retrieve the flight details from the cache
-            string key = GetCacheKey(FlightDetailsKeyPrefix);
+            string key = GetCacheKey(FlightDetailsKeyPrefix, userName);
             FlightDetailsViewModel details = _cache.Get<FlightDetailsViewModel>(key);
             if (details != null)
             {
@@ -485,11 +501,12 @@ namespace FlightRecorder.Mvc.Wizard
         /// <summary>
         /// Construct a key for caching data
         /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="prefix"></param>
         /// <returns></returns>
-        private string GetCacheKey(string prefix)
+        private string GetCacheKey(string prefix, string userName)
         {
-            // TODO : Append session-specific value
-            string key = $"{prefix}.";
+            string key = $"{prefix}.{userName}";
             return key;
         }
     }

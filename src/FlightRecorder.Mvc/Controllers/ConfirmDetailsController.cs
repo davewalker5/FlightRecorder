@@ -23,7 +23,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ConfirmDetailsViewModel model = await _wizard.GetConfirmDetailsModelAsync();
+            ConfirmDetailsViewModel model = await _wizard.GetConfirmDetailsModelAsync(User.Identity.Name);
             return View(model);
         }
 
@@ -42,7 +42,7 @@ namespace FlightRecorder.Mvc.Controllers
             switch (viewModel.Action)
             {
                 case ControllerActions.ActionNextPage:
-                    await _wizard.CreateSighting();
+                    await _wizard.CreateSighting(User.Identity.Name);
                     result = RedirectToAction("Index", "SightingDetails");
                     break;
                 case ControllerActions.ActionPreviousPage:

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,7 @@ namespace FlightRecorder.Mvc.Controllers
         {
             // If we hit the home page via this action method, reset the add sighting wizard
             // as we're starting from scratch with a new entry
-            _wizard.Reset();
+            _wizard.Reset(User.Identity.Name);
             return RedirectToAction("Index", "SightingDetails");
         }
 
