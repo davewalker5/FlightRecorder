@@ -50,7 +50,7 @@ namespace FlightRecorder.Mvc.Models
             // Add the default selection, which is empty
             Manufacturers = new List<SelectListItem>()
             {
-                new SelectListItem{ Value = "", Text = "" }
+                new SelectListItem{ Value = "0", Text = "" }
             };
 
             // Add the drones retrieved from the service
@@ -74,7 +74,7 @@ namespace FlightRecorder.Mvc.Models
             // Add the default selection, which is empty
             Models = new List<SelectListItem>()
             {
-                new SelectListItem{ Value = "", Text = "" }
+                new SelectListItem{ Value = "0", Text = "" }
             };
 
             // Add the drones retrieved from the service

@@ -94,8 +94,37 @@
             </div>
             <br />
 
-            <div id="ModelsList" class="row">
+            @if (Model.AircraftId == null)
+            {
+                <div class="row">
+                    <div class="col">
+                        <strong>@Html.LabelFor(m => m.NewManufacturer)</strong>
+                    </div>
+                    <div class="col">
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.NewManufacturer, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <br />
+            }
+
+            <div id="ModelsList">
             </div>
+
+            @if (Model.AircraftId == null)
+            {
+                <div class="row">
+                    <div class="col">
+                        <strong>@Html.LabelFor(m => m.NewModel)</strong>
+                    </div>
+                    <div class="col">
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.NewModel, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
             <hr />
 
             <p class="text-right">
@@ -148,12 +177,24 @@
         }
 
         // Respond to change events on the manufacturer list by clearing the current model selection
-        // and loading the models for the new selection
+        // and new manufacturer and model entries and loading the models for the new selection
         $("#ManufacturerId").change(function () {
             var manufacturerId = $("#ManufacturerId").val();
             $("#DropDownModelId").val("");
             $("#ModelId").val("");
+            $("#NewManufacturer").val("");
+            $("#NewModel").val("");
             LoadModelsForManufacturer(manufacturerId);
+        });
+
+        // Respond to change events on the "new manufacturer" field by clearing the manufacturer
+        // and model selections
+        $("#NewManufacturer").change(function () {
+            $("#ManufacturerId").val("");
+            $("#DropDownModelId").val("");
+            $("#ModelId").val("");
+            $("#NewModel").val("");
+            $("#ModelsList").html("");
         });
     });
 </script>

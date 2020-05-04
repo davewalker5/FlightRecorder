@@ -252,7 +252,7 @@ namespace FlightRecorder.Mvc.Wizard
             }
 
             // Repeat the above logic for the manufacturer
-            if (aircraft.ManufacturerId == 0)
+            if ((aircraft.ManufacturerId ?? 0) == 0)
             {
                 model.Manufacturer = aircraft.NewManufacturer;
             }
@@ -264,7 +264,7 @@ namespace FlightRecorder.Mvc.Wizard
             }
 
             // Repeat the above logic for the model
-            if (aircraft.ModelId == 0)
+            if ((aircraft.ModelId ?? 0) == 0)
             {
                 model.Model = aircraft.NewModel;
             }
@@ -438,14 +438,14 @@ namespace FlightRecorder.Mvc.Wizard
                 }
                 else
                 {
-                    if (details.ManufacturerId == 0)
+                    if ((details.ManufacturerId ?? 0) == 0)
                     {
                         // With no manufacturer selected, we're creating a new manufacturer and model
                         Manufacturer manufacturer = await _manufacturers.AddManufacturerAsync(details.NewManufacturer);
                         Model model = await _models.AddModelAsync(details.NewModel, manufacturer.Id);
                         details.ModelId = model.Id;
                     }
-                    else if (details.ModelId == 0)
+                    else if ((details.ModelId ?? 0) == 0)
                     {
                         // With no model selected, we're creating a new model for the selected manufacturer
                         Model model = await _models.AddModelAsync(details.NewModel, details.ManufacturerId ?? 0);

@@ -1,13 +1,16 @@
 ﻿@model FlightRecorder.Mvc.Models.AircraftDetailsViewModel
 
-<div class="col">
-    <strong>@Html.LabelFor(m => m.ModelId)</strong>
-</div>
-<div class="col">
-    <div class="input-group">
-        @Html.DropDownListFor(m => m.DropDownModelId, Model.Models, new { @class = "form-control" })
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.ModelId)</strong>
+    </div>
+    <div class="col">
+        <div class="input-group">
+            @Html.DropDownListFor(m => m.DropDownModelId, Model.Models, new { @class = "form-control" })
+        </div>
     </div>
 </div>
+<br/>
 
 <script type="text/javascript">
     // We have two fields representing the model ID. One is the drop-down, and the other is a
