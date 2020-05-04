@@ -17,6 +17,16 @@
         </div>
         <hr />
 
+        @if (!string.IsNullOrEmpty(Model.LastSightingAddedMessage))
+        {
+            <div class="row">
+                <div class="col-md">
+                    <span>@Html.Raw(Model.LastSightingAddedMessage)</span>
+                </div>
+            </div>
+            <hr />
+        }
+
         <div class="row">
             <div class="col">
                 <strong>@Html.LabelFor(m => m.Date)</strong>

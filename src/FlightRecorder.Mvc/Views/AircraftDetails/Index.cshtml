@@ -9,6 +9,7 @@
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.AircraftId)
             @Html.HiddenFor(m => m.Registration)
             @Html.HiddenFor(m => m.ModelId)
 

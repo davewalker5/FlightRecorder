@@ -14,9 +14,10 @@ namespace FlightRecorder.Mvc.Wizard
 {
     public class AddSightingWizard
     {
-        private const string SightingDetailsKeyPrefix = "SightingDetails";
-        private const string FlightDetailsKeyPrefix = "FlightDetails";
-        private const string AircraftDetailsKeyPrefix = "AircraftDetails";
+        private const string SightingDetailsKeyPrefix = "Wizard.SightingDetails";
+        private const string FlightDetailsKeyPrefix = "Wizard.FlightDetails";
+        private const string AircraftDetailsKeyPrefix = "Wizard.AircraftDetails";
+        private const string LastSightingAddedKeyPrefix = "Wizard.LastSightingAdded";
 
         private LocationClient _locations;
         private FlightClient _flights;
@@ -107,8 +108,10 @@ namespace FlightRecorder.Mvc.Wizard
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
             if (model == null)
             {
-                // Not cached, so create a new one
-                model = new SightingDetailsViewModel();
+                // Not cached, so create a new one and set the "last sighting added" message
+                string lastAdded = GetLastSightingAddedMessage();
+                ClearCachedLastSightingAddedMessage();
+                model = new SightingDetailsViewModel { LastSightingAddedMessage = lastAdded };
             }
 
             // Set the available locations
@@ -272,6 +275,16 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
+        /// Retrieve the message giving the details of the last sighting added
+        /// </summary>
+        /// <returns></returns>
+        public string GetLastSightingAddedMessage()
+        {
+            string key = GetCacheKey(LastSightingAddedKeyPrefix);
+            return _cache.Get<string>(key);
+        }
+
+        /// <summary>
         /// Cache the sighting details view model
         /// </summary>
         /// <param name="model"></param>
@@ -329,11 +342,23 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
+        /// Clear the last sighting added message from the cache
+        /// </summary>
+        public void ClearCachedLastSightingAddedMessage()
+        {
+            string key = GetCacheKey(LastSightingAddedKeyPrefix);
+            _cache.Remove(key);
+        }
+
+        /// <summary>
         /// Create a new sighting
         /// </summary>
         public async Task<Sighting> CreateSighting()
         {
             Sighting sighting = null;
+
+            // Clear the last sighting added message
+            ClearCachedLastSightingAddedMessage();
 
             // Retrieve the sighting details from the cache
             string key = GetCacheKey(SightingDetailsKeyPrefix);
@@ -351,16 +376,30 @@ namespace FlightRecorder.Mvc.Wizard
                     details.LocationId = location.Id;
                 }
 
-                // Create the sighting
+                // Create the sighting and cache the message giving its details
                 sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                string message = $"Your sighting of flight {sighting.Flight.Number}, " +
+                                 $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
+                                 $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
+                                 $"has been added to the database";
+                key = GetCacheKey(LastSightingAddedKeyPrefix);
+                _cache.Set<string>(key, message, _settings.Value.CacheLifetimeSeconds);
             }
 
             // Clear the cached data
+            Reset();
+
+            return sighting;
+        }
+
+        /// <summary>
+        /// Reset the wizard by clearing the cached details models
+        /// </summary>
+        public void Reset()
+        {
             ClearCachedSightingDetailsModel();
             ClearCachedFlightDetailsModel();
             ClearCachedAircraftDetailsModel();
-
-            return sighting;
         }
 
         /// <summary>
