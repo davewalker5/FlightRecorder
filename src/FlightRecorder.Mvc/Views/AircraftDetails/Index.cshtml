@@ -121,9 +121,9 @@
                     // disable  the model list as this page is not designed to edit existing aircraft
                     var modelId = parseInt("@Model.ModelId");
                     if (modelId > 0) {
-                        $("#DropDownModelId").val(modelId);
                         $("#ModelId").val(modelId);
-                        $("#ModelId").prop("disabled", true);
+                        $("#DropDownModelId").val(modelId);
+                        $("#DropDownModelId").prop("disabled", true);
                     }
 
                     $('html, body').css("cursor", "auto");
@@ -150,6 +150,7 @@
         // and loading the models for the new selection
         $("#ManufacturerId").change(function () {
             var manufacturerId = $("#ManufacturerId").val();
+            $("#DropDownModelId").val("");
             $("#ModelId").val("");
             LoadModelsForManufacturer(manufacturerId);
         });

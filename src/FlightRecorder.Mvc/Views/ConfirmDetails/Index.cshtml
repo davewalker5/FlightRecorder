@@ -18,12 +18,19 @@
             <hr />
 
             <div class="row">
+                <div class="col-md">
+                    <span><strong>Sighting Details:</strong></span>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
                 <div class="col">
                     <strong>@Html.LabelFor(m => m.Date)</strong>
                 </div>
                 <div class="col">
                     <div class="input-group">
-                        @Html.TextBox(Model.Date.ToString("dd-MMM-yyyy"), new { @class = "form-control", @disabled = "" })
+                        @Html.TextBox("Date", Model.Date.ToString("dd-MMM-yyyy"), new { @class = "form-control", @disabled = "" })
                     </div>
                 </div>
             </div>
@@ -49,6 +56,13 @@
                     <div class="input-group">
                         @Html.TextBoxFor(m => m.Location, new { @class = "form-control", @disabled = "" })
                     </div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col-md">
+                    <span><strong>Flight Details:</strong></span>
                 </div>
             </div>
             <hr />
@@ -98,6 +112,13 @@
                     <div class="input-group">
                         @Html.TextBoxFor(m => m.Airline, new { @class = "form-control", @disabled = "" })
                     </div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col-md">
+                    <span><strong>Aircraft Details:</strong></span>
                 </div>
             </div>
             <hr />
