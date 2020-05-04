@@ -1,5 +1,170 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.ConfirmDetailsViewModel
+
 @{
+    ViewData["Title"] = "Log Sighting : Confirm Details";
 }
+
+    <div class="container-fluid">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <div class="col-md">
+                    <span style="font-size: 1.2rem"><strong>Log New Sighting > Confirm Details</strong></span>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Date)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBox(Model.Date.ToString("dd-MMM-yyyy"), new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Altitude)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Altitude, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Location)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Location, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.FlightNumber, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Embarkation)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control", @disabled = "" })
+                    </div>
+
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Destination)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Destination, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Airline)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Airline, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Registration)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Registration, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.SerialNumber)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Age)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Age, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Manufacturer)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Manufacturer, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col">
+                    <strong>@Html.LabelFor(m => m.Model)</strong>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.Model, new { @class = "form-control", @disabled = "" })
+                    </div>
+                </div>
+            </div>
+            <hr />
+
+            <p class="text-right">
+                <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
+                <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary">Save</button>
+            </p>
+        }
+    </div>

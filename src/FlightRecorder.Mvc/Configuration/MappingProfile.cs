@@ -41,6 +41,24 @@ namespace FlightRecorder.Mvc.Configuration
                 .ForMember(m => m.Embarkation, x => x.MapFrom(m => m.Embarkation))
                 .ForMember(m => m.FlightNumber, x => x.MapFrom(m => m.Number))
                 .ForMember(m => m.Id, x => x.MapFrom(m => m.Id));
+
+            CreateMap<SightingDetailsViewModel, ConfirmDetailsViewModel>()
+                .ForMember(m => m.Altitude, x => x.MapFrom(m => m.Altitude))
+                .ForMember(m => m.Date, x => x.MapFrom(m => m.Date));
+
+            CreateMap<SightingDetailsViewModel, ConfirmDetailsViewModel>()
+                .ForMember(m => m.Altitude, x => x.MapFrom(m => m.Altitude))
+                .ForMember(m => m.Date, x => x.MapFrom(m => m.Date));
+
+            CreateMap<FlightDetailsViewModel, ConfirmDetailsViewModel>()
+                .ForMember(m => m.FlightNumber, x => x.MapFrom(m => m.FlightNumber))
+                .ForMember(m => m.Embarkation, x => x.MapFrom(m => m.Embarkation))
+                .ForMember(m => m.Destination, x => x.MapFrom(m => m.Destination));
+
+            CreateMap<AircraftDetailsViewModel, ConfirmDetailsViewModel>()
+                .ForMember(m => m.Registration, x => x.MapFrom(m => m.Registration))
+                .ForMember(m => m.SerialNumber, x => x.MapFrom(m => m.SerialNumber))
+                .ForMember(m => m.Age, x => x.MapFrom(m => m.Age));
         }
     }
 }

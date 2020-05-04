@@ -1,10 +1,21 @@
-﻿@model FlightRecorder.Mvc.Models.ListAircraftViewModel
+﻿@model FlightRecorder.Mvc.Models.AircraftDetailsViewModel
 
 <div class="col">
     <strong>@Html.LabelFor(m => m.ModelId)</strong>
 </div>
 <div class="col">
     <div class="input-group">
-        @Html.DropDownListFor(m => m.ModelId, Model.Models, new { @class = "form-control" })
+        @Html.DropDownListFor(m => m.DropDownModelId, Model.Models, new { @class = "form-control" })
     </div>
 </div>
+
+<script type="text/javascript">
+    // We have two fields representing the model ID. One is the drop-down, and the other is a
+    // hidden field into which drop-down selections are written. This arrangement ensures the
+    // (hidden) model ID will always be POSTed back, even if the models drop-down is disabled
+    // (which is the case when displaying existing aircraft)
+    $("#DropDownModelId").change(function () {
+        var modelId = $("#DropDownModelId").val();
+        $("#ModelId").val(modelId);
+    });
+</script>

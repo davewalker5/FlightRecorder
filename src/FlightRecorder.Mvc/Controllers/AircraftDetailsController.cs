@@ -36,7 +36,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Models(int manufacturerId)
         {
-            ListAircraftViewModel model = new ListAircraftViewModel();
+            AircraftDetailsViewModel model = new AircraftDetailsViewModel();
             List<Model> aircraftModels = await _wizard.GetModelsAsync(manufacturerId);
             model.SetModels(aircraftModels);
             return PartialView(model);
@@ -57,7 +57,7 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid && (model.Action == ControllerActions.ActionNextPage))
             {
                 _wizard.CacheAircraftDetailsModel(model);
-                // TODO : Redirect
+                result = RedirectToAction("Index", "ConfirmDetails");
             }
             else if (model.Action == ControllerActions.ActionPreviousPage)
             {

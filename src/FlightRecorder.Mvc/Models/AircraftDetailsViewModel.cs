@@ -31,6 +31,7 @@ namespace FlightRecorder.Mvc.Models
 
         [DisplayName("Model")]
         public int? ModelId { get; set; }
+        public int? DropDownModelId { get; set; }
 
         [DisplayName("New Model")]
         public string NewModel { get; set; }

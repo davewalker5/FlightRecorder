@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using FlightRecorder.Mvc.Api;
 using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
@@ -26,6 +27,7 @@ namespace FlightRecorder.Mvc.Wizard
         private SightingClient _sightings;
         private ICacheWrapper _cache;
         private IOptions<AppSettings> _settings;
+        private readonly IMapper _mapper;
 
         public AddSightingWizard(LocationClient locations,
                                  FlightClient flights,
@@ -35,7 +37,8 @@ namespace FlightRecorder.Mvc.Wizard
                                  AircraftClient aircraft,
                                  SightingClient sightings,
                                  IOptions<AppSettings> settings,
-                                 ICacheWrapper cache)
+                                 ICacheWrapper cache,
+                                 IMapper mapper)
         {
             _locations = locations;
             _flights = flights;
@@ -46,6 +49,7 @@ namespace FlightRecorder.Mvc.Wizard
             _sightings = sightings;
             _settings = settings;
             _cache = cache;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -190,6 +194,78 @@ namespace FlightRecorder.Mvc.Wizard
                 // Load the models for the aircraft's manufacturer
                 List<Model> models = await GetModelsAsync(model.ManufacturerId ?? 0);
                 model.SetModels(models);
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Construct the model to confirm sighting details
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ConfirmDetailsViewModel> GetConfirmDetailsModelAsync()
+        {
+            // Get the sighting, flight details and aircraft models and map them
+            // into the confirm details model
+            ConfirmDetailsViewModel model = new ConfirmDetailsViewModel();
+
+            string key = GetCacheKey(SightingDetailsKeyPrefix);
+            SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
+            _mapper.Map<SightingDetailsViewModel, ConfirmDetailsViewModel>(sighting, model);
+
+            key = GetCacheKey(FlightDetailsKeyPrefix);
+            FlightDetailsViewModel flight = _cache.Get<FlightDetailsViewModel>(key);
+            _mapper.Map<FlightDetailsViewModel, ConfirmDetailsViewModel>(flight, model);
+
+            key = GetCacheKey(AircraftDetailsKeyPrefix);
+            AircraftDetailsViewModel aircraft = _cache.Get<AircraftDetailsViewModel>(key);
+            _mapper.Map<AircraftDetailsViewModel, ConfirmDetailsViewModel>(aircraft, model);
+
+            // For the location, if we have a new location specified then use that as the
+            // location. Otherwise, look up the location by its ID
+            if (sighting.LocationId == 0)
+            {
+                model.Location = sighting.NewLocation;
+            }
+            else
+            {
+                Location location = await _locations.GetLocationAsync(sighting.LocationId);
+                model.Location = location.Name;
+            }
+
+            // Repeat the above logic for the airline
+            if (flight.AirlineId == 0)
+            {
+                model.Airline = flight.NewAirline;
+            }
+            else
+            {
+                Airline airline = await _airlines.GetAirlineAsync(flight.AirlineId);
+                model.Airline = airline.Name;
+            }
+
+            // Repeat the above logic for the manufacturer
+            if (aircraft.ManufacturerId == 0)
+            {
+                model.Manufacturer = aircraft.NewManufacturer;
+            }
+            else
+            {
+                int manufacturerId = aircraft.ManufacturerId ?? 0;
+                Manufacturer manufacturer = await _manufacturers.GetManufacturerAsync(manufacturerId);
+                model.Manufacturer = manufacturer.Name;
+            }
+
+            // Repeat the above logic for the model
+            if (aircraft.ModelId == 0)
+            {
+                model.Model = aircraft.NewModel;
+            }
+            else
+            {
+                int modelId = aircraft.ModelId ?? 0;
+                Model aircraftModel = await _models.GetModelAsync(modelId);
+                model.Model = aircraftModel.Name;
             }
 
             return model;
