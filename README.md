@@ -9,11 +9,11 @@
 
 ## About
 
-TO BE COMPLETED
+FlightRecorder.Mvc is a C# .NET Core MVC UI for accessing a [Flight Recorder Db](https://github.com/davewalker5/FlightRecorderDb) instance using the [Flight Recorder Web API](https://github.com/davewalker5/FlightRecorder.Api). Further details of the database are provided in the [Flight Recorder Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki).
 
 ## Getting Started
 
-TO BE COMPLETED
+The [Flight Recorder Wiki](https://github.com/davewalker5/The [Drone Flight Log Wiki](https://github.com/davewalker5/DroneFlightLogDb/wiki) contains further details on how to build and run the UI.Db/wiki) contains further details on how to build and run the UI.
 
 ## Authors
 
@@ -21,7 +21,7 @@ TO BE COMPLETED
 
 ## Credits
 
-The Drone Flight Log MVC project uses the Gijgo JavaScript controls library:
+The Flight Recorder MVC project uses the Gijgo JavaScript controls library:
 
 - https://gijgo.com
 
