@@ -9,7 +9,7 @@ namespace FlightRecorder.Mvc.Controllers
 {
     public class LoginController : Controller
     {
-        public const string TokenSessionKey = "Token";
+        public const string TokenSessionKey = "FlightRecorder.Token";
         public const string LoginPath = "/login";
 
         private readonly AuthenticationClient _client;
