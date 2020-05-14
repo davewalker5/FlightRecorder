@@ -6,9 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FlightRecorder.BusinessLogic\FlightRecorder.BusinessLogic.csproj" />
-    <ProjectReference Include="..\FlightRecorder.Entities\FlightRecorder.Entities.csproj" />
+    <Folder Include="Entities\" />
+    <Folder Include="Logic\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\FlightRecorder.Data\FlightRecorder.Data.csproj" />
+    <ProjectReference Include="..\FlightRecorder.BusinessLogic\FlightRecorder.BusinessLogic.csproj" />
+    <ProjectReference Include="..\FlightRecorder.DataExchange\FlightRecorder.DataExchange.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
