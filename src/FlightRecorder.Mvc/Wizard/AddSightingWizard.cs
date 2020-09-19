@@ -150,6 +150,19 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
+        /// Get the sighting ID for the current sighting being edited, which will
+        /// be null for new sightings
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public int? GetCurrentSightingId(string userName)
+        {
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
+            return model?.SightingId;
+        }
+
+        /// <summary>
         /// Retrieve or constuct the flight details model
         /// </summary>
         /// <param name="userName"></param>
