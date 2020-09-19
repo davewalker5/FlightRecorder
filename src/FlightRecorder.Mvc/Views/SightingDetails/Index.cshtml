@@ -2,23 +2,25 @@
 @model FlightRecorder.Mvc.Models.SightingDetailsViewModel
 
 @{
-    ViewData["Title"] = "Log Sighting : Sighting Details";
+    ViewData["Title"] = "Sighting : Sighting Details";
     var defaultDate = (Model.Date ?? DateTime.Now).ToString("MM/dd/yyyy");
 }
+
 
 <div class="container-fluid">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.SightingId)
 
         <div class="row">
             <div class="col-md">
-                <span style="font-size: 1.2rem"><strong>Log New Sighting > Sighting Details</strong></span>
+                <span style="font-size: 1.2rem"><strong>Sighting : Sighting Details</strong></span>
             </div>
         </div>
         <hr />
 
-        @if (!string.IsNullOrEmpty(Model.LastSightingAddedMessage))
+        @if (!string.IsNullOrEmpty(Model.LastSightingAddedMessage) && (Model.SightingId == null))
         {
             <div class="row">
                 <div class="col-md">
@@ -115,12 +117,10 @@
     }
 </div>
 
-<script type="text/javascript">
-
-    $(document).ready(function () {
-        // If a location is selected from the drop-down, clear the "new location"
-        // text box
-        $("#LocationId").change(function () {
+<script type="text/javascript">$(document).ready(function () {
+    // If a location is selected from the drop-down, clear the "new location"
+    // text box
+    $("#LocationId").change(function () {
             $("#NewLocation").val("");
         });
 

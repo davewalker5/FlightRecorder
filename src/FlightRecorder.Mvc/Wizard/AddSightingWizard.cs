@@ -104,23 +104,42 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName)
+        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName, int? sightingId)
         {
             // Retrieve the model from the cache
             string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
-            if (model == null)
+            if ((model == null) || (model.SightingId != sightingId))
             {
-                // Not cached, so create a new one and set the "last sighting added" message
+                // Not cached or the ID has changed, so create a new one and set the "last sighting added" message
                 string lastAdded = GetLastSightingAddedMessage(userName);
                 ClearCachedLastSightingAddedMessage(userName);
 
-                model = new SightingDetailsViewModel
+                // If an existing sighting is specified, construct the model using its
+                // details
+                if (sightingId != null)
                 {
-                    LastSightingAddedMessage = lastAdded,
-                    Date = GetDefaultDate(userName),
-                    LocationId = GetDefaultLocationId(userName)
-                };
+                    Sighting sighting = await _sightings.GetSightingAsync(sightingId ?? 0);
+                    model = new SightingDetailsViewModel
+                    {
+                        SightingId = sightingId,
+                        LastSightingAddedMessage = lastAdded,
+                        Altitude = sighting.Altitude,
+                        Date = sighting.Date,
+                        FlightNumber = sighting.Flight.Number,
+                        LocationId = sighting.LocationId,
+                        Registration = sighting.Aircraft.Registration
+                    };
+                }
+                else
+                {
+                    model = new SightingDetailsViewModel
+                    {
+                        LastSightingAddedMessage = lastAdded,
+                        Date = GetDefaultDate(userName),
+                        LocationId = GetDefaultLocationId(userName)
+                    };
+                }
             }
 
             // Set the available locations
@@ -397,12 +416,25 @@ namespace FlightRecorder.Mvc.Wizard
                     details.LocationId = location.Id;
                 }
 
-                // Create the sighting
-                sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
-                string message = $"Your sighting of flight {sighting.Flight.Number}, " +
-                                 $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
-                                 $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
-                                 $"has been added to the database";
+                // If an existing sighting is being edited, then update it. Otherwise, create
+                // a new one
+                string message;
+                if (details.SightingId != null)
+                {
+                    sighting = await _sightings.UpdateSightingAsync(details.SightingId ?? 0, details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                    message = $"Your sighting of flight {sighting.Flight.Number}, " +
+                                    $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
+                                    $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
+                                    $"has been updated";
+                }
+                else
+                {
+                    sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                    message = $"Your sighting of flight {sighting.Flight.Number}, " +
+                                     $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
+                                     $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
+                                     $"has been added to the database";
+                }
 
                 // Cache the message giving its details and other properties that are
                 // cached to improve data entry speed

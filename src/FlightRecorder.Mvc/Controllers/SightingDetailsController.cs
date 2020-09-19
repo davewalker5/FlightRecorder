@@ -21,11 +21,12 @@ namespace FlightRecorder.Mvc.Controllers
         /// <summary>
         /// Serve the sighting details entry page
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id = null)
         {
-            SightingDetailsViewModel model = await _wizard.GetSightingDetailsModelAsync(User.Identity.Name);
+            SightingDetailsViewModel model = await _wizard.GetSightingDetailsModelAsync(User.Identity.Name, id);
             return View(model);
         }
 
