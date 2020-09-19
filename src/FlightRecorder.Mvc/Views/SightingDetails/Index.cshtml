@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Log Sighting : Sighting Details";
+    var defaultDate = (Model.Date ?? DateTime.Now).ToString("MM/dd/yyyy");
 }
 
 <div class="container-fluid">
@@ -33,8 +34,8 @@
             </div>
             <div class="col">
                 <div class="input-group">
-                    @Html.EditorFor(m => m.Date, new { @class = "form-control" })
-                    <script type="text/javascript">new GijgoDatePicker(document.getElementById("Date"), { calendarWeeks: false, uiLibrary: "bootstrap4" });</script>
+                    @Html.Editor("Date", null, new { @class = "form-control" })
+                    <script type="text/javascript">new GijgoDatePicker(document.getElementById("Date"), { calendarWeeks: false, uiLibrary: "bootstrap4", value: "@defaultDate" });</script>
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.Date, "", new { @class = "text-danger" })</span>
             </div>
