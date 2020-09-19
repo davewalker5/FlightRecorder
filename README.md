@@ -31,7 +31,7 @@ Each sighting consists of the following data:
 
 ## Getting Started
 
-Please see the [Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki) for details on how to reference and use the Drone Flight Log business logic and how to get started with a database to hold the data.
+Please see the [Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki) for details on how to reference and use the Flight Recorder business logic and how to get started with a database to hold the data.
 
 ## Authors
 
