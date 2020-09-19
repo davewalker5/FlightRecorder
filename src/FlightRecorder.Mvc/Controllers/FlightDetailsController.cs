@@ -63,7 +63,8 @@ namespace FlightRecorder.Mvc.Controllers
             else if (model.Action == ControllerActions.ActionPreviousPage)
             {
                 _wizard.ClearCachedFlightDetailsModel(User.Identity.Name);
-                result = RedirectToAction("Index", "SightingDetails");
+                int? sightingId = _wizard.GetCurrentSightingId(User.Identity.Name);
+                result = RedirectToAction("Index", "SightingDetails", new { Id = sightingId });
             }
             else
             {

@@ -10,6 +10,8 @@ namespace FlightRecorder.Mvc.Models
 {
     public class SightingDetailsViewModel
     {
+        public int? SightingId { get; set; }
+
         [DisplayName("Date")]
         [Required(ErrorMessage = "You must provide a date for the sighting")]
         public DateTime? Date { get; set; }

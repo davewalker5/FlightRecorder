@@ -18,6 +18,8 @@ namespace FlightRecorder.Mvc.Wizard
         private const string FlightDetailsKeyPrefix = "Wizard.FlightDetails";
         private const string AircraftDetailsKeyPrefix = "Wizard.AircraftDetails";
         private const string LastSightingAddedKeyPrefix = "Wizard.LastSightingAdded";
+        private const string DefaultDateKeyPrefix = "Wizard.DefaultDate";
+        private const string DefaultLocationKeyPrefix = "Wizard.DefaultLocation";
 
         private LocationClient _locations;
         private FlightClient _flights;
@@ -102,17 +104,42 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName)
+        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName, int? sightingId)
         {
             // Retrieve the model from the cache
             string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
-            if (model == null)
+            if ((model == null) || (model.SightingId != sightingId))
             {
-                // Not cached, so create a new one and set the "last sighting added" message
+                // Not cached or the ID has changed, so create a new one and set the "last sighting added" message
                 string lastAdded = GetLastSightingAddedMessage(userName);
                 ClearCachedLastSightingAddedMessage(userName);
-                model = new SightingDetailsViewModel { LastSightingAddedMessage = lastAdded };
+
+                // If an existing sighting is specified, construct the model using its
+                // details
+                if (sightingId != null)
+                {
+                    Sighting sighting = await _sightings.GetSightingAsync(sightingId ?? 0);
+                    model = new SightingDetailsViewModel
+                    {
+                        SightingId = sightingId,
+                        LastSightingAddedMessage = lastAdded,
+                        Altitude = sighting.Altitude,
+                        Date = sighting.Date,
+                        FlightNumber = sighting.Flight.Number,
+                        LocationId = sighting.LocationId,
+                        Registration = sighting.Aircraft.Registration
+                    };
+                }
+                else
+                {
+                    model = new SightingDetailsViewModel
+                    {
+                        LastSightingAddedMessage = lastAdded,
+                        Date = GetDefaultDate(userName),
+                        LocationId = GetDefaultLocationId(userName)
+                    };
+                }
             }
 
             // Set the available locations
@@ -120,6 +147,19 @@ namespace FlightRecorder.Mvc.Wizard
             model.SetLocations(locations);
 
             return model;
+        }
+
+        /// <summary>
+        /// Get the sighting ID for the current sighting being edited, which will
+        /// be null for new sightings
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public int? GetCurrentSightingId(string userName)
+        {
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
+            return model?.SightingId;
         }
 
         /// <summary>
@@ -389,14 +429,36 @@ namespace FlightRecorder.Mvc.Wizard
                     details.LocationId = location.Id;
                 }
 
-                // Create the sighting and cache the message giving its details
-                sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
-                string message = $"Your sighting of flight {sighting.Flight.Number}, " +
-                                 $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
-                                 $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
-                                 $"has been added to the database";
+                // If an existing sighting is being edited, then update it. Otherwise, create
+                // a new one
+                string message;
+                if (details.SightingId != null)
+                {
+                    sighting = await _sightings.UpdateSightingAsync(details.SightingId ?? 0, details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                    message = $"Your sighting of flight {sighting.Flight.Number}, " +
+                                    $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
+                                    $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
+                                    $"has been updated";
+                }
+                else
+                {
+                    sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                    message = $"Your sighting of flight {sighting.Flight.Number}, " +
+                                     $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
+                                     $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
+                                     $"has been added to the database";
+                }
+
+                // Cache the message giving its details and other properties that are
+                // cached to improve data entry speed
                 key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
                 _cache.Set<string>(key, message, _settings.Value.CacheLifetimeSeconds);
+
+                key = GetCacheKey(DefaultDateKeyPrefix, userName);
+                _cache.Set<DateTime>(key, sighting.Date, _settings.Value.CacheLifetimeSeconds);
+
+                key = GetCacheKey(DefaultLocationKeyPrefix, userName);
+                _cache.Set<int>(key, sighting.LocationId, _settings.Value.CacheLifetimeSeconds);
             }
 
             // Clear the cached data
@@ -496,6 +558,33 @@ namespace FlightRecorder.Mvc.Wizard
             }
 
             return flight;
+        }
+
+        /// <summary>
+        /// The sighting date is cached between entries to speed up multiple
+        /// entries on the same date. If it's not been cached yet, it defaults
+        /// to today
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        private DateTime GetDefaultDate(string userName)
+        {
+            string key = GetCacheKey(DefaultDateKeyPrefix, userName);
+            DateTime? defaultDate = _cache.Get<DateTime?>(key);
+            return defaultDate ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+        }
+
+        /// <summary>
+        /// The sighting location is cached between entries to speed up multiple
+        /// entries at the same location
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        private int GetDefaultLocationId(string userName)
+        {
+            string key = GetCacheKey(DefaultLocationKeyPrefix, userName);
+            int? locationId = _cache.Get<int?>(key);
+            return locationId ?? 0;
         }
 
         /// <summary>
