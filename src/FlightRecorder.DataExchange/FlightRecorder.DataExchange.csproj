@@ -3,17 +3,19 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>FlightRecorder.DataExchange</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackageVersion>1.0.0.1</PackageVersion>
     <Authors>Dave Walker</Authors>
-    <Copyright>Copyright (c) Dave Walker 2020</Copyright>
+    <Copyright>Copyright (c) Dave Walker 2020, 2021</Copyright>
     <Owners>Dave Walker</Owners>
-    <PackageReleaseNotes>First Release</PackageReleaseNotes>
+    <PackageReleaseNotes>Dependency updates</PackageReleaseNotes>
     <Summary>Flight Recorder Data Exchange Tools</Summary>
     <PackageTags>FlightRecorder data exchange CSV</PackageTags>
     <Title>Flight Recorder Data Exchange Tools</Title>
     <Description>FlightRecorder Data Exchange Tools</Description>
     <PackOnBuild>true</PackOnBuild>
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
