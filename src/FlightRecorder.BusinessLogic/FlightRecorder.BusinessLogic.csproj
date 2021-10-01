@@ -3,18 +3,19 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>FlightRecorder.BusinessLogic</PackageId>
-    <PackageVersion>1.0.0.3</PackageVersion>
+    <PackageVersion>1.0.0.4</PackageVersion>
     <Authors>Dave Walker</Authors>
-    <Copyright>Copyright (c) Dave Walker 2020</Copyright>
+    <Copyright>Copyright (c) Dave Walker 2020, 2021</Copyright>
     <Owners>Dave Walker</Owners>
-    <PackageReleaseNotes>Refactored base class for business logic
-Added asynchronous data management methods</PackageReleaseNotes>
+    <PackageReleaseNotes>Dependency updates</PackageReleaseNotes>
     <Summary>Flight Recorder Business Logic</Summary>
     <PackageTags>FlightRecorder logic</PackageTags>
     <Title>Flight Recorder Business Logic</Title>
     <Description>FlightRecorder business logic</Description>
     <PackOnBuild>true</PackOnBuild>
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,7 +31,7 @@ Added asynchronous data management methods</PackageReleaseNotes>
     <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Linq.Async" Version="4.1.1" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
   </ItemGroup>
 </Project>
