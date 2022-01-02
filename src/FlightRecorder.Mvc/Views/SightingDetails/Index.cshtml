@@ -36,8 +36,15 @@
             </div>
             <div class="col">
                 <div class="input-group">
-                    @Html.Editor("Date", null, new { @class = "form-control" })
-                    <script type="text/javascript">new GijgoDatePicker(document.getElementById("Date"), { calendarWeeks: false, uiLibrary: "bootstrap4", value: "@defaultDate" });</script>
+                    @Html.TextBox("Date", null, new { @class = "form-control" })
+                    <script type="text/javascript">
+                        new GijgoDatePicker(document.getElementById("Date"), {
+                            calendarWeeks: false,
+                            uiLibrary: "bootstrap4",
+                            format: "mm/dd/yyyy",
+                            value: "@defaultDate"
+                        });
+                    </script>
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.Date, "", new { @class = "text-danger" })</span>
             </div>
