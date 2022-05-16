@@ -8,6 +8,7 @@ using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {

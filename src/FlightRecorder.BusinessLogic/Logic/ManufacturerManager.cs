@@ -80,10 +80,10 @@ namespace FlightRecorder.BusinessLogic.Logic
             IAsyncEnumerable<Manufacturer> results;
             if (predicate == null)
             {
-                results = _context.Manufacturers;
-                results = results.Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize)
-                                 .AsAsyncEnumerable();
+                results = _context.Manufacturers
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .AsAsyncEnumerable();
             }
             else
             {
