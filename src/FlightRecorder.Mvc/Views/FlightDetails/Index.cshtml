@@ -99,7 +99,7 @@
 
         <p class="text-right">
             <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
-            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary">Next</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Next</button>
         </p>
     }
 </div>
@@ -160,6 +160,15 @@
         $("#NewAirline").change(function() {
             $("#AirlineId").val("");
             $("#FlightId").val("");
+        });
+
+        // Capture the ENTER key and click the primary button instead
+        $(document).keypress(function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $(".btn-primary").click();
+                return false;
+            }
         });
     });
 </script>
