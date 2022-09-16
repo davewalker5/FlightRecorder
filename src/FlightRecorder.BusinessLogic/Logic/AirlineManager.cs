@@ -13,7 +13,7 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class AirlineManager : IAirlineManager
     {
-        private FlightRecorderDbContext _context;
+        private readonly FlightRecorderDbContext _context;
 
         internal AirlineManager(FlightRecorderDbContext context)
         {
@@ -62,7 +62,7 @@ namespace FlightRecorder.BusinessLogic.Logic
                 results = _context.Airlines
                                   .Where(predicate)
                                   .Skip((pageNumber - 1) * pageSize)
-                                  .Take(pageSize); ;
+                                  .Take(pageSize);
             }
 
             return results;

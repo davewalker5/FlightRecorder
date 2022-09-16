@@ -19,22 +19,19 @@ namespace FlightRecorder.Manager.Logic
         {
             Operation op = new Operation();
 
-            if (args.Length > 0)
+            // Attempt to parse out the operation type from the first argument
+            if ((args.Length > 0) && (Enum.TryParse<OperationType>(args[0], out OperationType type)))
             {
-                // Attempt to parse out the operation type from the first argument
-                if (Enum.TryParse<OperationType>(args[0], out OperationType type))
-                {
-                    // Check there are sufficient arguments for this operation
-                    op.Type = type;
-                    int requiredArgumentCount = _requiredArgumentCount[(int)type];
+                // Check there are sufficient arguments for this operation
+                op.Type = type;
+                int requiredArgumentCount = _requiredArgumentCount[(int)type];
 
-                    // All is OK at this point if the argument count is correct
-                    op.Valid = (args.Length == requiredArgumentCount);
-                    if (op.Valid)
-                    {
-                        // Extract the arguments
-                        AssignOperationParameters(op, args);
-                    }
+                // All is OK at this point if the argument count is correct
+                op.Valid = (args.Length == requiredArgumentCount);
+                if (op.Valid)
+                {
+                    // Extract the arguments
+                    AssignOperationParameters(op, args);
                 }
             }
 
@@ -47,20 +44,17 @@ namespace FlightRecorder.Manager.Logic
         /// </summary>
         /// <param name="op"></param>
         /// <param name="args"></param>
-        private void AssignOperationParameters(Operation op, string[] args)
+        private static void AssignOperationParameters(Operation op, string[] args)
         {
             switch (op.Type)
             {
+                case OperationType.setpassword:
                 case OperationType.add:
                     op.UserName = args[1];
                     op.Password = args[2];
                     break;
                 case OperationType.delete:
                     op.UserName = args[1];
-                    break;
-                case OperationType.setpassword:
-                    op.UserName = args[1];
-                    op.Password = args[2];
                     break;
                 case OperationType.import:
                     op.FileName = args[1];

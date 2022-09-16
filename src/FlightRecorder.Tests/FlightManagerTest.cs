@@ -24,7 +24,7 @@ namespace FlightRecorder.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
             _factory.Flights.Add(FlightNumber, Embarkation, Destination, AirlineName);
         }
@@ -92,7 +92,7 @@ namespace FlightRecorder.Tests
             List<Flight> flights = await _factory.Flights
                                                  .ListAsync(null, 1, 100)
                                                  .ToListAsync();
-            Assert.AreEqual(1, flights.Count());
+            Assert.AreEqual(1, flights.Count);
             Assert.AreEqual(FlightNumber, flights.First().Number);
             Assert.AreEqual(AirlineName, flights.First().Airline.Name);
         }
@@ -112,7 +112,7 @@ namespace FlightRecorder.Tests
             List<Flight> flights = await _factory.Flights
                                                  .ListAsync(e => e.Number == FlightNumber, 1, 100)
                                                  .ToListAsync();
-            Assert.AreEqual(1, flights.Count());
+            Assert.AreEqual(1, flights.Count);
             Assert.AreEqual(FlightNumber, flights.First().Number);
             Assert.AreEqual(AirlineName, flights.First().Airline.Name);
         }
@@ -139,7 +139,7 @@ namespace FlightRecorder.Tests
             IAsyncEnumerable<Flight> matches = await _factory.Flights
                                                              .ListByAirlineAsync(AirlineName, 1, 100);
             List<Flight> flights = await matches.ToListAsync();
-            Assert.AreEqual(1, flights.Count());
+            Assert.AreEqual(1, flights.Count);
             Assert.AreEqual(FlightNumber, flights.First().Number);
             Assert.AreEqual(AirlineName, flights.First().Airline.Name);
         }

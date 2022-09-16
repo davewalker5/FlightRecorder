@@ -10,7 +10,7 @@ using FlightRecorder.DataExchange;
 
 namespace FlightRecorder.Manager
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {

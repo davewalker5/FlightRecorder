@@ -13,7 +13,7 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class LocationManager : ILocationManager
     {
-        private FlightRecorderDbContext _context;
+        private readonly FlightRecorderDbContext _context;
 
         internal LocationManager(FlightRecorderDbContext context)
         {

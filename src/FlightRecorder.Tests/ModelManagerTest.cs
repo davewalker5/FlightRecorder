@@ -20,7 +20,7 @@ namespace FlightRecorder.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
             _factory.Models.Add(ModelName, ManufacturerName);
         }
@@ -84,7 +84,7 @@ namespace FlightRecorder.Tests
             List<Model> models = await _factory.Models
                                                .ListAsync(null, 1, 100)
                                                .ToListAsync();
-            Assert.AreEqual(1, models.Count());
+            Assert.AreEqual(1, models.Count);
             Assert.AreEqual(ModelName, models.First().Name);
             Assert.AreEqual(ManufacturerName, models.First().Manufacturer.Name);
         }
@@ -105,7 +105,7 @@ namespace FlightRecorder.Tests
             List<Model> models = await _factory.Models
                                                .ListAsync(e => e.Name == ModelName, 1, 100)
                                                .ToListAsync();
-            Assert.AreEqual(1, models.Count());
+            Assert.AreEqual(1, models.Count);
             Assert.AreEqual(ModelName, models.First().Name);
             Assert.AreEqual(ManufacturerName, models.First().Manufacturer.Name);
         }
@@ -132,7 +132,7 @@ namespace FlightRecorder.Tests
             List<Model> models = await _factory.Models
                                                .ListByManufacturerAsync(ManufacturerName, 1, 100)
                                                .ToListAsync();
-            Assert.AreEqual(1, models.Count());
+            Assert.AreEqual(1, models.Count);
             Assert.AreEqual(ModelName, models.First().Name);
             Assert.AreEqual(ManufacturerName, models.First().Manufacturer.Name);
         }

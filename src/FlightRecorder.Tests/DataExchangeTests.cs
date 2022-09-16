@@ -35,7 +35,7 @@ namespace FlightRecorder.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
             _sightingId = _factory.Sightings.Add(new FlattenedSighting
             {

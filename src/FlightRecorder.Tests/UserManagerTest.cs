@@ -23,7 +23,7 @@ namespace FlightRecorder.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
 
             User user = _factory.Users.AddUser(UserName, Password);
@@ -110,7 +110,7 @@ namespace FlightRecorder.Tests
         public async Task GetAllUsersAsyncTest()
         {
             List<User> users = await _factory.Users.GetUsersAsync().ToListAsync();
-            Assert.AreEqual(1, users.Count());
+            Assert.AreEqual(1, users.Count);
             Assert.AreEqual(UserName, _factory.Context.Users.First().UserName);
             Assert.AreNotEqual(Password, _factory.Context.Users.First().Password);
         }

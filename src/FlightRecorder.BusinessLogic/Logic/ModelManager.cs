@@ -13,7 +13,7 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class ModelManager : IModelManager
     {
-        private FlightRecorderFactory _factory;
+        private readonly FlightRecorderFactory _factory;
 
         internal ModelManager(FlightRecorderFactory factory)
         {

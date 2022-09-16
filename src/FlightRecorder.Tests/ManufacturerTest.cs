@@ -19,7 +19,7 @@ namespace FlightRecorder.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
             _factory.Manufacturers.Add(EntityName);
         }
@@ -75,7 +75,7 @@ namespace FlightRecorder.Tests
             List<Manufacturer> entities = await _factory.Manufacturers
                                                         .ListAsync(null, 1, 100)
                                                         .ToListAsync();
-            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(1, entities.Count);
             Assert.AreEqual(EntityName, entities.First().Name);
         }
 
@@ -94,7 +94,7 @@ namespace FlightRecorder.Tests
             List<Manufacturer> entities = await _factory.Manufacturers
                                                         .ListAsync(e => e.Name == EntityName, 1, 100)
                                                         .ToListAsync();
-            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(1, entities.Count);
             Assert.AreEqual(EntityName, entities.First().Name);
         }
 
