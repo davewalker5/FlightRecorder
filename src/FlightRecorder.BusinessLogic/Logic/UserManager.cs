@@ -14,7 +14,7 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     public class UserManager : IUserManager
     {
-        private Lazy<PasswordHasher<string>> _hasher;
+        private readonly Lazy<PasswordHasher<string>> _hasher;
         private readonly FlightRecorderDbContext _context;
 
         public UserManager(FlightRecorderDbContext context)

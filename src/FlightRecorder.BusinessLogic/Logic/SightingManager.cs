@@ -16,7 +16,7 @@ namespace FlightRecorder.BusinessLogic.Logic
     {
         private const int AllFlightsPageSize = 1000000;
 
-        private FlightRecorderFactory _factory;
+        private readonly FlightRecorderFactory _factory;
 
         internal SightingManager(FlightRecorderFactory factory)
         {

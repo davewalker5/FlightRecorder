@@ -13,7 +13,7 @@ namespace FlightRecorder.BusinessLogic.Logic
 {
     internal class ManufacturerManager : IManufacturerManager
     {
-        private FlightRecorderDbContext _context;
+        private readonly FlightRecorderDbContext _context;
 
         internal ManufacturerManager(FlightRecorderDbContext context)
         {

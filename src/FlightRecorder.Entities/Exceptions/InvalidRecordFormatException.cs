@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace FlightRecorder.Entities.Exceptions
 {
@@ -16,6 +17,10 @@ namespace FlightRecorder.Entities.Exceptions
         }
 
         public InvalidRecordFormatException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected InvalidRecordFormatException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
         {
         }
     }
