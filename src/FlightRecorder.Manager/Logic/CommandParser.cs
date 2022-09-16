@@ -56,7 +56,6 @@ namespace FlightRecorder.Manager.Logic
                 case OperationType.delete:
                     op.UserName = args[1];
                     break;
-                    break;
                 case OperationType.import:
                     op.FileName = args[1];
                     break;
