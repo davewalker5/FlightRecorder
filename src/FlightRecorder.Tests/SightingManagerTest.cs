@@ -141,7 +141,7 @@ namespace FlightRecorder.Tests
             List<Sighting> sightings = await _factory.Sightings
                                                      .ListAsync(null, 1, 100)
                                                      .ToListAsync();
-            Assert.AreEqual(1, sightings.Count());
+            Assert.AreEqual(1, sightings.Count);
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
 
@@ -159,7 +159,7 @@ namespace FlightRecorder.Tests
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
                                                                .ListByAircraftAsync(Registration, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
-            Assert.AreEqual(1, sightings.Count());
+            Assert.AreEqual(1, sightings.Count);
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
 
@@ -192,7 +192,7 @@ namespace FlightRecorder.Tests
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
                                                                .ListByRouteAsync(Embarkation, Destination, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
-            Assert.AreEqual(1, sightings.Count());
+            Assert.AreEqual(1, sightings.Count);
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
 
@@ -225,7 +225,7 @@ namespace FlightRecorder.Tests
             IAsyncEnumerable<Sighting> matches = await _factory.Sightings
                                                                .ListByAirlineAsync(AirlineName, 1, 100);
             List<Sighting> sightings = await matches.ToListAsync();
-            Assert.AreEqual(1, sightings.Count());
+            Assert.AreEqual(1, sightings.Count);
             Assert.AreEqual(_sightingId, sightings.First().Id);
         }
 

@@ -110,7 +110,7 @@ namespace FlightRecorder.Tests
         public async Task GetAllUsersAsyncTest()
         {
             List<User> users = await _factory.Users.GetUsersAsync().ToListAsync();
-            Assert.AreEqual(1, users.Count());
+            Assert.AreEqual(1, users.Count);
             Assert.AreEqual(UserName, _factory.Context.Users.First().UserName);
             Assert.AreNotEqual(Password, _factory.Context.Users.First().Password);
         }

@@ -72,7 +72,7 @@ namespace FlightRecorder.Tests
             List<Airline> entities = await _factory.Airlines
                                                    .ListAsync(null, 1, 100)
                                                    .ToListAsync();
-            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(1, entities.Count);
             Assert.AreEqual(EntityName, entities.First().Name);
         }
 
@@ -90,7 +90,7 @@ namespace FlightRecorder.Tests
             List<Airline> entities = await _factory.Airlines
                                                    .ListAsync(e => e.Name == EntityName, 1, 100)
                                                    .ToListAsync();
-            Assert.AreEqual(1, entities.Count());
+            Assert.AreEqual(1, entities.Count);
             Assert.AreEqual(EntityName, entities.First().Name);
         }
 

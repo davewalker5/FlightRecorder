@@ -94,7 +94,7 @@ namespace FlightRecorder.Tests
             List<Aircraft> aircraft = await _factory.Aircraft
                                                     .ListAsync(null, 1, 100)
                                                     .ToListAsync();
-            Assert.AreEqual(1, aircraft.Count());
+            Assert.AreEqual(1, aircraft.Count);
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
             Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
@@ -116,7 +116,7 @@ namespace FlightRecorder.Tests
             List<Aircraft> aircraft = await _factory.Aircraft
                                                     .ListAsync(e => e.Registration == Registration, 1, 100)
                                                     .ToListAsync();
-            Assert.AreEqual(1, aircraft.Count());
+            Assert.AreEqual(1, aircraft.Count);
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
             Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
@@ -138,7 +138,7 @@ namespace FlightRecorder.Tests
             IAsyncEnumerable<Aircraft> matches = await _factory.Aircraft
                                                                .ListByModelAsync(ModelName, 1, 100);
             List<Aircraft> aircraft = await matches.ToListAsync();
-            Assert.AreEqual(1, aircraft.Count());
+            Assert.AreEqual(1, aircraft.Count);
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
             Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
@@ -160,7 +160,7 @@ namespace FlightRecorder.Tests
             IAsyncEnumerable<Aircraft> matches = await _factory.Aircraft
                                                                .ListByManufacturerAsync(ManufacturerName, 1, 100);
             List<Aircraft> aircraft = await matches.ToListAsync();
-            Assert.AreEqual(1, aircraft.Count());
+            Assert.AreEqual(1, aircraft.Count);
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
             Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
