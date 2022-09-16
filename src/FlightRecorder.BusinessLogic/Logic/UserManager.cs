@@ -215,7 +215,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="user"></param>
         /// <param name="userId"></param>
         [ExcludeFromCodeCoverage]
-        private void ThrowIfUserNotFound(User user, object userId)
+        private static void ThrowIfUserNotFound(User user, object userId)
         {
             if (user == null)
             {
@@ -230,7 +230,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="user"></param>
         /// <param name="userId"></param>
         [ExcludeFromCodeCoverage]
-        private void ThrowIfUserFound(User user, object userId)
+        private static void ThrowIfUserFound(User user, object userId)
         {
             if (user != null)
             {

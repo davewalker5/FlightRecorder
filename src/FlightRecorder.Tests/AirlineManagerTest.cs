@@ -19,7 +19,7 @@ namespace FlightRecorder.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateInMemoryDbContext();
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
             _factory.Airlines.Add(EntityName);
         }

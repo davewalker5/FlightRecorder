@@ -44,7 +44,7 @@ namespace FlightRecorder.Manager.Logic
         /// </summary>
         /// <param name="op"></param>
         /// <param name="args"></param>
-        private void AssignOperationParameters(Operation op, string[] args)
+        private static void AssignOperationParameters(Operation op, string[] args)
         {
             switch (op.Type)
             {

@@ -35,7 +35,7 @@ namespace FlightRecorder.Data
         /// Create an in-memory context for unit testing
         /// </summary>
         /// <returns></returns>
-        public  FlightRecorderDbContext CreateInMemoryDbContext()
+        public static FlightRecorderDbContext CreateInMemoryDbContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<FlightRecorderDbContext>();
             optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
