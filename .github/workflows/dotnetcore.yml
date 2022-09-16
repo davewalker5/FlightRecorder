@@ -21,9 +21,4 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: src/FlightRecorder.Tests/coverage/coverage.info 
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        path-to-lcov: src/FlightRecorder.Tests/coverage/coverage.info
