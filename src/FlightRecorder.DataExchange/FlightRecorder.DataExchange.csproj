@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <PackageId>FlightRecorder.DataExchange</PackageId>
-    <PackageVersion>1.0.1.0</PackageVersion>
+    <PackageVersion>1.0.2.0</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022</Copyright>
     <Owners>Dave Walker</Owners>
