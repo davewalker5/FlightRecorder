@@ -81,8 +81,8 @@ namespace FlightRecorder.Manager
                 Console.WriteLine($"[1] {executable} add username password");
                 Console.WriteLine($"[2] {executable} setpassword username password");
                 Console.WriteLine($"[3] {executable} delete username");
-                Console.WriteLine($"[4] {executable} import csv_file_path");
-                Console.WriteLine($"[5] {executable} export csv_file_path");
+                Console.WriteLine($"[4] {executable} import airports|sightings csv_file_path");
+                Console.WriteLine($"[5] {executable} export airports|sightings csv_file_path");
                 Console.WriteLine($"[6] {executable} update");
             }
         }

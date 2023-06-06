@@ -7,6 +7,6 @@
         delete = 2,
         export = 3,
         import = 4,
-        update = 6
+        update = 5
     }
 }
