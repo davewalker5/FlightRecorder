@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FlightRecorder.Manager": {
+      "commandName": "Project",
+      "commandLineArgs": "export airports C:\\Temp\\iata_codes.csv"
+    }
+  }
+}

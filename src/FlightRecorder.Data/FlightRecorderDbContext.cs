@@ -9,6 +9,8 @@ namespace FlightRecorder.Data
     {
         public virtual DbSet<Aircraft> Aircraft { get; set; }
         public virtual DbSet<Airline> Airlines { get; set; }
+        public virtual DbSet<Airport> Airports { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Flight> Flights { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Manufacturer> Manufacturers { get; set; }
@@ -61,6 +63,41 @@ namespace FlightRecorder.Data
                     .IsRequired()
                     .HasColumnName("name")
                     .HasColumnType("VARCHAR(100)");
+            });
+
+            modelBuilder.Entity<Airport>(entity =>
+            {
+                entity.ToTable("AIRPORT");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.CountryId).HasColumnName("country_id");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasColumnName("code")
+                    .HasColumnType("VARCHAR(5)");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasColumnType("VARCHAR(100)");
+            });
+
+            modelBuilder.Entity<Country>(entity =>
+            {
+                entity.ToTable("COUNTRY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasColumnType("VARCHAR(50)");
             });
 
             modelBuilder.Entity<Flight>(entity =>

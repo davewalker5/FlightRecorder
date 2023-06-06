@@ -40,16 +40,25 @@ namespace FlightRecorder.Manager
                             Console.WriteLine($"Deleted user {op.UserName}");
                             break;
                         case OperationType.import:
-                            CsvImporter importer = new CsvImporter();
+                            IDataImporter importer = (op.EntityType == DataExchangeEntityType.sightings) ? new CsvImporter() : new AirportImporter();
                             importer.Import(op.FileName, factory);
-                            Console.WriteLine($"Imported data from {op.FileName}");
+                            Console.WriteLine($"Imported {op.EntityType.ToString()} data from {op.FileName}");
                             break;
                         case OperationType.export:
-                            // The third parameter is an arbitrary large number intended to capture all
-                            // sightings
-                            IEnumerable<Sighting> sightings = factory.Sightings.List(null, 1, 99999999);
-                            CsvExporter exporter = new CsvExporter();
-                            exporter.Export(sightings, op.FileName);
+                            // The third argument to the "List" methods is an arbitrarily large value intended
+                            // to return all records
+                            if (op.EntityType == DataExchangeEntityType.sightings)
+                            {
+                                IEnumerable<Sighting> sightings = factory.Sightings.List(null, 1, 99999999);
+                                CsvExporter exporter = new CsvExporter();
+                                exporter.Export(sightings, op.FileName);
+                            }
+                            else
+                            {
+                                IEnumerable<Airport> airports = factory.Airports.List(null, 1, 99999999);
+                                AirportExporter exporter = new AirportExporter();
+                                exporter.Export(airports, op.FileName);
+                            }
                             Console.WriteLine($"Exported the database to {op.FileName}");
                             break;
                         case OperationType.update:
