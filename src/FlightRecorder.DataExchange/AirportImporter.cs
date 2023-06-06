@@ -1,19 +1,20 @@
-﻿using System;
+﻿using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.DataExchange;
+using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Entities.Exceptions;
-using FlightRecorder.Entities.DataExchange;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FlightRecorder.DataExchange
 {
     [ExcludeFromCodeCoverage]
-    public class CsvImporter : IDataImporter
+    public class AirportImporter: IDataImporter
     {
-        public EventHandler<SightingDataExchangeEventArgs> RecordImport;
+        public EventHandler<AirportDataExchangeEventArgs> RecordImport;
 
         /// <summary>
         /// Import the contents of the CSV file
@@ -22,7 +23,7 @@ namespace FlightRecorder.DataExchange
         /// <param name="context"></param>
         public void Import(string file, FlightRecorderFactory factory)
         {
-            Regex regex = new Regex(FlattenedSighting.CsvRecordPattern, RegexOptions.Compiled);
+            Regex regex = new Regex(FlattenedAirport.CsvRecordPattern, RegexOptions.Compiled);
 
             using (StreamReader reader = new StreamReader(file, Encoding.UTF8))
             {
@@ -43,11 +44,12 @@ namespace FlightRecorder.DataExchange
                             throw new InvalidRecordFormatException(message);
                         }
 
-                        // Inflate the CSV record to a sighting and store it in the database
-                        FlattenedSighting sighting = FlattenedSighting.FromCsv(line);
-                        factory.Sightings.Add(sighting);
+                        // Inflate the CSV record to an airport and store it in the database
+                        FlattenedAirport airport = FlattenedAirport.FromCsv(line);
+                        Country country = factory.Countries.Add(airport.Country);
+                        factory.Airports.Add(airport.Code, airport.Name, airport.Country);
 
-                        RecordImport?.Invoke(this, new SightingDataExchangeEventArgs { RecordCount = count - 1, Sighting = sighting });
+                        RecordImport?.Invoke(this, new AirportDataExchangeEventArgs { RecordCount = count - 1, Airport = airport });
                     }
                 }
             }

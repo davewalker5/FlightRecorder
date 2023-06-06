@@ -21,5 +21,22 @@ namespace FlightRecorder.Entities.DataExchange
 
             return flattened;
         }
+
+        /// <summary>
+        /// Return a collection of flattened airports from a collection of airports
+        /// </summary>
+        /// <param name="sightings"></param>
+        /// <returns></returns>
+        public static IEnumerable<FlattenedAirport> Flatten(this IEnumerable<Airport> airports)
+        {
+            List<FlattenedAirport> flattened = new List<FlattenedAirport>();
+
+            foreach (Airport airport in airports)
+            {
+                flattened.Add(airport.Flatten());
+            }
+
+            return flattened;
+        }
     }
 }

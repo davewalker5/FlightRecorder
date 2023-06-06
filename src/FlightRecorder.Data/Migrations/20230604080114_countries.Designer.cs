@@ -3,6 +3,7 @@ using System;
 using FlightRecorder.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightRecorder.Data.Migrations
 {
     [DbContext(typeof(FlightRecorderDbContext))]
-    partial class FlightRecorderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230604080114_countries")]
+#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+    partial class countries
+#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");

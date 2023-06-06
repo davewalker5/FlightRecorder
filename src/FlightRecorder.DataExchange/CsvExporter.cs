@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using FlightRecorder.Entities.DataExchange;
 using FlightRecorder.Entities.Db;
 
@@ -37,7 +38,7 @@ namespace FlightRecorder.DataExchange
         {
             IEnumerable<FlattenedSighting> flattened = sightings.Flatten();
 
-            using (StreamWriter writer = new StreamWriter(file))
+            using (StreamWriter writer = new StreamWriter(file, false, Encoding.UTF8))
             {
                 string headers = string.Join(",", ColumnHeaders);
                 writer.WriteLine(headers);
