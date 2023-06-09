@@ -162,7 +162,7 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
-        /// Create a new flight
+        /// Update an existing flight
         /// </summary>
         /// <param name="flightId"></param>
         /// <param name="number"></param>

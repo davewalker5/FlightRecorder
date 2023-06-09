@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using FlightRecorder.Mvc.Attributes;
 using FlightRecorder.Mvc.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -15,10 +16,12 @@ namespace FlightRecorder.Mvc.Models
         [DisplayName("Flight")]
         public int FlightId { get; set; }
 
+        [IATACode]
         [DisplayName("Embarkation")]
         [Required(ErrorMessage = "You must provide a point of embarkation")]
         public string Embarkation { get; set; }
 
+        [IATACode]
         [DisplayName("Destination")]
         [Required(ErrorMessage = "You must provide a destination airport")]
         public string Destination { get; set; }
@@ -46,7 +49,7 @@ namespace FlightRecorder.Mvc.Models
                 new SelectListItem{ Value = "0", Text = "" }
             };
 
-            // Add the drones retrieved from the service
+            // Add the airlines retrieved from the service
             if (flights != null)
             {
                 Flights.AddRange(flights.Select(x =>
@@ -70,7 +73,7 @@ namespace FlightRecorder.Mvc.Models
                 new SelectListItem{ Value = "0", Text = "" }
             };
 
-            // Add the drones retrieved from the service
+            // Add the airlines retrieved from the service
             if (airlines != null)
             {
                 Airlines.AddRange(airlines.Select(x =>

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using FlightRecorder.Mvc.Api;
+using FlightRecorder.Mvc.Attributes;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace FlightRecorder.Mvc.Entities
@@ -15,11 +17,13 @@ namespace FlightRecorder.Mvc.Entities
         [Required(ErrorMessage = "You must provide a flight number")]
         public string Number { get; set; }
 
-        [DisplayName("Registration")]
+        [IATACode]
+        [DisplayName("Embarkation")]
         [Required(ErrorMessage = "You must provide a point of embarkation")]
         public string Embarkation { get; set; }
 
-        [DisplayName("Registration")]
+        [IATACode]
+        [DisplayName("Destination")]
         [Required(ErrorMessage = "You must provide a destination")]
         public string Destination { get; set; }
 
