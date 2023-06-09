@@ -24,6 +24,22 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
+        [Route("{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Airport>>> GetAirportsAsync(int pageNumber, int pageSize)
+        {
+            List<Airport> airports = await _factory.Airports
+                                                 .ListAsync(null, pageNumber, pageSize)
+                                                 .ToListAsync();
+
+            if (!airports.Any())
+            {
+                return NoContent();
+            }
+
+            return airports;
+        }
+
+        [HttpGet]
         [Route("code/{code}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Airport>>> GetAirportsByCodeAsync(string code, int pageNumber, int pageSize)
         {
