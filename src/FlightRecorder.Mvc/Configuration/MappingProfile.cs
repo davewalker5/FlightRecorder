@@ -59,6 +59,13 @@ namespace FlightRecorder.Mvc.Configuration
                 .ForMember(m => m.Registration, x => x.MapFrom(m => m.Registration))
                 .ForMember(m => m.SerialNumber, x => x.MapFrom(m => m.SerialNumber))
                 .ForMember(m => m.Age, x => x.MapFrom(m => m.Age));
+
+            CreateMap<Airport, EditAirportViewModel>()
+                .ForMember(m => m.CountryId, x => x.MapFrom(m => m.CountryId))
+                .ForMember(m => m.Countries, x => x.Ignore())
+                .ForMember(m => m.Code, x => x.MapFrom(m => m.Code))
+                .ForMember(m => m.Name, x => x.MapFrom(m => m.Name))
+                .ForMember(m => m.Id, x => x.MapFrom(m => m.Id));
         }
     }
 }

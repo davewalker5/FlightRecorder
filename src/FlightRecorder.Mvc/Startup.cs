@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using AutoMapper;
 using FlightRecorder.Mvc.Api;
+using FlightRecorder.Mvc.Attributes;
 using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Controllers;
 using FlightRecorder.Mvc.Interfaces;
@@ -50,6 +51,8 @@ namespace FlightRecorder.Mvc
             services.AddHttpClient<AuthenticationClient>();
             services.AddHttpClient<AirlineClient>();
             services.AddHttpClient<AircraftClient>();
+            services.AddHttpClient<AirportsClient>();
+            services.AddHttpClient<CountriesClient>();
             services.AddHttpClient<FlightClient>();
             services.AddHttpClient<LocationClient>();
             services.AddHttpClient<ManufacturerClient>();
@@ -103,6 +106,11 @@ namespace FlightRecorder.Mvc
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
+
+            // Set up a class that provides classes that are not managed by the DI container (Attributes)
+            // with access to the instances of the cache and HTTP clients that are registered in the
+            // ConfigureServices() method
+            new ServiceAccessor().SetProvider(app.ApplicationServices);
 
             // JWT authentication with the service is used to authenticate in the UI, so the user data
             // is held in one place (the service database). The login page authenticates with the service
