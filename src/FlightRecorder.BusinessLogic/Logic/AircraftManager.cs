@@ -219,7 +219,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="model"></param>
         /// <param name="manufacturer"></param>
         /// <returns></returns>
-        public Aircraft Add(string registration, string serialNumber, long yearOfManufacture, string modelName, string manufacturerName)
+        public Aircraft Add(string registration, string serialNumber, long? yearOfManufacture, string modelName, string manufacturerName)
         {
             registration = registration.CleanString().ToUpper();
             Aircraft aircraft = Get(a => a.Registration == registration);
@@ -254,7 +254,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="model"></param>
         /// <param name="manufacturer"></param>
         /// <returns></returns>
-        public async Task<Aircraft> AddAsync(string registration, string serialNumber, long yearOfManufacture, string modelName, string manufacturerName)
+        public async Task<Aircraft> AddAsync(string registration, string serialNumber, long? yearOfManufacture, string modelName, string manufacturerName)
         {
             registration = registration.CleanString().ToUpper();
             Aircraft aircraft = await GetAsync(a => a.Registration == registration);

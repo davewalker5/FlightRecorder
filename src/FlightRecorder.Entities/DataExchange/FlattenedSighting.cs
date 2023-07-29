@@ -14,7 +14,7 @@ namespace FlightRecorder.Entities.DataExchange
         public string SerialNumber { get; set; }
         public string Manufacturer { get; set; }
         public string Model { get; set; }
-        public long Age { get; set; }
+        public string Age { get; set; }
         public string Embarkation { get; set; }
         public string Destination { get; set; }
         public long Altitude { get; set; }
@@ -39,7 +39,7 @@ namespace FlightRecorder.Entities.DataExchange
                 SerialNumber = words[3],
                 Manufacturer = words[4],
                 Model = words[5],
-                Age = long.Parse(words[6]),
+                Age = words[6],
                 Embarkation = words[7],
                 Destination = words[8],
                 Altitude = long.Parse(words[9]),
