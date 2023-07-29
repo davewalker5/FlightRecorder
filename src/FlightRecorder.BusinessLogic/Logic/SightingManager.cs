@@ -200,7 +200,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public Sighting Add(FlattenedSighting flattened)
         {
-            long yearOfManufacture = DateTime.Now.Year - flattened.Age;
+            long? yearOfManufacture = !string.IsNullOrEmpty(flattened.Age) ? DateTime.Now.Year - long.Parse(flattened.Age) : null;
             long aircraftId = _factory.Aircraft.Add(flattened.Registration, flattened.SerialNumber, yearOfManufacture, flattened.Model, flattened.Manufacturer).Id;
             long flightId = _factory.Flights.Add(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, flattened.Airline).Id;
             long locationId = _factory.Locations.Add(flattened.Location).Id;
@@ -214,7 +214,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <returns></returns>
         public async Task<Sighting> AddAsync(FlattenedSighting flattened)
         {
-            long yearOfManufacture = DateTime.Now.Year - flattened.Age;
+            long? yearOfManufacture = !string.IsNullOrEmpty(flattened.Age) ? DateTime.Now.Year - long.Parse(flattened.Age) : null;
             long aircraftId = (await _factory.Aircraft.AddAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, flattened.Model, flattened.Manufacturer)).Id;
             long flightId = (await _factory.Flights.AddAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, flattened.Airline)).Id;
             long locationId = (await _factory.Locations.AddAsync(flattened.Location)).Id;

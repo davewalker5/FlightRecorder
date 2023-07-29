@@ -24,7 +24,7 @@ namespace FlightRecorder.Tests
         private const string ManufacturerName = "Airbus";
         private const string Registration = "G-EZFY";
         private const string SerialNumber = "4418";
-        private const long Age = 9;
+        private const string Age = "9";
 
         private const long Altitude = 930;
         private readonly DateTime SightingDate = new DateTime(2019, 9, 22);
@@ -77,7 +77,7 @@ namespace FlightRecorder.Tests
             Assert.IsNotNull(sighting.Aircraft);
             Assert.AreEqual(Registration, sighting.Aircraft.Registration);
             Assert.AreEqual(SerialNumber, sighting.Aircraft.SerialNumber);
-            Assert.AreEqual(DateTime.Now.Year - Age, sighting.Aircraft.Manufactured);
+            Assert.AreEqual(DateTime.Now.Year - long.Parse(Age), sighting.Aircraft.Manufactured);
 
             Assert.IsNotNull(sighting.Aircraft.Model);
             Assert.AreEqual(ModelName, sighting.Aircraft.Model.Name);

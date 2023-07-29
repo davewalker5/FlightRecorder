@@ -11,7 +11,7 @@ namespace FlightRecorder.Entities.Db
         public long ModelId { get; set; }
         public string Registration { get; set; }
         public string SerialNumber { get; set; }
-        public long Manufactured { get; set; }
+        public long? Manufactured { get; set; }
 
         public virtual Model Model { get; set; }
     }
