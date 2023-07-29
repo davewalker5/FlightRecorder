@@ -103,7 +103,8 @@ namespace FlightRecorder.Api.Controllers
             Aircraft aircraft = await _factory.Aircraft
                         .GetAsync(a => (a.Registration == template.Registration) ||
                                        (  (a.Model.ManufacturerId == template.Model.ManufacturerId) &&
-                                          (a.SerialNumber == template.SerialNumber)));
+                                          (a.SerialNumber == template.SerialNumber) &&
+                                          !string.IsNullOrEmpty(a.SerialNumber)));
 
             if ((aircraft != null) && (aircraft.Id != template.Id))
             {
@@ -118,6 +119,7 @@ namespace FlightRecorder.Api.Controllers
 
             aircraft.Registration = template.Registration;
             aircraft.SerialNumber = template.SerialNumber;
+            aircraft.Manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             aircraft.ModelId = template.ModelId;
             await _factory.Context.SaveChangesAsync();
             await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
@@ -131,6 +133,7 @@ namespace FlightRecorder.Api.Controllers
         public async Task<ActionResult<Aircraft>> CreateAircraftAsync([FromBody] Aircraft template)
         {
             // TODO : Should have create method taking model and manufacturer IDs
+            long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             Aircraft aircraft = await _factory.Aircraft
                                               .AddAsync(template.Registration,
                                                         template.SerialNumber,
