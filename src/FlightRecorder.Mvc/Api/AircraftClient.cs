@@ -78,7 +78,7 @@ namespace FlightRecorder.Mvc.Api
                 }
             }
 
-            if (aircraft.Manufactured == 0)
+            if ((aircraft != null) && (aircraft.Manufactured == 0))
             {
                 aircraft.Manufactured = null;
             }
@@ -103,7 +103,7 @@ namespace FlightRecorder.Mvc.Api
                 aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
             }
 
-            if (aircraft.Manufactured == 0)
+            if ((aircraft != null) && (aircraft.Manufactured == 0))
             {
                 aircraft.Manufactured = null;
             }
@@ -141,7 +141,7 @@ namespace FlightRecorder.Mvc.Api
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
 
             Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
-            if (aircraft.Manufactured == 0)
+            if ((aircraft != null) && (aircraft.Manufactured == 0))
             {
                 aircraft.Manufactured = null;
             }
@@ -191,7 +191,7 @@ namespace FlightRecorder.Mvc.Api
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
 
             Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
-            if (aircraft.Manufactured == 0)
+            if ((aircraft != null) && (aircraft.Manufactured == 0))
             {
                 aircraft.Manufactured = null;
             }
