@@ -48,9 +48,26 @@ namespace FlightRecorder.Mvc.Api
             _cache.Remove(key);
         }
 
+        public void Clear()
+        {
+            _cache.Clear();
+        }
+
         public IEnumerable<string> GetKeys()
         {
             return _keys.Where(k => k.Value > DateTime.Now).Select(k => k.Key);
+        }
+
+        public IEnumerable<string> GetFilteredKeys(string filter)
+        {
+            IEnumerable<string> keys = GetKeys();
+
+            if ((filter ?? "").Trim() != "")
+            {
+                keys = keys.Where(k => k.Contains(filter, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return keys;
         }
 
         private void OnEntryEvicted(object key, object value, EvictionReason reason, object state)

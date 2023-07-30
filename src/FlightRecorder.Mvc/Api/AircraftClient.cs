@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Threading.Tasks;
 using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
@@ -44,6 +45,12 @@ namespace FlightRecorder.Mvc.Api
                     aircraft = JsonConvert.DeserializeObject<List<Aircraft>>(json)
                                         .OrderBy(m => m.Registration)
                                         .ToList();
+
+                    foreach (Aircraft aeroplane in aircraft.Where(a => a.Manufactured == 0))
+                    {
+                        aeroplane.Manufactured = null;
+                    }
+
                     _cache.Set(key, aircraft, _settings.Value.CacheLifetimeSeconds);
                 }
             }
@@ -71,6 +78,11 @@ namespace FlightRecorder.Mvc.Api
                 }
             }
 
+            if (aircraft.Manufactured == 0)
+            {
+                aircraft.Manufactured = null;
+            }
+
             return aircraft;
         }
 
@@ -91,6 +103,11 @@ namespace FlightRecorder.Mvc.Api
                 aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
             }
 
+            if (aircraft.Manufactured == 0)
+            {
+                aircraft.Manufactured = null;
+            }
+
             return aircraft;
         }
 
@@ -102,7 +119,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, int yearOfManufacture, int modelId)
+        public async Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, int? yearOfManufacture, int modelId)
         {
             string key = $"{CacheKeyPrefix}.{modelId}";
             _cache.Remove(key);
@@ -115,8 +132,8 @@ namespace FlightRecorder.Mvc.Api
             dynamic template = new
             {
                 Registration = registration,
-                SerialNumber = serialNumber,
-                Manufactured = yearOfManufacture,
+                SerialNumber = serialNumber ?? "",
+                Manufactured = (yearOfManufacture != null) ? yearOfManufacture : 0,
                 Model = model
             };
 
@@ -124,6 +141,10 @@ namespace FlightRecorder.Mvc.Api
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
 
             Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+            if (aircraft.Manufactured == 0)
+            {
+                aircraft.Manufactured = null;
+            }
             return aircraft;
         }
 
@@ -137,7 +158,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="manufacturerId"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> UpdateAircraftAsync(int id, string registration, string serialNumber, int yearOfManufacture, int manufacturerId, int modelId)
+        public async Task<Aircraft> UpdateAircraftAsync(int id, string registration, string serialNumber, int? yearOfManufacture, int manufacturerId, int modelId)
         {
             // We might've changed the model, so not only do we need to clear the
             // current model's cached model list but we also need to identify the
@@ -158,8 +179,8 @@ namespace FlightRecorder.Mvc.Api
                 Id = id,
                 ModelId = modelId,
                 Registration = registration,
-                SerialNumber = serialNumber,
-                Manufactured = yearOfManufacture,
+                SerialNumber = serialNumber ?? "",
+                Manufactured = (yearOfManufacture != null) ? yearOfManufacture : 0,
                 Model = new Model
                 {
                     ManufacturerId = manufacturerId
@@ -170,6 +191,10 @@ namespace FlightRecorder.Mvc.Api
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
 
             Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+            if (aircraft.Manufactured == 0)
+            {
+                aircraft.Manufactured = null;
+            }
             return aircraft;
         }
 

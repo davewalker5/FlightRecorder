@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using FlightRecorder.Mvc.Api;
@@ -115,7 +116,7 @@ namespace FlightRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                int manufactured = DateTime.Now.Year - model.Age;
+                int? manufactured = (model.Age != null) ? DateTime.Now.Year - model.Age : null;
                 Aircraft aircraft = await _aircraft.AddAircraftAsync(model.Registration, model.SerialNumber, manufactured, model.ModelId);
                 ModelState.Clear();
                 model.Clear();
@@ -156,7 +157,7 @@ namespace FlightRecorder.Mvc.Controllers
 
             if (ModelState.IsValid)
             {
-                int manufactured = DateTime.Now.Year - viewModel.Age;
+                int? manufactured = (viewModel.Age != null) ? DateTime.Now.Year - viewModel.Age : null;
                 await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ManufacturerId, viewModel.ModelId);
                 result = RedirectToAction("Index", new { manufacturerId = viewModel.ManufacturerId, modelId = viewModel.ModelId });
             }

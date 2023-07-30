@@ -33,7 +33,7 @@ namespace FlightRecorder.Mvc.Models
         public string SerialNumber { get; set; }
 
         [DisplayName("Age")]
-        public int Age { get; set; }
+        public int? Age { get; set; }
 
         [DisplayName("Manufacturer")]
         public string Manufacturer { get; set; }

@@ -24,12 +24,11 @@ namespace FlightRecorder.Mvc.Models
         public string Registration { get; set; }
 
         [DisplayName("Serial Number")]
-        [Required(ErrorMessage = "You must provide a serial number")]
         public string SerialNumber { get; set; }
 
         [DisplayName("Age")]
-        [Range(0, int.MaxValue, ErrorMessage = "You must provide an aircraft age")]
-        public int Age { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Aircraft age is not valid")]
+        public int? Age { get; set; }
 
         public List<SelectListItem> Manufacturers { get; set; }
         public List<SelectListItem> Models { get; set; }

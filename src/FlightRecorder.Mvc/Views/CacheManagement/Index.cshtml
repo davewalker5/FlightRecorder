@@ -1,0 +1,115 @@
+﻿@model FlightRecorder.Mvc.Models.CacheManagementViewModel
+
+@{
+    ViewData["Title"] = "Cached Data Management";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Cache Management
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage cached data
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md">
+                <span id="Message" name="Message">@Html.Raw(Model.Message)</span>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Filter)</strong>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Filter, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div id="CachedDataList">
+        </div>
+
+        <hr />
+        <p class="text-right">
+            <button type="submit" class="btn btn-primary">Clear</button>
+        </p>
+    }
+</div>
+
+<script type="text/javascript">
+    function LoadCachedDataForFilter(filter) {
+        var route = "/CacheManagement/List?filter=" + filter;
+        $('html, body').css("cursor", "wait");
+        $.ajax({
+            url: route,
+            method: "GET",
+            dataType: "html",
+            cache: false,
+            success: function (result) {
+                $("#CachedDataList").html(result);
+                $('html, body').css("cursor", "auto");
+            },
+            error: function (xhr, status, error) {
+                var errorMessage = xhr.status + ': ' + xhr.statusText
+                $("#CachedDataList").html(errorMessage);
+                $('html, body').css("cursor", "auto");
+            }
+        });
+    }
+
+    function LoadCachedDataForCurrentFilter() {
+        var filter = $("#Filter").val();
+        LoadCachedDataForFilter(filter);
+    }
+
+    function RemoveCachedData(key) {
+        var route = "/CacheManagement/Remove?key=" + key;
+        $('html, body').css("cursor", "wait");
+        $.ajax({
+            url: route,
+            method: "DELETE",
+            dataType: "json",
+            cache: false,
+            success: function (result) {
+                console.log(result);
+                $("#Message").html(result.message);
+                $('html, body').css("cursor", "auto");
+                LoadCachedDataForCurrentFilter();
+            },
+            error: function (xhr, status, error) {
+                var errorMessage = xhr.status + ': ' + xhr.statusText
+                $("#CachedDataList").html(errorMessage);
+                $('html, body').css("cursor", "auto");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Filter using the initial filter value on page load
+        LoadCachedDataForCurrentFilter();
+
+        // Pressing ENTER on the filter text box reloads the cached data using the specified filter
+        $("#Filter").keydown(function(e) {
+            if (e.which == 13) {
+                LoadCachedDataForCurrentFilter();
+                e.preventDefault();
+            }
+        });
+
+        // Loss of focus on the filter text box reloads the cached data using the specified filter
+        $("#Filter").blur(function () {
+            LoadCachedDataForCurrentFilter();
+            e.preventDefault();
+        });
+    });
+</script>
