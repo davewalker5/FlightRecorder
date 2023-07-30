@@ -21,8 +21,8 @@ namespace FlightRecorder.Mvc.Entities
         public string SerialNumber { get; set; }
 
         [DisplayName("Year of Manufacturer")]
-        [Range(1, int.MaxValue, ErrorMessage = "You must provide a year of manufacture")]
-        public int Manufactured { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Year of manufacture is not valid")]
+        public int? Manufactured { get; set; }
 
         public Model Model { get; set; }
     }
