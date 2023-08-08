@@ -7,6 +7,8 @@ using FlightRecorder.Entities.Db;
 using FlightRecorder.Manager.Entities;
 using FlightRecorder.Manager.Logic;
 using FlightRecorder.DataExchange;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace FlightRecorder.Manager
 {
@@ -14,8 +16,9 @@ namespace FlightRecorder.Manager
     {
         static void Main(string[] args)
         {
-            string version = typeof(Program).Assembly.GetName().Version.ToString();
-            Console.WriteLine($"Flight Recorder Database Management {version}");
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo info = FileVersionInfo.GetVersionInfo(assembly.Location);
+            Console.WriteLine($"Flight Recorder Database Management {info.FileVersion}");
 
             Operation op = new CommandParser().ParseCommandLine(args);
             if (op.Valid)

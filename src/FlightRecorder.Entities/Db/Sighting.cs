@@ -30,7 +30,7 @@ namespace FlightRecorder.Entities.Db
                 SerialNumber = Aircraft.SerialNumber,
                 Manufacturer = Aircraft.Model.Manufacturer.Name,
                 Model = Aircraft.Model.Name,
-                Age = (Aircraft.Manufactured != null) ? (DateTime.Now.Year - Aircraft.Manufactured).ToString() : "",
+                Age = (Aircraft.Manufactured > 0) ? (DateTime.Now.Year - Aircraft.Manufactured).ToString() : "",
                 Embarkation = Flight.Embarkation,
                 Destination = Flight.Destination,
                 Altitude = Altitude,
