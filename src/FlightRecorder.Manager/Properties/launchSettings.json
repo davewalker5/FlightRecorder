@@ -2,7 +2,7 @@
   "profiles": {
     "FlightRecorder.Manager": {
       "commandName": "Project",
-      "commandLineArgs": "update"
+      "commandLineArgs": "export sightings test_export.csv"
     }
   }
 }
