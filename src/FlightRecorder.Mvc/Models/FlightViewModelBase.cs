@@ -44,7 +44,7 @@ namespace FlightRecorder.Mvc.Models
                 new SelectListItem{ Value = "", Text = "" }
             };
 
-            // Add the drones retrieved from the service
+            // Add the airlines retrieved from the service
             if (airlines != null)
             {
                 Airlines.AddRange(airlines.Select(a =>

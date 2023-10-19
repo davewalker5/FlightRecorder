@@ -50,7 +50,7 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Airport>> GetAirportsByCodeAsync(string code)
         {
-            string key = $"{CacheKeyPrefix}.R.{code}";
+            string key = $"{CacheKeyPrefix}.R.{code.ToUpper()}";
             List<Airport> airports = _cache.Get<List<Airport>>(key);
             if (airports == null)
             {
