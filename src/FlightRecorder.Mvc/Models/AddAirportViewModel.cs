@@ -1,6 +1,4 @@
-﻿using FlightRecorder.Mvc.Entities;
-
-namespace FlightRecorder.Mvc.Models
+﻿namespace FlightRecorder.Mvc.Models
 {
     public class AddAirportViewModel : AirportViewModelBase
     {
@@ -10,6 +8,7 @@ namespace FlightRecorder.Mvc.Models
         {
             Id = 0;
             CountryId = 0;
+            Code = "";
             Name = "";
             Message = "";
         }
