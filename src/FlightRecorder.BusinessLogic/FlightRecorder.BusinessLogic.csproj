@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>FlightRecorder.BusinessLogic</PackageId>
-    <PackageVersion>1.0.5.0</PackageVersion>
+    <PackageVersion>1.1.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
-    <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022</Copyright>
+    <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023</Copyright>
     <Owners>Dave Walker</Owners>
     <PackageReleaseNotes>Dependency updates</PackageReleaseNotes>
     <Summary>Flight Recorder Business Logic</Summary>
@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <ReleaseVersion>1.0.5.0</ReleaseVersion>
+    <ReleaseVersion>1.1.0.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +25,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Base\LogicBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Sql\AirlineStatistics.sql" />
+    <None Remove="Sql\LocationStatistics.sql" />
+    <None Remove="Sql\ManufacturerStatistis.sql" />
+    <None Remove="Sql\ModelStatistics.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sql\AirlineStatistics.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sql\LocationStatistics.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sql\ManufacturerStatistis.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sql\ModelStatistics.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Factory\" />

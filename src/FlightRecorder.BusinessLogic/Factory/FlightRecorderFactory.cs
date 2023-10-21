@@ -2,6 +2,7 @@
 using FlightRecorder.BusinessLogic.Logic;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Reporting;
 
 namespace FlightRecorder.BusinessLogic.Factory
 {
@@ -17,6 +18,10 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IUserManager> _users = null;
         private readonly Lazy<ICountryManager> _countries = null;
         private readonly Lazy<IAirportManager> _airports = null;
+        private readonly Lazy<IDateBasedReport<AirlineStatistics>> _airlineStatistics = null;
+        private readonly Lazy<IDateBasedReport<LocationStatistics>> _locationStatistics = null;
+        private readonly Lazy<IDateBasedReport<ManufacturerStatistics>> _manufacturerStatistics = null;
+        private readonly Lazy<IDateBasedReport<ModelStatistics>> _modelStatistics = null;
 
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -28,6 +33,10 @@ namespace FlightRecorder.BusinessLogic.Factory
         public IUserManager Users { get { return _users.Value; } }
         public ICountryManager Countries { get { return _countries.Value; } }
         public IAirportManager Airports { get { return _airports.Value; } }
+        public IDateBasedReport<AirlineStatistics> AirlineStatistics { get { return _airlineStatistics.Value; } }
+        public IDateBasedReport<LocationStatistics> LocationStatistics { get { return _locationStatistics.Value; } }
+        public IDateBasedReport<ManufacturerStatistics> ManufacturerStatistics { get { return _manufacturerStatistics.Value; } }
+        public IDateBasedReport<ModelStatistics> ModelStatistics { get { return _modelStatistics.Value; } }
         public FlightRecorderDbContext Context { get; private set; }
 
         public FlightRecorderFactory(FlightRecorderDbContext context)
@@ -43,6 +52,10 @@ namespace FlightRecorder.BusinessLogic.Factory
             _users = new Lazy<IUserManager>(() => new UserManager(context));
             _countries = new Lazy<ICountryManager>(() => new CountryManager(context));
             _airports = new Lazy<IAirportManager>(() => new AirportManager(this));
+            _airlineStatistics = new Lazy<IDateBasedReport<AirlineStatistics>>(() => new DateBasedReport<AirlineStatistics>(context));
+            _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(context));
+            _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(context));
+            _modelStatistics = new Lazy<IDateBasedReport<ModelStatistics>>(() => new DateBasedReport<ModelStatistics>(context));
         }
     }
 }

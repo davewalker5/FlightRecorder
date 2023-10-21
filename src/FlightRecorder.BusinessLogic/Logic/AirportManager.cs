@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {
-    public class AirportManager : IAirportManager
+    internal class AirportManager : IAirportManager
     {
         private readonly FlightRecorderFactory _factory;
 

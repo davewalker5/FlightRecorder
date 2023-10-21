@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <ReleaseVersion>1.0.6.0</ReleaseVersion>
-    <FileVersion>1.0.6.0</FileVersion>
-    <ProductVersion>1.0.6</ProductVersion>
+    <ReleaseVersion>1.1.0.0</ReleaseVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <ProductVersion>1.1.0.0</ProductVersion>
     <Configurations>Release;Debug</Configurations>
   </PropertyGroup>
 
