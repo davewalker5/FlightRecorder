@@ -31,6 +31,7 @@ namespace FlightRecorder.Mvc.Models
 
         [DisplayName("New Airline")]
         public string NewAirline { get; set; }
+        public bool IsDuplicate { get; set; }
 
         public string Action { get; set; }
         public string AirlineErrorMessage { get; set; }

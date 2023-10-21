@@ -18,6 +18,15 @@
         </div>
         <hr />
 
+        @if (Model.IsDuplicate)
+        {
+            <div class="row">
+                <div class="col-md-12 warning">
+                    <span>There is already a record for this flight on the date specified</span>
+                </div>
+            </div>
+        }
+
         <div class="row">
             <div class="col">
                 <strong>@Html.LabelFor(m => m.FlightNumber)</strong>

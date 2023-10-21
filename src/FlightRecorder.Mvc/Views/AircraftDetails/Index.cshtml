@@ -197,6 +197,12 @@
             $("#ModelsList").html("");
         });
 
+        // Respond to change events on the "new model" field by clearing the model selection
+        $("#NewModel").change(function () {
+            $("#DropDownModelId").val("");
+            $("#ModelId").val("");
+        });
+
         // Capture the ENTER key and click the primary button instead
         $(document).keypress(function (e) {
             var key = e.which;
