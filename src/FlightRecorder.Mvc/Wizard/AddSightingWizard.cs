@@ -28,6 +28,7 @@ namespace FlightRecorder.Mvc.Wizard
         private ModelClient _models;
         private AircraftClient _aircraft;
         private SightingClient _sightings;
+        private SightingsSearchClient _sightingsSearch;
         private ICacheWrapper _cache;
         private IOptions<AppSettings> _settings;
         private readonly IMapper _mapper;
@@ -39,6 +40,7 @@ namespace FlightRecorder.Mvc.Wizard
                                  ModelClient models,
                                  AircraftClient aircraft,
                                  SightingClient sightings,
+                                 SightingsSearchClient sightingsSearch,
                                  IOptions<AppSettings> settings,
                                  ICacheWrapper cache,
                                  IMapper mapper)
@@ -50,6 +52,7 @@ namespace FlightRecorder.Mvc.Wizard
             _models = models;
             _aircraft = aircraft;
             _sightings = sightings;
+            _sightingsSearch = sightingsSearch;
             _settings = settings;
             _cache = cache;
             _mapper = mapper;
@@ -169,15 +172,17 @@ namespace FlightRecorder.Mvc.Wizard
         /// <returns></returns>
         public async Task<FlightDetailsViewModel> GetFlightDetailsModelAsync(string userName)
         {
+            // Get the current sighting details
+            string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
+            SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
+
             // Retrieve the model from the cache
-            string key = GetCacheKey(FlightDetailsKeyPrefix,userName);
+            key = GetCacheKey(FlightDetailsKeyPrefix,userName);
             FlightDetailsViewModel model = _cache.Get<FlightDetailsViewModel>(key);
             if (model == null)
             {
                 // Not cached, so create a new one, using the cached sighting details
                 // model to supply the flight number
-                key = GetCacheKey(SightingDetailsKeyPrefix, userName);
-                SightingDetailsViewModel sighting = _cache.Get<SightingDetailsViewModel>(key);
                 model = new FlightDetailsViewModel{ FlightNumber = sighting.FlightNumber };
             }
 
@@ -199,6 +204,11 @@ namespace FlightRecorder.Mvc.Wizard
                 model.Destination = flight.Destination;
                 model.AirlineId = flight.AirlineId;
             }
+
+            // See if this is a potential duplicate - only need to return the first page with 1 result to do the
+            // duplicate check
+            var duplicates = await _sightingsSearch.GetSightingsByFlightAndDate((DateTime)sighting.Date, sighting.FlightNumber, 1, 1);
+            model.IsDuplicate = duplicates?.Count > 0;
 
             return model;
         }

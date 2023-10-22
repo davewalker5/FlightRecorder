@@ -17,12 +17,12 @@ namespace FlightRecorder.Mvc.Attributes
             FlightDetailsViewModel model = (FlightDetailsViewModel)validationContext.ObjectInstance;
             List<string> codes = _client.GetAirportsAsync().Result.Select(x => x.Code).ToList();
 
-            if ((validationContext.MemberName == "Embarkation") && !codes.Contains(model.Embarkation))
+            if ((validationContext.MemberName == "Embarkation") && !codes.Contains(model.Embarkation.ToUpper()))
             {
                 return new ValidationResult($"{model.Embarkation} is not a valid IATA code for the point of embarkation");
             }
 
-            if ((validationContext.MemberName == "Destination") && !codes.Contains(model.Destination))
+            if ((validationContext.MemberName == "Destination") && !codes.Contains(model.Destination.ToUpper()))
             {
                 return new ValidationResult($"{model.Destination} is not a valid IATA code for the destination");
             }

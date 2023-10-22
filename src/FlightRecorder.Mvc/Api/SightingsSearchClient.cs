@@ -55,6 +55,24 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
+        /// Retrieve sightings for the specified flight on the specified date
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="flightNumber"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<Sighting>> GetSightingsByFlightAndDate(DateTime date, string flightNumber, int page, int pageSize)
+        {
+            string dateRouteSegment = date.ToString(_settings.Value.DateTimeFormat);
+            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string route = $"{baseRoute}/flight/{dateRouteSegment}/{flightNumber}/{page}/{pageSize}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            return sightings;
+        }
+
+        /// <summary>
         /// Return the specified page of sightings filtered by airline
         /// </summary>
         /// <param name="airlineId"></param>
