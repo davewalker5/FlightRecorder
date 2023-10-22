@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -25,9 +26,15 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        protected async Task<List<T>> GenerateReport<T>(string query) where T : class
+        protected async Task<IEnumerable<T>> GenerateReport<T>(string query, int pageNumber, int pageSize) where T : class
         {
-            var results = await _context.Set<T>().FromSqlRaw(query).ToListAsync();
+            // Pagination using Skip and Take causes the database query to fail with FromSqlRaw, possible
+            // dependent on the DBS. To avoid this, the results are queried in two steps:
+            //
+            // 1) Query the database for all the report results and convert to a list
+            // 2) Extract the required page from the in-memory list
+            var all = await _context.Set<T>().FromSqlRaw(query).ToListAsync();
+            var results = all.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             return results;
         }
 

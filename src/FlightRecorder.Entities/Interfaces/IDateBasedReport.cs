@@ -6,6 +6,6 @@ namespace FlightRecorder.Entities.Interfaces
 {
     public interface IDateBasedReport<T> where T : class
     {
-        Task<List<T>> GenerateReport(DateTime? from, DateTime? to);
+        Task<IEnumerable<T>> GenerateReport(DateTime? from, DateTime? to, int pageNumber, int pageSize);
     }
 }

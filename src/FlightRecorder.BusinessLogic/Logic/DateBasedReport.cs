@@ -19,10 +19,14 @@ namespace FlightRecorder.BusinessLogic.Logic
         }
 
         /// <summary>
-        /// Generate the airline statistics report
+        /// Generate a datebased report for reporting entity type T
         /// </summary>
-        /// <param name="file"></param>
-        public async Task<List<T>> GenerateReport(DateTime? from, DateTime? to)
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<T>> GenerateReport(DateTime? from, DateTime? to, int pageNumber, int pageSize)
         {
             // SQL report files are named after the keyless entity type they map to with a .sql extension
             var sqlFile = $"{typeof(T).Name}.sql";
@@ -31,7 +35,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             var query = ReadDateBasedSqlReportResource(sqlFile, from, to);
 
             // Run the query and return the results
-            var results = await GenerateReport<T>(query);
+            var results = await GenerateReport<T>(query, pageNumber, pageSize);
             return results;
         }
 
