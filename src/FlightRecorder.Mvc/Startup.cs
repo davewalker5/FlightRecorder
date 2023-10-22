@@ -1,6 +1,3 @@
-using System;
-using System.Text;
-using AutoMapper;
 using FlightRecorder.Mvc.Api;
 using FlightRecorder.Mvc.Attributes;
 using FlightRecorder.Mvc.Configuration;
@@ -16,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace FlightRecorder.Mvc
 {
@@ -59,6 +58,7 @@ namespace FlightRecorder.Mvc
             services.AddHttpClient<ModelClient>();
             services.AddHttpClient<SightingClient>();
             services.AddHttpClient<SightingsSearchClient>();
+            services.AddHttpClient<ReportsClient>();
 
             // Configure session state for token storage
             services.AddSession(options =>
