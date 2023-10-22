@@ -38,7 +38,7 @@ namespace FlightRecorder.Api.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("airlines/{start}/{end}/{pageNumber}/{pageSize}")]
-        public async Task<ActionResult<List<AirlineStatistics>>> GetSightingsByFlightAndDateAsync(string start, string end, int pageNumber, int pageSize)
+        public async Task<ActionResult<List<AirlineStatistics>>> GetAirlineStatisticsAsync(string start, string end, int pageNumber, int pageSize)
         {
             // Decode the start and end date and convert them to dates
             DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
@@ -46,6 +46,34 @@ namespace FlightRecorder.Api.Controllers
 
             // Get the report content
             var results = await _factory.AirlineStatistics.GenerateReport(startDate, endDate, pageNumber, pageSize);
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the location statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("locations/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<LocationStatistics>>> GetLocationStatisticsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.LocationStatistics.GenerateReport(startDate, endDate, pageNumber, pageSize);
 
             if (!results.Any())
             {
