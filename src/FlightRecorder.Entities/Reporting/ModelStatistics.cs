@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FlightRecorder.Entities.Reporting
 {
     [Keyless]
+    [ExcludeFromCodeCoverage]
     public class ModelStatistics
     {
         public string Manufacturer { get; set; }

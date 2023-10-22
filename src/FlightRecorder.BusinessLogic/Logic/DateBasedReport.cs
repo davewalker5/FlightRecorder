@@ -2,10 +2,12 @@
 using FlightRecorder.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {
+    [ExcludeFromCodeCoverage]
     internal class DateBasedReport<T> : ReportManagerBase, IDateBasedReport<T> where T : class
     {
         private const string DateFormat = "yyyy-MM-dd";
@@ -26,7 +28,7 @@ namespace FlightRecorder.BusinessLogic.Logic
             var sqlFile = $"{typeof(T).Name}.sql";
 
             // Load the SQL file and perform date range place-holder replacements
-            var query = ReadDateBasedSqlFile(sqlFile, from, to);
+            var query = ReadDateBasedSqlReportResource(sqlFile, from, to);
 
             // Run the query and return the results
             var results = await GenerateReport<T>(query);
@@ -40,17 +42,14 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        private static string ReadDateBasedSqlFile(string reportFile, DateTime? from, DateTime? to)
+        private static string ReadDateBasedSqlReportResource(string reportFile, DateTime? from, DateTime? to)
         {
-            // Get the full path to the SQL report file
-            var filePath = GetSqlFilePath(reportFile);
-
             // Get non-NULL versions of the from and to dates
             var nonNullFromDate = (from ?? DateTime.MinValue).ToString(DateFormat);
             var nonNullToDate = (to ?? DateTime.MaxValue).ToString(DateFormat);
 
             // Read and return the query, replacing the date range parameters
-            var query = ReadSqlFile(filePath, new Dictionary<string, string>
+            var query = ReadSqlResource(reportFile, new Dictionary<string, string>
             {
                 { FromDatePlaceHolder, nonNullFromDate },
                 { ToDatePlaceHolder, nonNullToDate }

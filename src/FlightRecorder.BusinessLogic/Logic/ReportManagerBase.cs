@@ -1,12 +1,14 @@
 ﻿using FlightRecorder.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {
+    [ExcludeFromCodeCoverage]
     internal abstract class ReportManagerBase
     {
         private readonly FlightRecorderDbContext _context;
@@ -58,10 +60,51 @@ namespace FlightRecorder.BusinessLogic.Logic
                 content = reader.ReadToEnd();
 
                 // Perform place holder replacement
-                foreach (var placeHolder in placeHolderValues.Keys)
-                {
-                    content = content.Replace(placeHolder, placeHolderValues[placeHolder]);
-                }
+                content = ReplacePlaceHolders(content, placeHolderValues);
+            }
+
+            return content;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="placeHolderValues"></param>
+        /// <returns></returns>
+        protected static string ReadSqlResource(string file, Dictionary<string, string> placeHolderValues)
+        {
+            string content = "";
+
+            // Get the name of the resource and a resource stream for reading it
+            var assembly = Assembly.GetExecutingAssembly();
+            var sqlResourceName = $"FlightRecorder.BusinessLogic.Sql.{file}";
+            var resourceStream = assembly.GetManifestResourceStream(sqlResourceName);
+
+            // Open a stream reader to read the file content
+            using (var reader = new StreamReader(resourceStream))
+            {
+                // Read the file content
+                content = reader.ReadToEnd();
+
+                // Perform place holder replacement
+                content = ReplacePlaceHolders(content, placeHolderValues);
+            }
+
+            return content;
+        }
+
+        /// <summary>
+        /// Perform place holder replacement on content read from an embedded resource or SQL file
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="placeHolderValues"></param>
+        /// <returns></returns>
+        private static string ReplacePlaceHolders(string content, Dictionary<string, string> placeHolderValues)
+        {
+            foreach (var placeHolder in placeHolderValues.Keys)
+            {
+                content = content.Replace(placeHolder, placeHolderValues[placeHolder]);
             }
 
             return content;
