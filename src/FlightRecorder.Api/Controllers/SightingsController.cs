@@ -1,12 +1,12 @@
-﻿using System;
+﻿using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.Db;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Entities.Db;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FlightRecorder.Api.Controllers
 {
@@ -50,6 +50,27 @@ namespace FlightRecorder.Api.Controllers
             string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
             List<Sighting> sightings = await _factory.Sightings
                                                      .ListAsync(s => s.Flight.Number == decodedNumber, pageNumber, pageSize)
+                                                     .ToListAsync();
+
+            if (!sightings.Any())
+            {
+                return NoContent();
+            }
+
+            return sightings;
+        }
+
+        [HttpGet]
+        [Route("flight/{date}/{number}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<Sighting>>> GetSightingsByFlightAndDateAsync(string date, string number, int pageNumber, int pageSize)
+        {
+            DateTime decodedDate = DateTime.ParseExact(HttpUtility.UrlDecode(date), DateTimeFormat, null);
+            string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
+            List<Sighting> sightings = await _factory.Sightings
+                                                     .ListAsync(s => (s.Flight.Number == decodedNumber) &&
+                                                                     (s.Date == decodedDate),
+                                                                pageNumber,
+                                                                pageSize)
                                                      .ToListAsync();
 
             if (!sightings.Any())
