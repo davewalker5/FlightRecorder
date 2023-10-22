@@ -1,14 +1,9 @@
-﻿using FlightRecorder.Entities.Db;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FlightRecorder.Entities.DataExchange
 {
+    [ExcludeFromCodeCoverage]
     public class FlattenedAirport
     {
         public const string CsvRecordPattern = @"^""[a-zA-Z]{3}"","".*"","".*""$";

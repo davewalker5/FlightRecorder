@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace FlightRecorder.BusinessLogic.Logic
 {
-    public class CountryManager : ICountryManager
+    internal class CountryManager : ICountryManager
     {
         private readonly FlightRecorderDbContext _context;
 

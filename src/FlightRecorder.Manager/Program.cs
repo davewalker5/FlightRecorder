@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using FlightRecorder.BusinessLogic.Factory;
+﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
+using FlightRecorder.DataExchange;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Manager.Entities;
 using FlightRecorder.Manager.Logic;
-using FlightRecorder.DataExchange;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 

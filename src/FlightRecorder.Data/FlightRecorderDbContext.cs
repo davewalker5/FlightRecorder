@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Reporting;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.Data
@@ -17,6 +18,10 @@ namespace FlightRecorder.Data
         public virtual DbSet<Model> Models { get; set; }
         public virtual DbSet<Sighting> Sightings { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<AirlineStatistics> AirlineStatistics { get; set; }
+        public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
+        public virtual DbSet<ManufacturerStatistics> ManufacturerStatistics { get; set; }
+        public virtual DbSet<ModelStatistics> ModelStatistics { get; set; }
 
         public FlightRecorderDbContext(DbContextOptions<FlightRecorderDbContext> options) : base(options)
         {
@@ -28,6 +33,11 @@ namespace FlightRecorder.Data
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AirlineStatistics>().HasNoKey();
+            modelBuilder.Entity<LocationStatistics>().HasNoKey();
+            modelBuilder.Entity<ManufacturerStatistics>().HasNoKey();
+            modelBuilder.Entity<ModelStatistics>().HasNoKey();
+
             modelBuilder.Entity<Aircraft>(entity =>
             {
                 entity.ToTable("AIRCRAFT");
