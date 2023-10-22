@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using FlightRecorder.BusinessLogic.Logic;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Interfaces;
@@ -22,7 +23,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IDateBasedReport<LocationStatistics>> _locationStatistics = null;
         private readonly Lazy<IDateBasedReport<ManufacturerStatistics>> _manufacturerStatistics = null;
         private readonly Lazy<IDateBasedReport<ModelStatistics>> _modelStatistics = null;
-
+        public FlightRecorderDbContext Context { get; private set; }
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
         public IManufacturerManager Manufacturers { get { return _manufacturers.Value; } }
@@ -33,11 +34,18 @@ namespace FlightRecorder.BusinessLogic.Factory
         public IUserManager Users { get { return _users.Value; } }
         public ICountryManager Countries { get { return _countries.Value; } }
         public IAirportManager Airports { get { return _airports.Value; } }
+
+        [ExcludeFromCodeCoverage]
         public IDateBasedReport<AirlineStatistics> AirlineStatistics { get { return _airlineStatistics.Value; } }
+
+        [ExcludeFromCodeCoverage]
         public IDateBasedReport<LocationStatistics> LocationStatistics { get { return _locationStatistics.Value; } }
+
+        [ExcludeFromCodeCoverage]
         public IDateBasedReport<ManufacturerStatistics> ManufacturerStatistics { get { return _manufacturerStatistics.Value; } }
+
+        [ExcludeFromCodeCoverage]
         public IDateBasedReport<ModelStatistics> ModelStatistics { get { return _modelStatistics.Value; } }
-        public FlightRecorderDbContext Context { get; private set; }
 
         public FlightRecorderFactory(FlightRecorderDbContext context)
         {

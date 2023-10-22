@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>FlightRecorder.BusinessLogic</PackageId>
-    <PackageVersion>1.1.0.0</PackageVersion>
+    <PackageVersion>1.1.1.0</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023</Copyright>
     <Owners>Dave Walker</Owners>
@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <ReleaseVersion>1.1.0.0</ReleaseVersion>
+    <ReleaseVersion>1.1.1.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +29,7 @@
   <ItemGroup>
     <None Remove="Sql\AirlineStatistics.sql" />
     <None Remove="Sql\LocationStatistics.sql" />
-    <None Remove="Sql\ManufacturerStatistis.sql" />
+    <None Remove="Sql\ManufacturerStatistics.sql" />
     <None Remove="Sql\ModelStatistics.sql" />
   </ItemGroup>
   <ItemGroup>
@@ -39,7 +39,7 @@
     <EmbeddedResource Include="Sql\LocationStatistics.sql">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Sql\ManufacturerStatistis.sql">
+    <EmbeddedResource Include="Sql\ManufacturerStatistics.sql">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\ModelStatistics.sql">
