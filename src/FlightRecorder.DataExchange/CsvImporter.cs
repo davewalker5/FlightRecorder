@@ -7,6 +7,7 @@ using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.DataExchange;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FlightRecorder.DataExchange
 {
@@ -20,7 +21,7 @@ namespace FlightRecorder.DataExchange
         /// </summary>
         /// <param name="file"></param>
         /// <param name="context"></param>
-        public void Import(string file, FlightRecorderFactory factory)
+        public async Task Import(string file, FlightRecorderFactory factory)
         {
             Regex regex = new Regex(FlattenedSighting.CsvRecordPattern, RegexOptions.Compiled);
 
@@ -45,7 +46,7 @@ namespace FlightRecorder.DataExchange
 
                         // Inflate the CSV record to a sighting and store it in the database
                         FlattenedSighting sighting = FlattenedSighting.FromCsv(line);
-                        factory.Sightings.Add(sighting);
+                        await factory.Sightings.AddAsync(sighting);
 
                         RecordImport?.Invoke(this, new SightingDataExchangeEventArgs { RecordCount = count - 1, Sighting = sighting });
                     }

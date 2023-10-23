@@ -13,7 +13,6 @@ namespace FlightRecorder.Tests
     public class CountryManagerTest
     {
         private const string EntityName = "UK";
-        private const string AsyncEntityName = "USA";
 
         private FlightRecorderFactory _factory;
 
@@ -22,49 +21,32 @@ namespace FlightRecorder.Tests
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
-            _factory.Countries.Add(EntityName);
+            Task.Run(() => _factory.Countries.AddAsync(EntityName)).Wait();
         }
 
         [TestMethod]
-        public void AddDuplicateTest()
+        public async Task AddDuplicateAsyncTest()
         {
-            _factory.Countries.Add(EntityName);
-            Assert.AreEqual(1, _factory.Countries.List(null, 1, 100).Count());
+            var countries = await _factory.Countries.ListAsync(null, 1, 100).ToListAsync();
+            Assert.AreEqual(1, countries.Count);
         }
 
         [TestMethod]
-        public void AddAndGetTest()
+        public async Task AddAndGetAsyncTest()
         {
-            Country entity = _factory.Countries.Get(a => a.Name == EntityName);
+            await _factory.Countries.AddAsync(EntityName);
+            Country entity = await _factory.Countries
+                                           .GetAsync(a => a.Name == EntityName);
             Assert.IsNotNull(entity);
             Assert.IsTrue(entity.Id > 0);
             Assert.AreEqual(EntityName, entity.Name);
         }
 
         [TestMethod]
-        public async Task AddAndGetAsyncTest()
+        public async Task GetMissingAsyncTest()
         {
-            await _factory.Countries.AddAsync(AsyncEntityName);
-            Country entity = await _factory.Countries
-                                           .GetAsync(a => a.Name == AsyncEntityName);
-            Assert.IsNotNull(entity);
-            Assert.IsTrue(entity.Id > 0);
-            Assert.AreEqual(AsyncEntityName, entity.Name);
-        }
-
-        [TestMethod]
-        public void GetMissingTest()
-        {
-            Country entity = _factory.Countries.Get(a => a.Name == "Missing");
+            Country entity = await _factory.Countries.GetAsync(a => a.Name == "Missing");
             Assert.IsNull(entity);
-        }
-
-        [TestMethod]
-        public void ListAllTest()
-        {
-            IEnumerable<Country> entities = _factory.Countries.List(null, 1, 100);
-            Assert.AreEqual(1, entities.Count());
-            Assert.AreEqual(EntityName, entities.First().Name);
         }
 
         [TestMethod]
@@ -74,14 +56,6 @@ namespace FlightRecorder.Tests
                                                    .ListAsync(null, 1, 100)
                                                    .ToListAsync();
             Assert.AreEqual(1, entities.Count);
-            Assert.AreEqual(EntityName, entities.First().Name);
-        }
-
-        [TestMethod]
-        public void FilteredListTest()
-        {
-            IEnumerable<Country> entities = _factory.Countries.List(e => e.Name == EntityName, 1, 100);
-            Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
 
@@ -96,10 +70,10 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void ListMissingTest()
+        public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Country> entities = _factory.Countries.List(e => e.Name == "Missing", 1, 100);
-            Assert.AreEqual(0, entities.Count());
+            List<Country> entities = await _factory.Countries.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, entities.Count);
         }
     }
 }

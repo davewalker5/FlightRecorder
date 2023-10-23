@@ -28,34 +28,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public User GetUser(int userId)
-        {
-            User user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            ThrowIfUserNotFound(user, userId);
-            return user;
-        }
-
-        /// <summary>
-        /// Return the user with the specified Id
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <returns></returns>
         public async Task<User> GetUserAsync(int userId)
         {
             User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             ThrowIfUserNotFound(user, userId);
-            return user;
-        }
-
-        /// <summary>
-        /// Return the user with the specified Id
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <returns></returns>
-        public User GetUser(string userName)
-        {
-            User user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-            ThrowIfUserNotFound(user, userName);
             return user;
         }
 
@@ -74,36 +50,8 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <summary>
         /// Get all the current user details
         /// </summary>
-        public IEnumerable<User> GetUsers() =>
-            _context.Users;
-
-        /// <summary>
-        /// Get all the current user details
-        /// </summary>
         public IAsyncEnumerable<User> GetUsersAsync() =>
             _context.Users.AsAsyncEnumerable();
-
-        /// <summary>
-        /// Add a new user, given their details
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public User AddUser(string userName, string password)
-        {
-            User user = _context.Users.FirstOrDefault(u => u.UserName == userName);
-            ThrowIfUserFound(user, userName);
-
-            user = new User
-            {
-                UserName = userName,
-                Password = _hasher.Value.HashPassword(userName, password)
-            };
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
-            return user;
-        }
 
         /// <summary>
         /// Add a new user, given their details
@@ -133,24 +81,6 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public bool Authenticate(string userName, string password)
-        {
-            User user = GetUser(userName);
-            PasswordVerificationResult result = _hasher.Value.VerifyHashedPassword(userName, user.Password, password);
-            if (result == PasswordVerificationResult.SuccessRehashNeeded)
-            {
-                user.Password = _hasher.Value.HashPassword(userName, password);
-                _context.SaveChanges();
-            }
-            return result != PasswordVerificationResult.Failed;
-        }
-
-        /// <summary>
-        /// Authenticate the specified user
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
         public async Task<bool> AuthenticateAsync(string userName, string password)
         {
             User user = await GetUserAsync(userName);
@@ -168,34 +98,11 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="password"></param>
-        public void SetPassword(string userName, string password)
-        {
-            User user = GetUser(userName);
-            user.Password = _hasher.Value.HashPassword(userName, password);
-            _context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Set the password for the specified user
-        /// </summary>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
         public async Task SetPasswordAsync(string userName, string password)
         {
             User user = await GetUserAsync(userName);
             user.Password = _hasher.Value.HashPassword(userName, password);
             await _context.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Delete the specified user
-        /// </summary>
-        /// <param name="userName"></param>
-        public void DeleteUser(string userName)
-        {
-            User user = GetUser(userName);
-            _context.Users.Remove(user);
-            _context.SaveChanges();
         }
 
         /// <summary>

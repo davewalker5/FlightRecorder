@@ -13,12 +13,11 @@ namespace FlightRecorder.Tests
     public class UserManagerTest
     {
         private const string UserName = "Some User";
-        private const string AsyncUserName = "Some Other User";
         private const string Password = "password";
         private const string UpdatedPassword = "newpassword";
 
         private FlightRecorderFactory _factory;
-        private int _userId;
+        private User _user;
 
         [TestInitialize]
         public void TestInitialize()
@@ -26,45 +25,13 @@ namespace FlightRecorder.Tests
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
 
-            User user = _factory.Users.AddUser(UserName, Password);
-            _factory.Context.SaveChanges();
-            _userId = user.Id;
-        }
-
-        [TestMethod]
-        public void AddUserTest()
-        {
-            // The  user has been added during test initialisation. All that needs
-            // to be done here is to validate it
-            Assert.AreEqual(1, _factory.Context.Users.Count());
-            Assert.AreEqual(UserName, _factory.Context.Users.First().UserName);
-
-            // Password is hashed and so should *not* equal the supplied password
-            Assert.AreNotEqual(Password, _factory.Context.Users.First().Password);
-        }
-
-        [TestMethod]
-        public async Task AddUserAsyncTest()
-        {
-            User user = await _factory.Users.AddUserAsync(AsyncUserName, Password);
-            await _factory.Context.SaveChangesAsync();
-            Assert.AreEqual(2, _factory.Context.Users.Count());
-            Assert.AreEqual(AsyncUserName, user.UserName);
-            Assert.AreNotEqual(Password, user.Password);
+            _user = Task.Run(() => _factory.Users.AddUserAsync(UserName, Password)).Result;
         }
 
         [TestMethod, ExpectedException(typeof(UserExistsException))]
-        public void AddExistingUserTest()
+        public async Task AddExistingUserAsyncTest()
         {
-            _factory.Users.AddUser(UserName, Password);
-        }
-
-        [TestMethod]
-        public void DeleteUserTest()
-        {
-            _factory.Users.DeleteUser(UserName);
-            IEnumerable<User> users = _factory.Users.GetUsers();
-            Assert.IsFalse(users.Any());
+            await _factory.Users.AddUserAsync(UserName, Password);
         }
 
         [TestMethod]
@@ -76,34 +43,17 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void GetUserByIdTest()
-        {
-            User user = _factory.Users.GetUser(_userId);
-            Assert.AreEqual(UserName, user.UserName);
-            Assert.AreNotEqual(Password, user.Password);
-        }
-
-        [TestMethod]
         public async Task GetUserByIdAsyncTest()
         {
-            User user = await _factory.Users.GetUserAsync(_userId);
+            User user = await _factory.Users.GetUserAsync(_user.Id);
             Assert.AreEqual(UserName, user.UserName);
             Assert.AreNotEqual(Password, user.Password);
         }
 
         [TestMethod, ExpectedException(typeof(UserNotFoundException))]
-        public void GetMissingUserByIdTest()
+        public async Task GetMissingUserByIdAsyncTest()
         {
-            _factory.Users.GetUser(-1);
-        }
-
-        [TestMethod]
-        public void GetAllUsersTest()
-        {
-            IEnumerable<User> users = _factory.Users.GetUsers();
-            Assert.AreEqual(1, users.Count());
-            Assert.AreEqual(UserName, _factory.Context.Users.First().UserName);
-            Assert.AreNotEqual(Password, _factory.Context.Users.First().Password);
+            await _factory.Users.GetUserAsync(-1);
         }
 
         [TestMethod]
@@ -116,13 +66,6 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void AuthenticateTest()
-        {
-            bool authenticated = _factory.Users.Authenticate(UserName, Password);
-            Assert.IsTrue(authenticated);
-        }
-
-        [TestMethod]
         public async Task AuthenticateAsyncTest()
         {
             bool authenticated = await _factory.Users.AuthenticateAsync(UserName, Password);
@@ -130,18 +73,10 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void FailedAuthenticationTest()
+        public async Task FailedAuthenticationTest()
         {
-            bool authenticated = _factory.Users.Authenticate(UserName, "the wrong password");
+            bool authenticated = await _factory.Users.AuthenticateAsync(UserName, "the wrong password");
             Assert.IsFalse(authenticated);
-        }
-
-        [TestMethod]
-        public void SetPassswordTest()
-        {
-            _factory.Users.SetPassword(UserName, UpdatedPassword);
-            bool authenticated = _factory.Users.Authenticate(UserName, UpdatedPassword);
-            Assert.IsTrue(authenticated);
         }
 
         [TestMethod]

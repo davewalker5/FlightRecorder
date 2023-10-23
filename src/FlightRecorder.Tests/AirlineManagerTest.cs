@@ -12,7 +12,6 @@ namespace FlightRecorder.Tests
     public class AirlineManagerTest
     {
         private const string EntityName = "EasyJet";
-        private const string AsyncEntityName = "Virgin Atlantic";
 
         private FlightRecorderFactory _factory;
 
@@ -21,49 +20,32 @@ namespace FlightRecorder.Tests
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
-            _factory.Airlines.Add(EntityName);
+            Task.Run(() => _factory.Airlines.AddAsync(EntityName)).Wait();
         }
 
         [TestMethod]
-        public void AddDuplicateTest()
+        public async Task AddDuplicateAsyncTest()
         {
-            _factory.Airlines.Add(EntityName);
-            Assert.AreEqual(1, _factory.Airlines.List(null, 1, 100).Count());
+            await _factory.Airlines.AddAsync(EntityName);
+            var airlines = await _factory.Airlines.ListAsync(null, 1, 100).ToListAsync();
+            Assert.AreEqual(1, airlines.Count);
         }
 
         [TestMethod]
-        public void AddAndGetTest()
+        public async Task AddAndGetAsyncTest()
         {
-            Airline entity = _factory.Airlines.Get(a => a.Name == EntityName);
+            Airline entity = await _factory.Airlines
+                                           .GetAsync(a => a.Name == EntityName);
             Assert.IsNotNull(entity);
             Assert.IsTrue(entity.Id > 0);
             Assert.AreEqual(EntityName, entity.Name);
         }
 
         [TestMethod]
-        public async Task AddAndGetAsyncTest()
+        public async Task GetMissingAsyncTest()
         {
-            await _factory.Airlines.AddAsync(AsyncEntityName);
-            Airline entity = await _factory.Airlines
-                                           .GetAsync(a => a.Name == AsyncEntityName);
-            Assert.IsNotNull(entity);
-            Assert.IsTrue(entity.Id > 0);
-            Assert.AreEqual(AsyncEntityName, entity.Name);
-        }
-
-        [TestMethod]
-        public void GetMissingTest()
-        {
-            Airline entity = _factory.Airlines.Get(a => a.Name == "Missing");
+            Airline entity = await _factory.Airlines.GetAsync(a => a.Name == "Missing");
             Assert.IsNull(entity);
-        }
-
-        [TestMethod]
-        public void ListAllTest()
-        {
-            IEnumerable<Airline> entities = _factory.Airlines.List(null, 1, 100);
-            Assert.AreEqual(1, entities.Count());
-            Assert.AreEqual(EntityName, entities.First().Name);
         }
 
         [TestMethod]
@@ -73,14 +55,6 @@ namespace FlightRecorder.Tests
                                                    .ListAsync(null, 1, 100)
                                                    .ToListAsync();
             Assert.AreEqual(1, entities.Count);
-            Assert.AreEqual(EntityName, entities.First().Name);
-        }
-
-        [TestMethod]
-        public void FilteredListTest()
-        {
-            IEnumerable<Airline> entities = _factory.Airlines.List(e => e.Name == EntityName, 1, 100);
-            Assert.AreEqual(1, entities.Count());
             Assert.AreEqual(EntityName, entities.First().Name);
         }
 
@@ -95,10 +69,10 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void ListMissingTest()
+        public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Airline> entities = _factory.Airlines.List(e => e.Name == "Missing", 1, 100);
-            Assert.AreEqual(0, entities.Count());
+            List<Airline> entities = await _factory.Airlines.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, entities.Count);
         }
     }
 }
