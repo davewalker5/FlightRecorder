@@ -22,6 +22,7 @@ namespace FlightRecorder.Data
         public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
         public virtual DbSet<ManufacturerStatistics> ManufacturerStatistics { get; set; }
         public virtual DbSet<ModelStatistics> ModelStatistics { get; set; }
+        public virtual DbSet<FlightsByMonth> FlightsByMonth { get; set; }
 
         public FlightRecorderDbContext(DbContextOptions<FlightRecorderDbContext> options) : base(options)
         {
@@ -37,6 +38,7 @@ namespace FlightRecorder.Data
             modelBuilder.Entity<LocationStatistics>().HasNoKey();
             modelBuilder.Entity<ManufacturerStatistics>().HasNoKey();
             modelBuilder.Entity<ModelStatistics>().HasNoKey();
+            modelBuilder.Entity<FlightsByMonth>().HasNoKey();
 
             modelBuilder.Entity<Aircraft>(entity =>
             {
