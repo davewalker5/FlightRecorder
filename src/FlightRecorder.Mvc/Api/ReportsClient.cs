@@ -64,6 +64,17 @@ namespace FlightRecorder.Mvc.Api
             => await DateBasedStatisticsReportAsync<ModelStatistics>("ModelStatistics", from, to, pageNumber, pageSize);
 
         /// <summary>
+        /// Return the flights by month report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<FlightsByMonth>> FlightsByMonthAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedStatisticsReportAsync<FlightsByMonth>("FlightsByMonth", from, to, pageNumber, pageSize);
+
+        /// <summary>
         /// Return a date-based statistics report
         /// </summary>
         /// <typeparam name="T"></typeparam>
