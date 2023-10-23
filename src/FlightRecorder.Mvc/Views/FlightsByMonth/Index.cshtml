@@ -1,20 +1,20 @@
 ﻿@using FlightRecorder.Mvc.Entities
-@model FlightRecorder.Mvc.Models.LocationStatisticsViewModel
+@model FlightRecorder.Mvc.Models.FlightsByMonthViewModel
 
 @{
-    ViewData["Title"] = "Location Statistics Report";
+    ViewData["Title"] = "Flights By Month Report";
     string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
     string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
 }
 
 <p class="text-center font-weight-bold">
     <span style="font-size: 1.2rem">
-        Location Statistics
+        Flights By Month
     </span>
     <br />
     <small class="text-muted">
         <em>
-            Produce summary statistics for all locations
+            Produce a summary of sightings and flights by month
         </em>
     </small>
 </p>
@@ -60,22 +60,18 @@
         {
             <table class="table">
                 <tr>
-                    <th>Location</th>
+                    <th>Year</th>
+                    <th>Month</th>
                     <th>Sightings</th>
                     <th>Flights</th>
-                    <th>Aircraft</th>
-                    <th>Models</th>
-                    <th>Manufacturers</th>
                 </tr>
                 @foreach (var record in Model.Records)
                 {
                     <tr>
-                        <td valign="center">@record.Name</td>
+                        <td valign="center">@record.Year</td>
+                        <td valign="center">@record.Month</td>
                         <td valign="center">@record.Sightings</td>
                         <td valign="center">@record.Flights</td>
-                        <td valign="center">@record.Aircraft</td>
-                        <td valign="center">@record.Models</td>
-                        <td valign="center">@record.Manufacturers</td>
                     </tr>
                 }
             </table>
@@ -88,7 +84,7 @@
         else if (Model.HasNoMatchingResults)
         {
             <hr />
-            @Html.Raw("Location statistics are not available")
+            @Html.Raw("Flight statistics are not available")
         }
     }
 </div>
