@@ -23,6 +23,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IDateBasedReport<LocationStatistics>> _locationStatistics = null;
         private readonly Lazy<IDateBasedReport<ManufacturerStatistics>> _manufacturerStatistics = null;
         private readonly Lazy<IDateBasedReport<ModelStatistics>> _modelStatistics = null;
+        private readonly Lazy<IDateBasedReport<FlightsByMonth>> _flightsByMonth = null;
         public FlightRecorderDbContext Context { get; private set; }
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -47,6 +48,10 @@ namespace FlightRecorder.BusinessLogic.Factory
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<ModelStatistics> ModelStatistics { get { return _modelStatistics.Value; } }
 
+        [ExcludeFromCodeCoverage]
+        public IDateBasedReport<FlightsByMonth> FlightsByMonth { get { return _flightsByMonth.Value; } }
+
+
         public FlightRecorderFactory(FlightRecorderDbContext context)
         {
             Context = context;
@@ -64,6 +69,7 @@ namespace FlightRecorder.BusinessLogic.Factory
             _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(context));
             _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(context));
             _modelStatistics = new Lazy<IDateBasedReport<ModelStatistics>>(() => new DateBasedReport<ModelStatistics>(context));
+            _flightsByMonth = new Lazy<IDateBasedReport<FlightsByMonth>>(() => new DateBasedReport<FlightsByMonth>(context));
         }
     }
 }
