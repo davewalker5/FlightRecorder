@@ -28,13 +28,13 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Country>> GetCountriesAsync()
         {
-            List<Country> countries = _cache.Get<List<Country>>(CacheKey);
+            List<Country> countries = Cache.Get<List<Country>>(CacheKey);
             if (countries == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllCountriesPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllCountriesPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                countries = JsonConvert.DeserializeObject<List<Country>>(json).OrderBy(m => m.Name).ToList();
-                _cache.Set(CacheKey, countries, _settings.Value.CacheLifetimeSeconds);
+                countries = JsonConvert.DeserializeObject<List<Country>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
+                Cache.Set(CacheKey, countries, Settings.Value.CacheLifetimeSeconds);
             }
             return countries;
         }
@@ -46,12 +46,12 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Country> GetCountryAsync(int id)
         {
-            Country country = _cache.Get<List<Country>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
+            Country country = Cache.Get<List<Country>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
             if (country == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                country = JsonConvert.DeserializeObject<Country>(json);
+                country = JsonConvert.DeserializeObject<Country>(json, JsonSettings);
             }
 
             return country;
@@ -64,10 +64,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Country> AddCountryAsync(string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            Country country = JsonConvert.DeserializeObject<Country>(json);
+            Country country = JsonConvert.DeserializeObject<Country>(json, JsonSettings);
             return country;
         }
 
@@ -79,11 +79,11 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Country> UpdateCountryAsync(int id, string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
-            string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
             string json = await SendDirectAsync(route, data, HttpMethod.Put);
-            Country country = JsonConvert.DeserializeObject<Country>(json);
+            Country country = JsonConvert.DeserializeObject<Country>(json, JsonSettings);
             return country;
         }
     }

@@ -33,16 +33,16 @@ namespace FlightRecorder.Mvc.Api
         public async Task<List<Model>> GetModelsAsync(int manufacturerId)
         {
             string key = $"{CacheKeyPrefix}.{manufacturerId}";
-            List<Model> models = _cache.Get<List<Model>>(key);
+            List<Model> models = Cache.Get<List<Model>>(key);
             if (models == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/manufacturer/{manufacturerId}/1/{AllModelsPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/manufacturer/{manufacturerId}/1/{AllModelsPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
-                    models = JsonConvert.DeserializeObject<List<Model>>(json)
+                    models = JsonConvert.DeserializeObject<List<Model>>(json, JsonSettings)
                                         .OrderBy(m => m.Name).ToList();
-                    _cache.Set(key, models, _settings.Value.CacheLifetimeSeconds);
+                    Cache.Set(key, models, Settings.Value.CacheLifetimeSeconds);
                 }
             }
 
@@ -61,9 +61,9 @@ namespace FlightRecorder.Mvc.Api
             if (model == null)
             {
                 // It doesn't, so go to the service to get it
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                model = JsonConvert.DeserializeObject<Model>(json);
+                model = JsonConvert.DeserializeObject<Model>(json, JsonSettings);
             }
 
             return model;
@@ -78,7 +78,7 @@ namespace FlightRecorder.Mvc.Api
         public async Task<Model> AddModelAsync(string name, int manufacturerId)
         {
             string key = $"{CacheKeyPrefix}.{manufacturerId}";
-            _cache.Remove(key);
+            Cache.Remove(key);
 
             // TODO : When the service "TODO" list is completed, it will no longer
             // be necessary to retrieve the manufacturer here as it will be
@@ -94,7 +94,7 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
 
-            Model model = JsonConvert.DeserializeObject<Model>(json);
+            Model model = JsonConvert.DeserializeObject<Model>(json, JsonSettings);
             return model;
         }
 
@@ -115,11 +115,11 @@ namespace FlightRecorder.Mvc.Api
             if (original != null)
             {
                 key = $"{CacheKeyPrefix}.{original.ManufacturerId}";
-                _cache.Remove(key);
+                Cache.Remove(key);
             }
 
             key = $"{CacheKeyPrefix}.{manufacturerId}";
-            _cache.Remove(key);
+            Cache.Remove(key);
 
             dynamic template = new
             {
@@ -130,7 +130,7 @@ namespace FlightRecorder.Mvc.Api
 
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
-            Model model = JsonConvert.DeserializeObject<Model>(json);
+            Model model = JsonConvert.DeserializeObject<Model>(json, JsonSettings);
             return model;
         }
 
@@ -142,10 +142,10 @@ namespace FlightRecorder.Mvc.Api
         {
             Model model = null;
 
-            IEnumerable<string> keys = _cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
+            IEnumerable<string> keys = Cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
             foreach (string key in keys)
             {
-                List<Model> models = _cache.Get<List<Model>>(key);
+                List<Model> models = Cache.Get<List<Model>>(key);
                 model = models.FirstOrDefault(m => m.Id == id);
             }
 

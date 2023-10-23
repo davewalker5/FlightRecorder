@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Api
 {
@@ -28,9 +27,9 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Sighting> GetSightingAsync(int id)
         {
-            string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json);
+            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json, JsonSettings);
             return sighting;
         }
 
@@ -56,7 +55,7 @@ namespace FlightRecorder.Mvc.Api
 
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json);
+            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json, JsonSettings);
             return sighting;
         }
 
@@ -84,7 +83,7 @@ namespace FlightRecorder.Mvc.Api
 
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
-            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json);
+            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json, JsonSettings);
             return sighting;
         }
     }

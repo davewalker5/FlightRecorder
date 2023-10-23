@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using FlightRecorder.Mvc.Api;
@@ -445,18 +446,12 @@ namespace FlightRecorder.Mvc.Wizard
                 if (details.SightingId != null)
                 {
                     sighting = await _sightings.UpdateSightingAsync(details.SightingId ?? 0, details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
-                    message = $"Your sighting of flight {sighting.Flight.Number}, " +
-                                    $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
-                                    $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
-                                    $"has been updated";
+                    message = BuildSightingMessage(sighting, true);
                 }
                 else
                 {
                     sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
-                    message = $"Your sighting of flight {sighting.Flight.Number}, " +
-                                     $"aircraft {sighting.Aircraft.Registration} ({sighting.Aircraft.Model.Manufacturer.Name} {sighting.Aircraft.Model.Name}), " +
-                                     $"at {sighting.Location.Name} on {sighting.Date.ToString("dd-MMM-yyyy")} " +
-                                     $"has been added to the database";
+                    message = BuildSightingMessage(sighting, false);
                 }
 
                 // Cache the message giving its details and other properties that are
@@ -489,6 +484,46 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
+        /// Build the message to report addition/update of a sighting
+        /// </summary>
+        /// <param name="sighting"></param>
+        /// <param name="isUpdate"></param>
+        /// <returns></returns>
+        private static string BuildSightingMessage(Sighting sighting, bool isUpdate)
+        {
+            StringBuilder builder = new();
+            builder.Append("Your sighting of flight ");
+            builder.Append(sighting.Flight.Number);
+            builder.Append(", aircraft ");
+            builder.Append(sighting.Aircraft.Registration);
+
+            if (sighting.Aircraft.Model != null)
+            {
+                builder.Append("(");
+                builder.Append(sighting.Aircraft.Model.Manufacturer.Name);
+                builder.Append(" ");
+                builder.Append(sighting.Aircraft.Model.Name);
+                builder.Append(")");
+            }
+
+            builder.Append(", at ");
+            builder.Append(sighting.Location.Name);
+            builder.Append(" on ");
+            builder.Append(sighting.Date.ToString("dd-MMM-yyyy"));
+
+            if (isUpdate)
+            {
+                builder.Append(" has been updated");
+            }
+            else
+            {
+                builder.Append(" has been added to the database");
+            }
+
+            return builder.ToString();
+        }
+
+        /// <summary>
         /// Either retrieve an existing aircraft or create a new one
         /// </summary>
         /// <param name="userName"></param>
@@ -510,14 +545,21 @@ namespace FlightRecorder.Mvc.Wizard
                 }
                 else
                 {
-                    if ((details.ManufacturerId ?? 0) == 0)
+                    // If an existing manufacturer's not been specified and we have a manufacturer name,
+                    // create a new manufacturer
+                    if (((details.ManufacturerId ?? 0) == 0) && !string.IsNullOrEmpty(details.NewManufacturer))
                     {
                         // With no manufacturer selected, we're creating a new manufacturer and model
                         Manufacturer manufacturer = await _manufacturers.AddManufacturerAsync(details.NewManufacturer);
-                        Model model = await _models.AddModelAsync(details.NewModel, manufacturer.Id);
-                        details.ModelId = model.Id;
+                        details.ManufacturerId = manufacturer.Id;
+
+                        // Must be creating a new model, so NULL the model ID on the details
+                        details.ModelId = null;
                     }
-                    else if ((details.ModelId ?? 0) == 0)
+
+                    // If an existing model's not been specified and we have a model name and a manufacturer,
+                    // create a newmodel
+                    if (((details.ModelId ?? 0) == 0) && (details.ManufacturerId > 0) && !string.IsNullOrEmpty(details.NewModel))
                     {
                         // With no model selected, we're creating a new model for the selected manufacturer
                         Model model = await _models.AddModelAsync(details.NewModel, details.ManufacturerId ?? 0);
@@ -603,7 +645,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// <param name="userName"></param>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        private string GetCacheKey(string prefix, string userName)
+        private static string GetCacheKey(string prefix, string userName)
         {
             string key = $"{prefix}.{userName}";
             return key;

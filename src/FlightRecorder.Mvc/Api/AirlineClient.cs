@@ -28,13 +28,13 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Airline>> GetAirlinesAsync()
         {
-            List<Airline> airlines = _cache.Get<List<Airline>>(CacheKey);
+            List<Airline> airlines = Cache.Get<List<Airline>>(CacheKey);
             if (airlines == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllAirlinesPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllAirlinesPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                airlines = JsonConvert.DeserializeObject<List<Airline>>(json).OrderBy(m => m.Name).ToList();
-                _cache.Set(CacheKey, airlines, _settings.Value.CacheLifetimeSeconds);
+                airlines = JsonConvert.DeserializeObject<List<Airline>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
+                Cache.Set(CacheKey, airlines, Settings.Value.CacheLifetimeSeconds);
             }
             return airlines;
         }
@@ -46,12 +46,12 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Airline> GetAirlineAsync(int id)
         {
-            Airline airline = _cache.Get<List<Airline>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
+            Airline airline = Cache.Get<List<Airline>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
             if (airline == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                airline = JsonConvert.DeserializeObject<Airline>(json);
+                airline = JsonConvert.DeserializeObject<Airline>(json, JsonSettings);
             }
 
             return airline;
@@ -64,10 +64,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Airline> AddAirlineAsync(string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            Airline airline = JsonConvert.DeserializeObject<Airline>(json);
+            Airline airline = JsonConvert.DeserializeObject<Airline>(json, JsonSettings);
             return airline;
         }
 
@@ -79,11 +79,11 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Airline> UpdateAirlineAsync(int id, string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
-            string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
             string json = await SendDirectAsync(route, data, HttpMethod.Put);
-            Airline airline = JsonConvert.DeserializeObject<Airline>(json);
+            Airline airline = JsonConvert.DeserializeObject<Airline>(json, JsonSettings);
             return airline;
         }
     }

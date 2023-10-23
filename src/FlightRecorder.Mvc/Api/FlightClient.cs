@@ -35,18 +35,18 @@ namespace FlightRecorder.Mvc.Api
         public async Task<List<Flight>> GetFlightsByRouteAsync(string embarkation, string destination)
         {
             string key = $"{CacheKeyPrefix}.R.{embarkation}.{destination}";
-            List<Flight> flights = _cache.Get<List<Flight>>(key);
+            List<Flight> flights = Cache.Get<List<Flight>>(key);
             if (flights == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/route/{embarkation}/{destination}/1/{AllFlightsPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/route/{embarkation}/{destination}/1/{AllFlightsPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
-                    flights = JsonConvert.DeserializeObject<List<Flight>>(json)
+                    flights = JsonConvert.DeserializeObject<List<Flight>>(json, JsonSettings)
                                         .OrderBy(m => m.Embarkation)
                                         .ThenBy(m => m.Destination)
                                         .ToList();
-                    _cache.Set(key, flights, _settings.Value.CacheLifetimeSeconds);
+                    Cache.Set(key, flights, Settings.Value.CacheLifetimeSeconds);
                 }
             }
 
@@ -61,19 +61,19 @@ namespace FlightRecorder.Mvc.Api
         public async Task<List<Flight>> GetFlightsByAirlineAsync(int airlineId)
         {
             string key = $"{CacheKeyPrefix}.A.{airlineId}";
-            List<Flight> flights = _cache.Get<List<Flight>>(key);
+            List<Flight> flights = Cache.Get<List<Flight>>(key);
             if (flights == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/airline/{airlineId}/1/{AllFlightsPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/airline/{airlineId}/1/{AllFlightsPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
-                    flights = JsonConvert.DeserializeObject<List<Flight>>(json)
+                    flights = JsonConvert.DeserializeObject<List<Flight>>(json, JsonSettings)
                                         .OrderBy(m => m.Airline.Name)
                                         .ThenBy(m => m.Embarkation)
                                         .ThenBy(m => m.Destination)
                                         .ToList();
-                    _cache.Set(key, flights, _settings.Value.CacheLifetimeSeconds);
+                    Cache.Set(key, flights, Settings.Value.CacheLifetimeSeconds);
                 }
             }
 
@@ -88,19 +88,19 @@ namespace FlightRecorder.Mvc.Api
         public async Task<List<Flight>> GetFlightsByNumberAsync(string number)
         {
             string key = $"{CacheKeyPrefix}.N.{number}";
-            List<Flight> flights = _cache.Get<List<Flight>>(key);
+            List<Flight> flights = Cache.Get<List<Flight>>(key);
             if (flights == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/number/{number}/1/{AllFlightsPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/number/{number}/1/{AllFlightsPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
-                    flights = JsonConvert.DeserializeObject<List<Flight>>(json)
+                    flights = JsonConvert.DeserializeObject<List<Flight>>(json, JsonSettings)
                                         .OrderBy(m => m.Airline.Name)
                                         .ThenBy(m => m.Embarkation)
                                         .ThenBy(m => m.Destination)
                                         .ToList();
-                    _cache.Set(key, flights, _settings.Value.CacheLifetimeSeconds);
+                    Cache.Set(key, flights, Settings.Value.CacheLifetimeSeconds);
                 }
             }
 
@@ -119,9 +119,9 @@ namespace FlightRecorder.Mvc.Api
             if (flight == null)
             {
                 // It doesn't, so go to the service to get it
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                flight = JsonConvert.DeserializeObject<Flight>(json);
+                flight = JsonConvert.DeserializeObject<Flight>(json, JsonSettings);
             }
 
             return flight;
@@ -157,7 +157,7 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
 
-            Flight flight = JsonConvert.DeserializeObject<Flight>(json);
+            Flight flight = JsonConvert.DeserializeObject<Flight>(json, JsonSettings);
             return flight;
         }
 
@@ -188,7 +188,7 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
 
-            Flight flight = JsonConvert.DeserializeObject<Flight>(json);
+            Flight flight = JsonConvert.DeserializeObject<Flight>(json, JsonSettings);
             return flight;
         }
 
@@ -201,10 +201,10 @@ namespace FlightRecorder.Mvc.Api
         {
             Flight flight = null;
 
-            IEnumerable<string> keys = _cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
+            IEnumerable<string> keys = Cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
             foreach (string key in keys)
             {
-                List<Flight> flights = _cache.Get<List<Flight>>(key);
+                List<Flight> flights = Cache.Get<List<Flight>>(key);
                 flight = flights.FirstOrDefault(predicate);
                 if (flight != null)
                 {
@@ -220,10 +220,10 @@ namespace FlightRecorder.Mvc.Api
         /// </summary>
         private void ClearCache()
         {
-            IEnumerable<string> keys = _cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
+            IEnumerable<string> keys = Cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
             foreach (string key in keys)
             {
-                _cache.Remove(key);
+                Cache.Remove(key);
             }
         }
     }

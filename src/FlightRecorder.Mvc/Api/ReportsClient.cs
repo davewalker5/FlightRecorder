@@ -76,15 +76,15 @@ namespace FlightRecorder.Mvc.Api
         private async Task<List<T>> DateBasedStatisticsReportAsync<T>(string routeName, DateTime? from, DateTime? to, int pageNumber, int pageSize)
         {
             // URL encode the dates
-            string fromRouteSegment = (from ?? DateTime.MinValue).ToString(_settings.Value.DateTimeFormat);
-            string toRouteSegment = (to ?? DateTime.MaxValue).ToString(_settings.Value.DateTimeFormat);
+            string fromRouteSegment = (from ?? DateTime.MinValue).ToString(Settings.Value.DateTimeFormat);
+            string toRouteSegment = (to ?? DateTime.MaxValue).ToString(Settings.Value.DateTimeFormat);
 
             // Construct the route
-            string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == routeName).Route}/{fromRouteSegment}/{toRouteSegment}/{pageNumber}/{pageSize}";
+            string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == routeName).Route}/{fromRouteSegment}/{toRouteSegment}/{pageNumber}/{pageSize}";
 
             // Call the endpoint and decode the response
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            var records = JsonConvert.DeserializeObject<List<T>>(json);
+            var records = JsonConvert.DeserializeObject<List<T>>(json, JsonSettings);
 
             return records;
         }

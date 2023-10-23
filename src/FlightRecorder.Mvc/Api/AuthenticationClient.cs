@@ -30,9 +30,9 @@ namespace FlightRecorder.Mvc.Api
             string jsonCredentials = JsonConvert.SerializeObject(credentials);
 
             // Send the request. The route is configured in appsettings.json
-            string route = _settings.Value.ApiRoutes.First(r => r.Name == "Authenticate").Route;
+            string route = Settings.Value.ApiRoutes.First(r => r.Name == "Authenticate").Route;
             StringContent content = new StringContent(jsonCredentials, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(route, content);
+            HttpResponseMessage response = await Client.PostAsync(route, content);
 
             string token = null;
             if (response.IsSuccessStatusCode)

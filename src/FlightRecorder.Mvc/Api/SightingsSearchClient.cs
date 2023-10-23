@@ -31,10 +31,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Sighting>> GetSightingsByRoute(string embarkation, string destination, int page, int pageSize)
         {
-            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
             string route = $"{baseRoute}/route/{embarkation}/{destination}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
             return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
@@ -47,10 +47,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Sighting>> GetSightingsByFlight(string number, int page, int pageSize)
         {
-            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
             string route = $"{baseRoute}/flight/{number}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
             return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
@@ -64,11 +64,11 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Sighting>> GetSightingsByFlightAndDate(DateTime date, string flightNumber, int page, int pageSize)
         {
-            string dateRouteSegment = date.ToString(_settings.Value.DateTimeFormat);
-            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string dateRouteSegment = date.ToString(Settings.Value.DateTimeFormat);
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
             string route = $"{baseRoute}/flight/{dateRouteSegment}/{flightNumber}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
             return sightings;
         }
 
@@ -81,10 +81,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Sighting>> GetSightingsByAirline(int airlineId, int page, int pageSize)
         {
-            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
             string route = $"{baseRoute}/airline/{airlineId}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
             return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
@@ -97,10 +97,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Sighting>> GetSightingsByAircraft(int aircraftId, int page, int pageSize)
         {
-            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
             string route = $"{baseRoute}/aircraft/{aircraftId}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
             return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
 
@@ -114,12 +114,12 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Sighting>> GetSightingsByDate(DateTime from, DateTime to, int page, int pageSize)
         {
-            string fromRouteSegment = from.ToString(_settings.Value.DateTimeFormat);
-            string toRouteSegment = to.ToString(_settings.Value.DateTimeFormat);
-            string baseRoute = _settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string fromRouteSegment = from.ToString(Settings.Value.DateTimeFormat);
+            string toRouteSegment = to.ToString(Settings.Value.DateTimeFormat);
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
             string route = $"{baseRoute}/date/{fromRouteSegment}/{toRouteSegment}/{page}/{pageSize}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json);
+            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
             return (sightings != null) ? sightings.OrderBy(s => s.Date).ToList() : sightings;
         }
     }
