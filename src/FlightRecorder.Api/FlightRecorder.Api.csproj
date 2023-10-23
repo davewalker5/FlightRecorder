@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <ReleaseVersion>1.2.0.0</ReleaseVersion>
+    <ReleaseVersion>1.3.0.0</ReleaseVersion>
   </PropertyGroup>
 
 
@@ -12,9 +12,9 @@
     <Folder Include="Interfaces\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FlightRecorder.BusinessLogic" Version="1.1.2" />
-    <PackageReference Include="FlightRecorder.Entities" Version="1.1.2" />
-    <PackageReference Include="FlightRecorder.Data" Version="1.1.2" />
+    <PackageReference Include="FlightRecorder.BusinessLogic" Version="1.1.4" />
+    <PackageReference Include="FlightRecorder.Entities" Version="1.1.4" />
+    <PackageReference Include="FlightRecorder.Data" Version="1.1.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
