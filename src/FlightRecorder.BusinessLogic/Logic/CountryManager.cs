@@ -22,51 +22,14 @@ namespace FlightRecorder.BusinessLogic.Logic
         }
 
         /// <summary>
-        /// Return the first entity matching the specified criteria
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public Country Get(Expression<Func<Country, bool>> predicate)
-            => List(predicate, 1, 1).FirstOrDefault();
-
-        /// <summary>
         /// Get the first airline matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
         public async Task<Country> GetAsync(Expression<Func<Country, bool>> predicate)
         {
-            List<Country> countries = await _context.Countries
-                                                    .Where(predicate)
-                                                    .ToListAsync();
+            List<Country> countries = await ListAsync(predicate, 1, 1).ToListAsync();
             return countries.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Return all entities matching the specified criteria
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public IEnumerable<Country> List(Expression<Func<Country, bool>> predicate, int pageNumber, int pageSize)
-        {
-            IEnumerable<Country> results;
-            if (predicate == null)
-            {
-                results = _context.Countries;
-                results = results.Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize);
-            }
-            else
-            {
-                results = _context.Countries
-                                  .Where(predicate)
-                                  .Skip((pageNumber - 1) * pageSize)
-                                  .Take(pageSize);
-            }
-
-            return results;
         }
 
         /// <summary>
@@ -92,26 +55,6 @@ namespace FlightRecorder.BusinessLogic.Logic
             }
 
             return results;
-        }
-
-        /// <summary>
-        /// Add a named country, if it doesn't already exist
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Country Add(string name)
-        {
-            name = name.CleanString();
-            Country country = Get(a => a.Name == name);
-
-            if (country == null)
-            {
-                country = new Country { Name = name };
-                _context.Countries.Add(country);
-                _context.SaveChanges();
-            }
-
-            return country;
         }
 
         /// <summary>

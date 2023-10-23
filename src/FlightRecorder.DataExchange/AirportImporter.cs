@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace FlightRecorder.DataExchange
 {
@@ -21,7 +22,7 @@ namespace FlightRecorder.DataExchange
         /// </summary>
         /// <param name="file"></param>
         /// <param name="context"></param>
-        public void Import(string file, FlightRecorderFactory factory)
+        public async Task Import(string file, FlightRecorderFactory factory)
         {
             Regex regex = new Regex(FlattenedAirport.CsvRecordPattern, RegexOptions.Compiled);
 
@@ -46,8 +47,8 @@ namespace FlightRecorder.DataExchange
 
                         // Inflate the CSV record to an airport and store it in the database
                         FlattenedAirport airport = FlattenedAirport.FromCsv(line);
-                        Country country = factory.Countries.Add(airport.Country);
-                        factory.Airports.Add(airport.Code, airport.Name, airport.Country);
+                        Country country = await factory.Countries.AddAsync(airport.Country);
+                        await factory.Airports.AddAsync(airport.Code, airport.Name, airport.Country);
 
                         RecordImport?.Invoke(this, new AirportDataExchangeEventArgs { RecordCount = count - 1, Airport = airport });
                     }

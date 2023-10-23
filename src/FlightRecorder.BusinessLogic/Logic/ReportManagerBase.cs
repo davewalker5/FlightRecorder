@@ -26,7 +26,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        protected async Task<IEnumerable<T>> GenerateReport<T>(string query, int pageNumber, int pageSize) where T : class
+        protected async Task<IEnumerable<T>> GenerateReportAsync<T>(string query, int pageNumber, int pageSize) where T : class
         {
             // Pagination using Skip and Take causes the database query to fail with FromSqlRaw, possible
             // dependent on the DBS. To avoid this, the results are queried in two steps:

@@ -21,51 +21,14 @@ namespace FlightRecorder.BusinessLogic.Logic
         }
 
         /// <summary>
-        /// Return the first entity matching the specified criteria
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public Airline Get(Expression<Func<Airline, bool>> predicate)
-            => List(predicate, 1, 1).FirstOrDefault();
-
-        /// <summary>
         /// Get the first airline matching the specified criteria
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
         public async Task<Airline> GetAsync(Expression<Func<Airline, bool>> predicate)
         {
-            List<Airline> airlines = await _context.Airlines
-                                                   .Where(predicate)
-                                                   .ToListAsync();
+            List<Airline> airlines = await ListAsync(predicate, 1, 1).ToListAsync();
             return airlines.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Return all entities matching the specified criteria
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public IEnumerable<Airline> List(Expression<Func<Airline, bool>> predicate, int pageNumber, int pageSize)
-        {
-            IEnumerable<Airline> results;
-            if (predicate == null)
-            {
-                results = _context.Airlines;
-                results = results.Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize);
-            }
-            else
-            {
-                results = _context.Airlines
-                                  .Where(predicate)
-                                  .Skip((pageNumber - 1) * pageSize)
-                                  .Take(pageSize);
-            }
-
-            return results;
         }
 
         /// <summary>
@@ -91,26 +54,6 @@ namespace FlightRecorder.BusinessLogic.Logic
             }
 
             return results;
-        }
-
-        /// <summary>
-        /// Add a named airline, if it doesn't already exist
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Airline Add(string name)
-        {
-            name = name.CleanString();
-            Airline airline = Get(a => a.Name == name);
-
-            if (airline == null)
-            {
-                airline = new Airline { Name = name };
-                _context.Airlines.Add(airline);
-                _context.SaveChanges();
-            }
-
-            return airline;
         }
 
         /// <summary>

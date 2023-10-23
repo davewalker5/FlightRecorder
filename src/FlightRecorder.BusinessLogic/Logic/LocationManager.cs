@@ -25,47 +25,10 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public Location Get(Expression<Func<Location, bool>> predicate)
-            => List(predicate, 1, 1).FirstOrDefault();
-
-        /// <summary>
-        /// Return the first entity matching the specified criteria
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
         public async Task<Location> GetAsync(Expression<Func<Location, bool>> predicate)
         {
-            List<Location> locations = await _context.Locations
-                                                     .Where(predicate)
-                                                     .ToListAsync();
+            List<Location> locations = await ListAsync(predicate, 1, 1).ToListAsync();
             return locations.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Return all entities matching the specified criteria
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public virtual IEnumerable<Location> List(Expression<Func<Location, bool>> predicate, int pageNumber, int pageSize)
-        {
-            IEnumerable<Location> results;
-            if (predicate == null)
-            {
-                results = _context.Locations;
-                results = results.Skip((pageNumber - 1) * pageSize)
-                                 .Take(pageSize);
-            }
-            else
-            {
-                results = _context.Locations
-                                  .Where(predicate)
-                                  .Skip((pageNumber - 1) * pageSize)
-                                  .Take(pageSize);
-            }
-
-            return results;
         }
 
         /// <summary>
@@ -95,26 +58,6 @@ namespace FlightRecorder.BusinessLogic.Logic
             }
 
             return results;
-        }
-
-        /// <summary>
-        /// Add a named location, if it doesn't already exist
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Location Add(string name)
-        {
-            name = name.CleanString();
-            Location location = Get(a => a.Name == name);
-
-            if (location == null)
-            {
-                location = new Location { Name = name };
-                _context.Locations.Add(location);
-                _context.SaveChanges();
-            }
-
-            return location;
         }
 
         /// <summary>

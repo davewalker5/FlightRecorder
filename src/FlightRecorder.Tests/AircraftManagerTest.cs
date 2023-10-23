@@ -14,11 +14,9 @@ namespace FlightRecorder.Tests
         private const string ModelName = "A380-861";
         private const string ManufacturerName = "Airbus";
         private const string Registration = "A6-EUH";
-        private const string AsyncRegistration = "A6-EDM";
         private const string SerialNumber = "220";
-        private const string AsyncSerialNumber = "42";
+        private const string MissingDetailsRegistration = "G-EZTK";
         private const int YearOfManufacture = 2016;
-        private const int AsyncYearOfManufacture = 2010;
 
         private FlightRecorderFactory _factory;
 
@@ -27,13 +25,13 @@ namespace FlightRecorder.Tests
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
-            _factory.Aircraft.Add(Registration, SerialNumber, YearOfManufacture, ModelName, ManufacturerName);
+            Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, ModelName, ManufacturerName)).Wait();
         }
 
         [TestMethod]
-        public void AddAndGetTest()
+        public async Task AddAndGetAsyncTest()
         {
-            Aircraft aircraft = _factory.Aircraft.Get(a => a.Registration == Registration);
+            Aircraft aircraft = await _factory.Aircraft.GetAsync(a => a.Registration == Registration);
 
             Assert.IsNotNull(aircraft);
             Assert.IsTrue(aircraft.Id > 0);
@@ -51,41 +49,35 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public async Task AddAndGetAsyncTest()
+        public async Task AddWithMissingDetailsAsyncTest()
         {
-            await _factory.Aircraft.AddAsync(AsyncRegistration, AsyncSerialNumber, AsyncYearOfManufacture, ModelName, ManufacturerName);
-            Aircraft aircraft = await _factory.Aircraft.GetAsync(a => a.Registration == AsyncRegistration);
+            var aircraft = await _factory.Aircraft.AddAsync(MissingDetailsRegistration, null, null, null, null);
 
             Assert.IsNotNull(aircraft);
-            Assert.IsTrue(aircraft.Id > 0);
-            Assert.AreEqual(AsyncRegistration, aircraft.Registration);
-            Assert.AreEqual(AsyncSerialNumber, aircraft.SerialNumber);
-            Assert.AreEqual(AsyncYearOfManufacture, aircraft.Manufactured);
-
-            Assert.IsNotNull(aircraft.Model);
-            Assert.IsTrue(aircraft.Model.Id > 0);
-            Assert.AreEqual(ModelName, aircraft.Model.Name);
-
-            Assert.IsNotNull(aircraft.Model.Manufacturer);
-            Assert.IsTrue(aircraft.Model.Manufacturer.Id > 0);
-            Assert.AreEqual(ManufacturerName, aircraft.Model.Manufacturer.Name);
+            Assert.AreEqual(MissingDetailsRegistration, aircraft.Registration);
+            Assert.IsNull(aircraft.SerialNumber);
+            Assert.IsNull(aircraft.Manufactured);
+            Assert.IsNull(aircraft.Model);
         }
 
         [TestMethod]
-        public void GetMissingTest()
+        public async Task GetWithMissingDetailsAsyncTest()
         {
-            Aircraft aircraft = _factory.Aircraft.Get(a => a.Registration == "Missing");
+            await _factory.Aircraft.AddAsync(MissingDetailsRegistration, null, null, null, null);
+            var aircraft = await _factory.Aircraft.GetAsync(x => x.Registration == MissingDetailsRegistration);
+
+            Assert.IsNotNull(aircraft);
+            Assert.AreEqual(MissingDetailsRegistration, aircraft.Registration);
+            Assert.IsNull(aircraft.SerialNumber);
+            Assert.IsNull(aircraft.Manufactured);
+            Assert.IsNull(aircraft.Model);
+        }
+
+        [TestMethod]
+        public async Task GetMissingAsyncTest()
+        {
+            Aircraft aircraft = await _factory.Aircraft.GetAsync(a => a.Registration == "Missing");
             Assert.IsNull(aircraft);
-        }
-
-        [TestMethod]
-        public void ListAllTest()
-        {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(null, 1, 100);
-            Assert.AreEqual(1, aircraft.Count());
-            Assert.AreEqual(Registration, aircraft.First().Registration);
-            Assert.AreEqual(ModelName, aircraft.First().Model.Name);
-            Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
         }
 
         [TestMethod]
@@ -95,16 +87,6 @@ namespace FlightRecorder.Tests
                                                     .ListAsync(null, 1, 100)
                                                     .ToListAsync();
             Assert.AreEqual(1, aircraft.Count);
-            Assert.AreEqual(Registration, aircraft.First().Registration);
-            Assert.AreEqual(ModelName, aircraft.First().Model.Name);
-            Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
-        }
-
-        [TestMethod]
-        public void FilteredListTest()
-        {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(e => e.Registration == Registration, 1, 100);
-            Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
             Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
@@ -123,32 +105,12 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void FilterByModelTest()
-        {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByModel(ModelName, 1, 100);
-            Assert.AreEqual(1, aircraft.Count());
-            Assert.AreEqual(Registration, aircraft.First().Registration);
-            Assert.AreEqual(ModelName, aircraft.First().Model.Name);
-            Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
-        }
-
-        [TestMethod]
         public async Task FilterByModelAsyncTest()
         {
             IAsyncEnumerable<Aircraft> matches = await _factory.Aircraft
                                                                .ListByModelAsync(ModelName, 1, 100);
             List<Aircraft> aircraft = await matches.ToListAsync();
             Assert.AreEqual(1, aircraft.Count);
-            Assert.AreEqual(Registration, aircraft.First().Registration);
-            Assert.AreEqual(ModelName, aircraft.First().Model.Name);
-            Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
-        }
-
-        [TestMethod]
-        public void FilterByManufacturerTest()
-        {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer(ManufacturerName, 1, 100);
-            Assert.AreEqual(1, aircraft.Count());
             Assert.AreEqual(Registration, aircraft.First().Registration);
             Assert.AreEqual(ModelName, aircraft.First().Model.Name);
             Assert.AreEqual(ManufacturerName, aircraft.First().Model.Manufacturer.Name);
@@ -167,31 +129,31 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void ListMissingTest()
+        public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.List(e => e.Registration == "Missing", 1, 100);
+            IEnumerable<Aircraft> aircraft = await _factory.Aircraft.ListAsync(e => e.Registration == "Missing", 1, 100).ToListAsync();
             Assert.AreEqual(0, aircraft.Count());
         }
 
         [TestMethod]
-        public void ListByMissingModelTest()
+        public async Task ListByMissingModelAsyncTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByModel("Missing", 1, 100);
+            IAsyncEnumerable<Aircraft> aircraft = await _factory.Aircraft.ListByModelAsync("Missing", 1, 100);
             Assert.IsNull(aircraft);
         }
 
         [TestMethod]
-        public void ListByMissingManufacturerTest()
+        public async Task ListByMissingManufacturerAsyncTest()
         {
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer("Missing", 1, 100);
+            IAsyncEnumerable<Aircraft> aircraft = await _factory.Aircraft.ListByManufacturerAsync("Missing", 1, 100);
             Assert.IsNull(aircraft);
         }
 
         [TestMethod]
-        public void ListByManufacturerWithNoModelsTest()
+        public async Task ListByManufacturerWithNoModelsTest()
         {
-            _factory.Manufacturers.Add("Boeing");
-            IEnumerable<Aircraft> aircraft = _factory.Aircraft.ListByManufacturer("Boeing", 1, 100);
+            await _factory.Manufacturers.AddAsync("Boeing");
+            IAsyncEnumerable<Aircraft> aircraft = await _factory.Aircraft.ListByManufacturerAsync("Boeing", 1, 100);
             Assert.IsNull(aircraft);
         }
     }

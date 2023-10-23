@@ -1,9 +1,10 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
+using System.Threading.Tasks;
 
 namespace FlightRecorder.DataExchange
 {
     public interface IDataImporter
     {
-        void Import(string file, FlightRecorderFactory factory);
+        Task Import(string file, FlightRecorderFactory factory);
     }
 }

@@ -15,8 +15,6 @@ namespace FlightRecorder.Tests
         private const string Code = "BHX";
         private const string Name = "Birmingham";
         private const string Country = "UK";
-        private const string AsyncCode = "LGW";
-        private const string AsyncName = "Hatwick";
 
         private FlightRecorderFactory _factory;
 
@@ -25,21 +23,21 @@ namespace FlightRecorder.Tests
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
-            _factory.Airports.Add(Code, Name, Country);
+            Task.Run(() => _factory.Airports.AddAsync(Code, Name, Country)).Wait();
         }
 
         [TestMethod]
-        public void AddDuplicateTest()
+        public async Task AddDuplicateAsyncTest()
         {
-            _factory.Airports.Add(Code, Name, Country);
-            Assert.AreEqual(1, _factory.Airports.List(null, 1, 100).Count());
-            Assert.AreEqual(1, _factory.Airports.List(null, 1, 100).Count());
+            await _factory.Airports.AddAsync(Code, Name, Country);
+            var airports = await _factory.Airports.ListAsync(null, 1, 100).ToListAsync();
+            Assert.AreEqual(1, airports.Count());
         }
 
         [TestMethod]
-        public void AddAndGetTest()
+        public async Task AddAndGetAsyncTest()
         {
-            Airport airport = _factory.Airports.Get(a => a.Code == Code);
+            Airport airport = await _factory.Airports.GetAsync(a => a.Code == Code);
 
             Assert.IsNotNull(airport);
             Assert.IsTrue(airport.Id > 0);
@@ -52,36 +50,10 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public async Task AddAndGetAsyncTest()
+        public async Task GetMissingAsyncTest()
         {
-            await _factory.Airports.AddAsync(AsyncCode, AsyncName, Country);
-            Airport airport = await _factory.Airports.GetAsync(a => a.Code == AsyncCode);
-
-            Assert.IsNotNull(airport);
-            Assert.IsTrue(airport.Id > 0);
-            Assert.AreEqual(AsyncCode, airport.Code);
-            Assert.AreEqual(AsyncName, airport.Name);
-
-            Assert.IsNotNull(airport.Country);
-            Assert.IsTrue(airport.Country.Id > 0);
-            Assert.AreEqual(Country, airport.Country.Name);
-        }
-
-        [TestMethod]
-        public void GetMissingTest()
-        {
-            Airport airport = _factory.Airports.Get(a => a.Code == "Missing");
+            Airport airport = await _factory.Airports.GetAsync(a => a.Code == "Missing");
             Assert.IsNull(airport);
-        }
-
-        [TestMethod]
-        public void ListAllTest()
-        {
-            IEnumerable<Airport> airports = _factory.Airports.List(null, 1, 100);
-            Assert.AreEqual(1, airports.Count());
-            Assert.AreEqual(Code, airports.First().Code);
-            Assert.AreEqual(Name, airports.First().Name);
-            Assert.AreEqual(Country, airports.First().Country.Name);
         }
 
         [TestMethod]
@@ -91,16 +63,6 @@ namespace FlightRecorder.Tests
                                                  .ListAsync(null, 1, 100)
                                                  .ToListAsync();
             Assert.AreEqual(1, airports.Count);
-            Assert.AreEqual(Code, airports.First().Code);
-            Assert.AreEqual(Name, airports.First().Name);
-            Assert.AreEqual(Country, airports.First().Country.Name);
-        }
-
-        [TestMethod]
-        public void FilteredListTest()
-        {
-            IEnumerable<Airport> airports = _factory.Airports.List(e => e.Code == Code, 1, 100);
-            Assert.AreEqual(1, airports.Count());
             Assert.AreEqual(Code, airports.First().Code);
             Assert.AreEqual(Name, airports.First().Name);
             Assert.AreEqual(Country, airports.First().Country.Name);
@@ -119,9 +81,9 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void ListMissingTest()
+        public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Airport> airports = _factory.Airports.List(e => e.Code == "Missing", 1, 100);
+            IEnumerable<Airport> airports = await _factory.Airports.ListAsync(e => e.Code == "Missing", 1, 100).ToListAsync();
             Assert.AreEqual(0, airports.Count());
         }
     }

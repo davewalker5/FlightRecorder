@@ -8,13 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace FlightRecorder.Manager
 {
-    static class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        private static FlightRecorderFactory factory;
+        public static void Main(string[] args)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo info = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -24,43 +27,37 @@ namespace FlightRecorder.Manager
             if (op.Valid)
             {
                 FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateDbContext(null);
-                FlightRecorderFactory factory = new FlightRecorderFactory(context);
+                factory = new FlightRecorderFactory(context);
 
                 try
                 {
                     switch (op.Type)
                     {
                         case OperationType.add:
-                            factory.Users.AddUser(op.UserName, op.Password);
+                            Task.Run(() => factory.Users.AddUserAsync(op.UserName, op.Password)).Wait();
                             Console.WriteLine($"Added user {op.UserName}");
                             break;
                         case OperationType.setpassword:
-                            factory.Users.SetPassword(op.UserName, op.Password);
+                            Task.Run(() => factory.Users.SetPasswordAsync(op.UserName, op.Password)).Wait();
                             Console.WriteLine($"Set password for user {op.UserName}");
                             break;
                         case OperationType.delete:
-                            factory.Users.DeleteUser(op.UserName);
+                            Task.Run(() => factory.Users.DeleteUserAsync(op.UserName)).Wait();
                             Console.WriteLine($"Deleted user {op.UserName}");
                             break;
                         case OperationType.import:
                             IDataImporter importer = (op.EntityType == DataExchangeEntityType.sightings) ? new CsvImporter() : new AirportImporter();
-                            importer.Import(op.FileName, factory);
+                            Task.Run(() => importer.Import(op.FileName, factory)).Wait();
                             Console.WriteLine($"Imported {op.EntityType.ToString()} data from {op.FileName}");
                             break;
                         case OperationType.export:
-                            // The third argument to the "List" methods is an arbitrarily large value intended
-                            // to return all records
                             if (op.EntityType == DataExchangeEntityType.sightings)
                             {
-                                IEnumerable<Sighting> sightings = factory.Sightings.List(null, 1, 99999999);
-                                CsvExporter exporter = new CsvExporter();
-                                exporter.Export(sightings, op.FileName);
+                                Task.Run(() => ExportSightings(op.FileName)).Wait();
                             }
                             else
                             {
-                                IEnumerable<Airport> airports = factory.Airports.List(null, 1, 99999999);
-                                AirportExporter exporter = new AirportExporter();
-                                exporter.Export(airports, op.FileName);
+                                Task.Run(() => ExportAirports(op.FileName)).Wait();
                             }
                             Console.WriteLine($"Exported the database to {op.FileName}");
                             break;
@@ -88,6 +85,34 @@ namespace FlightRecorder.Manager
                 Console.WriteLine($"[5] {executable} export airports|sightings csv_file_path");
                 Console.WriteLine($"[6] {executable} update");
             }
+        }
+
+        /// <summary>
+        /// Export the sightings from the database
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportSightings(string fileName)
+        {
+            // The third argument to the "List" methods is an arbitrarily large value intended
+            // to return all records
+            IEnumerable<Sighting> sightings = await factory.Sightings.ListAsync(null, 1, 99999999).ToListAsync();
+            CsvExporter exporter = new();
+            exporter.Export(sightings, fileName);
+        }
+
+        /// <summary>
+        /// Export the airport details from the database
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportAirports(string fileName)
+        {
+            // The third argument to the "List" methods is an arbitrarily large value intended
+            // to return all records
+            IEnumerable<Airport> airports = await factory.Airports.ListAsync(null, 1, 99999999).ToListAsync();
+            AirportExporter exporter = new AirportExporter();
+            exporter.Export(airports, fileName);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.DataExchange;
@@ -37,7 +38,7 @@ namespace FlightRecorder.Tests
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context);
-            _sightingId = _factory.Sightings.Add(new FlattenedSighting
+            _sightingId = Task.Run(() => _factory.Sightings.AddAsync(new FlattenedSighting
             {
                 FlightNumber = FlightNumber,
                 Airline = AirlineName,
@@ -51,13 +52,13 @@ namespace FlightRecorder.Tests
                 Altitude = Altitude,
                 Date = SightingDate,
                 Location = LocationName
-            }).Id;
+            })).Result.Id;
         }
 
         [TestMethod]
-        public void AddAndGetTest()
+        public async Task AddAndGetTest()
         {
-            Sighting sighting = _factory.Sightings.Get(a => a.Id == _sightingId);
+            Sighting sighting = await _factory.Sightings.GetAsync(a => a.Id == _sightingId);
 
             Assert.IsNotNull(sighting);
             Assert.AreEqual(Altitude, sighting.Altitude);
@@ -87,9 +88,10 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void FlattenCollectionTest()
+        public async Task FlattenCollectionTest()
         {
-            IEnumerable<FlattenedSighting> flattened = _factory.Sightings.List(null, 1, 100).Flatten();
+            IEnumerable<Sighting> sightings = await _factory.Sightings.ListAsync(null, 1, 100).ToListAsync();
+            IEnumerable<FlattenedSighting> flattened = sightings.Flatten();
             Assert.AreEqual(1, flattened.Count());
             Assert.AreEqual(FlightNumber, flattened.First().FlightNumber);
             Assert.AreEqual(AirlineName, flattened.First().Airline);
@@ -106,33 +108,35 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void FlattenedToCsvTest()
+        public async Task FlattenedToCsvTest()
         {
-            FlattenedSighting sighting = _factory.Sightings.Get(a => a.Id == _sightingId).Flatten();
-            string csvRecord = sighting.ToCsv();
+            Sighting sighting = await _factory.Sightings.GetAsync(a => a.Id == _sightingId);
+            FlattenedSighting flattened = sighting.Flatten();
+            string csvRecord = flattened.ToCsv();
             Regex regex = new Regex(FlattenedSighting.CsvRecordPattern);
             bool matches = regex.Matches(csvRecord).Any();
             Assert.IsTrue(matches);
         }
 
         [TestMethod]
-        public void InflateFromCsvTest()
+        public async Task InflateFromCsvTest()
         {
-            FlattenedSighting sighting = _factory.Sightings.Get(a => a.Id == _sightingId).Flatten();
-            string csvRecord = sighting.ToCsv();
+            Sighting sighting = await _factory.Sightings.GetAsync(a => a.Id == _sightingId);
+            FlattenedSighting flattened = sighting.Flatten();
+            string csvRecord = flattened.ToCsv();
             FlattenedSighting inflated = FlattenedSighting.FromCsv(csvRecord);
-            Assert.AreEqual(sighting.FlightNumber, inflated.FlightNumber);
-            Assert.AreEqual(sighting.Airline, inflated.Airline);
-            Assert.AreEqual(sighting.Registration, inflated.Registration);
-            Assert.AreEqual(sighting.SerialNumber, inflated.SerialNumber);
-            Assert.AreEqual(sighting.Manufacturer, inflated.Manufacturer);
-            Assert.AreEqual(sighting.Model, inflated.Model);
-            Assert.AreEqual(sighting.Age, inflated.Age);
-            Assert.AreEqual(sighting.Embarkation, inflated.Embarkation);
-            Assert.AreEqual(sighting.Destination, inflated.Destination);
-            Assert.AreEqual(sighting.Altitude, inflated.Altitude);
-            Assert.AreEqual(sighting.Date, inflated.Date);
-            Assert.AreEqual(sighting.Location, inflated.Location);
+            Assert.AreEqual(flattened.FlightNumber, inflated.FlightNumber);
+            Assert.AreEqual(flattened.Airline, inflated.Airline);
+            Assert.AreEqual(flattened.Registration, inflated.Registration);
+            Assert.AreEqual(flattened.SerialNumber, inflated.SerialNumber);
+            Assert.AreEqual(flattened.Manufacturer, inflated.Manufacturer);
+            Assert.AreEqual(flattened.Model, inflated.Model);
+            Assert.AreEqual(flattened.Age, inflated.Age);
+            Assert.AreEqual(flattened.Embarkation, inflated.Embarkation);
+            Assert.AreEqual(flattened.Destination, inflated.Destination);
+            Assert.AreEqual(flattened.Altitude, inflated.Altitude);
+            Assert.AreEqual(flattened.Date, inflated.Date);
+            Assert.AreEqual(flattened.Location, inflated.Location);
         }
     }
 }

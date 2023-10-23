@@ -56,7 +56,6 @@ namespace FlightRecorder.Data
                     .HasColumnType("VARCHAR(50)");
 
                 entity.Property(e => e.SerialNumber)
-                    .IsRequired()
                     .HasColumnName("serial_number")
                     .HasColumnType("VARCHAR(50)");
             });
