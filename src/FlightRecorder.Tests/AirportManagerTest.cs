@@ -31,7 +31,7 @@ namespace FlightRecorder.Tests
         {
             await _factory.Airports.AddAsync(Code, Name, Country);
             var airports = await _factory.Airports.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, airports.Count());
+            Assert.AreEqual(1, airports.Count);
         }
 
         [TestMethod]
@@ -83,8 +83,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Airport> airports = await _factory.Airports.ListAsync(e => e.Code == "Missing", 1, 100).ToListAsync();
-            Assert.AreEqual(0, airports.Count());
+            List<Airport> airports = await _factory.Airports.ListAsync(e => e.Code == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, airports.Count);
         }
     }
 }

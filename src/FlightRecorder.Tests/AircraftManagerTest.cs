@@ -131,8 +131,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Aircraft> aircraft = await _factory.Aircraft.ListAsync(e => e.Registration == "Missing", 1, 100).ToListAsync();
-            Assert.AreEqual(0, aircraft.Count());
+            List<Aircraft> aircraft = await _factory.Aircraft.ListAsync(e => e.Registration == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, aircraft.Count);
         }
 
         [TestMethod]

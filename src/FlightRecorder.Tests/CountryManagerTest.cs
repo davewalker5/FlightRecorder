@@ -28,7 +28,7 @@ namespace FlightRecorder.Tests
         public async Task AddDuplicateAsyncTest()
         {
             var countries = await _factory.Countries.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, countries.Count());
+            Assert.AreEqual(1, countries.Count);
         }
 
         [TestMethod]
@@ -72,8 +72,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Country> entities = await _factory.Countries.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
-            Assert.AreEqual(0, entities.Count());
+            List<Country> entities = await _factory.Countries.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, entities.Count);
         }
     }
 }

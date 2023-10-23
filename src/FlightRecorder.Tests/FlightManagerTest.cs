@@ -32,8 +32,8 @@ namespace FlightRecorder.Tests
             await _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, AirlineName);
             var flights = await _factory.Flights.ListAsync(null, 1, 100).ToListAsync();
             var airlines = await _factory.Airlines.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, flights.Count());
-            Assert.AreEqual(1, airlines.Count());
+            Assert.AreEqual(1, flights.Count);
+            Assert.AreEqual(1, airlines.Count);
         }
 
         [TestMethod]
@@ -84,8 +84,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Flight> flights = await _factory.Flights.ListAsync(e => e.Number == "Missing", 1, 100).ToListAsync();
-            Assert.AreEqual(0, flights.Count());
+            List<Flight> flights = await _factory.Flights.ListAsync(e => e.Number == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, flights.Count);
         }
 
         [TestMethod]

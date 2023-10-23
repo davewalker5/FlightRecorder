@@ -28,7 +28,7 @@ namespace FlightRecorder.Tests
         {
             await _factory.Locations.AddAsync(EntityName);
             var locations = await _factory.Locations.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, locations.Count());
+            Assert.AreEqual(1, locations.Count);
         }
 
         [TestMethod]
@@ -70,8 +70,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Location> entities = await _factory.Locations.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
-            Assert.AreEqual(0, entities.Count());
+            List<Location> entities = await _factory.Locations.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, entities.Count);
         }
     }
 }

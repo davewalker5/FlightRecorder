@@ -71,8 +71,8 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListMissingAsyncTest()
         {
-            IEnumerable<Airline> entities = await _factory.Airlines.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
-            Assert.AreEqual(0, entities.Count());
+            List<Airline> entities = await _factory.Airlines.ListAsync(e => e.Name == "Missing", 1, 100).ToListAsync();
+            Assert.AreEqual(0, entities.Count);
         }
     }
 }
