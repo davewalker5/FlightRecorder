@@ -28,13 +28,13 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Manufacturer>> GetManufacturersAsync()
         {
-            List<Manufacturer> manufacturers = _cache.Get<List<Manufacturer>>(CacheKey);
+            List<Manufacturer> manufacturers = Cache.Get<List<Manufacturer>>(CacheKey);
             if (manufacturers == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllManufacturersPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllManufacturersPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                manufacturers = JsonConvert.DeserializeObject<List<Manufacturer>>(json).OrderBy(m => m.Name).ToList();
-                _cache.Set(CacheKey, manufacturers, _settings.Value.CacheLifetimeSeconds);
+                manufacturers = JsonConvert.DeserializeObject<List<Manufacturer>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
+                Cache.Set(CacheKey, manufacturers, Settings.Value.CacheLifetimeSeconds);
             }
             return manufacturers;
         }
@@ -46,12 +46,12 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Manufacturer> GetManufacturerAsync(int id)
         {
-            Manufacturer manufacturer = _cache.Get<List<Manufacturer>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
+            Manufacturer manufacturer = Cache.Get<List<Manufacturer>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
             if (manufacturer == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                manufacturer = JsonConvert.DeserializeObject<Manufacturer>(json);
+                manufacturer = JsonConvert.DeserializeObject<Manufacturer>(json, JsonSettings);
             }
 
             return manufacturer;
@@ -64,10 +64,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Manufacturer> AddManufacturerAsync(string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            Manufacturer manufacturer = JsonConvert.DeserializeObject<Manufacturer>(json);
+            Manufacturer manufacturer = JsonConvert.DeserializeObject<Manufacturer>(json, JsonSettings);
             return manufacturer;
         }
 
@@ -79,11 +79,11 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Manufacturer> UpdateManufacturerAsync(int id, string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
-            string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
             string json = await SendDirectAsync(route, data, HttpMethod.Put);
-            Manufacturer manufacturer = JsonConvert.DeserializeObject<Manufacturer>(json);
+            Manufacturer manufacturer = JsonConvert.DeserializeObject<Manufacturer>(json, JsonSettings);
             return manufacturer;
         }
     }

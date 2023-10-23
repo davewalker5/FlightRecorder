@@ -28,13 +28,13 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Location>> GetLocationsAsync()
         {
-            List<Location> locations = _cache.Get<List<Location>>(CacheKey);
+            List<Location> locations = Cache.Get<List<Location>>(CacheKey);
             if (locations == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllLocationsPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllLocationsPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                locations = JsonConvert.DeserializeObject<List<Location>>(json).OrderBy(m => m.Name).ToList();
-                _cache.Set(CacheKey, locations, _settings.Value.CacheLifetimeSeconds);
+                locations = JsonConvert.DeserializeObject<List<Location>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
+                Cache.Set(CacheKey, locations, Settings.Value.CacheLifetimeSeconds);
             }
             return locations;
         }
@@ -46,12 +46,12 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Location> GetLocationAsync(int id)
         {
-            Location location = _cache.Get<List<Location>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
+            Location location = Cache.Get<List<Location>>(CacheKey)?.FirstOrDefault(l => l.Id == id);
             if (location == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                location = JsonConvert.DeserializeObject<Location>(json);
+                location = JsonConvert.DeserializeObject<Location>(json, JsonSettings);
             }
 
             return location;
@@ -64,10 +64,10 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Location> AddLocationAsync(string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
-            Location location = JsonConvert.DeserializeObject<Location>(json);
+            Location location = JsonConvert.DeserializeObject<Location>(json, JsonSettings);
             return location;
         }
 
@@ -79,11 +79,11 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<Location> UpdateLocationAsync(int id, string name)
         {
-            _cache.Remove(CacheKey);
+            Cache.Remove(CacheKey);
             string data = $"\"{name}\"";
-            string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
             string json = await SendDirectAsync(route, data, HttpMethod.Put);
-            Location location = JsonConvert.DeserializeObject<Location>(json);
+            Location location = JsonConvert.DeserializeObject<Location>(json, JsonSettings);
             return location;
         }
     }

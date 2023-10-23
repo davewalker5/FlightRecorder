@@ -9,23 +9,25 @@ using FlightRecorder.Mvc.Controllers;
 using FlightRecorder.Mvc.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace FlightRecorder.Mvc.Api
 {
     public abstract class FlightRecorderClientBase
     {
-        protected HttpClient _client { get; private set; }
-        protected IOptions<AppSettings> _settings { get; private set; }
-        protected ICacheWrapper _cache { get; private set; }
+        protected HttpClient Client { get; private set; }
+        protected IOptions<AppSettings> Settings { get; private set; }
+        protected ICacheWrapper Cache { get; private set; }
+        protected JsonSerializerSettings JsonSettings { get; private set; }
 
         public FlightRecorderClientBase(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
         {
-            _cache = cache;
+            Cache = cache;
 
             // Configure the Http client
-            _settings = settings;
-            _client = client;
-            _client.BaseAddress = new Uri(_settings.Value.ApiUrl);
+            Settings = settings;
+            Client = client;
+            Client.BaseAddress = new Uri(Settings.Value.ApiUrl);
 
             // Retrieve the token from session and create the authentication
             // header, if present
@@ -34,6 +36,13 @@ namespace FlightRecorder.Mvc.Api
             {
                 SetAuthenticationHeader(token);
             }
+
+            // Create the JSON deserialisation settings
+            JsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
         }
 
         /// <summary>
@@ -42,7 +51,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="token"></param>
         protected void SetAuthenticationHeader(string token)
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -56,7 +65,7 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         protected async Task<string> SendIndirectAsync(string routeName, string data, HttpMethod method)
         {
-            string route = _settings.Value.ApiRoutes.First(r => r.Name == routeName).Route;
+            string route = Settings.Value.ApiRoutes.First(r => r.Name == routeName).Route;
             string json = await SendDirectAsync(route, data, method);
             return json;
         }
@@ -76,17 +85,17 @@ namespace FlightRecorder.Mvc.Api
             HttpResponseMessage response = null;
             if (method == HttpMethod.Get)
             {
-                response = await _client.GetAsync(route);
+                response = await Client.GetAsync(route);
             }
             else if (method == HttpMethod.Post)
             {
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                response = await _client.PostAsync(route, content);
+                response = await Client.PostAsync(route, content);
             }
             else if (method == HttpMethod.Put)
             {
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                response = await _client.PutAsync(route, content);
+                response = await Client.PutAsync(route, content);
             }
 
             if ((response != null) && response.IsSuccessStatusCode)

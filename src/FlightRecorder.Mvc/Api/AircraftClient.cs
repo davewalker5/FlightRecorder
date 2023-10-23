@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Numerics;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Api
 {
@@ -35,14 +34,14 @@ namespace FlightRecorder.Mvc.Api
         public async Task<List<Aircraft>> GetAircraftByModelAsync(int modelId)
         {
             string key = $"{CacheKeyPrefix}.{modelId}";
-            List<Aircraft> aircraft = _cache.Get<List<Aircraft>>(key);
+            List<Aircraft> aircraft = Cache.Get<List<Aircraft>>(key);
             if (aircraft == null)
             {
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/model/{modelId}/1/{AllAircraftPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/model/{modelId}/1/{AllAircraftPageSize}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
-                    aircraft = JsonConvert.DeserializeObject<List<Aircraft>>(json)
+                    aircraft = JsonConvert.DeserializeObject<List<Aircraft>>(json, JsonSettings)
                                         .OrderBy(m => m.Registration)
                                         .ToList();
 
@@ -51,7 +50,7 @@ namespace FlightRecorder.Mvc.Api
                         aeroplane.Manufactured = null;
                     }
 
-                    _cache.Set(key, aircraft, _settings.Value.CacheLifetimeSeconds);
+                    Cache.Set(key, aircraft, Settings.Value.CacheLifetimeSeconds);
                 }
             }
 
@@ -70,11 +69,11 @@ namespace FlightRecorder.Mvc.Api
             if (aircraft == null)
             {
                 // It doesn't, so go to the service to get it
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/registration/{registration}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/registration/{registration}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
-                    aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+                    aircraft = JsonConvert.DeserializeObject<Aircraft>(json, JsonSettings);
                 }
             }
 
@@ -98,9 +97,9 @@ namespace FlightRecorder.Mvc.Api
             if (aircraft == null)
             {
                 // It doesn't, so go to the service to get it
-                string route = @$"{_settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
-                aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+                aircraft = JsonConvert.DeserializeObject<Aircraft>(json, JsonSettings);
             }
 
             if ((aircraft != null) && (aircraft.Manufactured == 0))
@@ -119,15 +118,15 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, int? yearOfManufacture, int modelId)
+        public async Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, int? yearOfManufacture, int? modelId)
         {
             string key = $"{CacheKeyPrefix}.{modelId}";
-            _cache.Remove(key);
+            Cache.Remove(key);
 
             // TODO : When the service "TODO" list is completed, it will no longer
             // be necessary to retrieve the model here as it will be possible
             // to pass the model ID in the template
-            Model model = await _models.GetModelAsync(modelId);
+            Model model = (modelId > 0) ? await _models.GetModelAsync(modelId ?? 0) : null;
 
             dynamic template = new
             {
@@ -140,7 +139,7 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
 
-            Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+            Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json, JsonSettings);
             if ((aircraft != null) && (aircraft.Manufactured == 0))
             {
                 aircraft.Manufactured = null;
@@ -168,11 +167,11 @@ namespace FlightRecorder.Mvc.Api
             if (original != null)
             {
                 key = $"{CacheKeyPrefix}.{original.ModelId}";
-                _cache.Remove(key);
+                Cache.Remove(key);
             }
 
             key = $"{CacheKeyPrefix}.{modelId}";
-            _cache.Remove(key);
+            Cache.Remove(key);
 
             dynamic template = new
             {
@@ -190,7 +189,7 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
 
-            Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json);
+            Aircraft aircraft = JsonConvert.DeserializeObject<Aircraft>(json, JsonSettings);
             if ((aircraft != null) && (aircraft.Manufactured == 0))
             {
                 aircraft.Manufactured = null;
@@ -207,10 +206,10 @@ namespace FlightRecorder.Mvc.Api
         {
             Aircraft aircraft = null;
 
-            IEnumerable<string> keys = _cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
+            IEnumerable<string> keys = Cache.GetKeys().Where(k => k.StartsWith(CacheKeyPrefix));
             foreach (string key in keys)
             {
-                List<Aircraft> aircraftList = _cache.Get<List<Aircraft>>(key);
+                List<Aircraft> aircraftList = Cache.Get<List<Aircraft>>(key);
                 aircraft = aircraftList.FirstOrDefault(predicate);
                 if (aircraft != null)
                 {
