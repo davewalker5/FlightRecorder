@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using FlightRecorder.BusinessLogic.Factory;
+﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace FlightRecorder.Api.Controllers
 {
@@ -138,8 +138,8 @@ namespace FlightRecorder.Api.Controllers
                                               .AddAsync(template.Registration,
                                                         template.SerialNumber,
                                                         template.Manufactured,
-                                                        template.Model.Name,
-                                                        template.Model.Manufacturer.Name);
+                                                        template.Model?.Name,
+                                                        template.Model?.Manufacturer?.Name);
             return aircraft;
         }
     }

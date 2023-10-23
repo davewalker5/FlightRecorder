@@ -42,7 +42,7 @@ namespace FlightRecorder.Api.Controllers
             DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
 
             // Get the report content
-            var results = await _factory.AirlineStatistics.GenerateReport(startDate, endDate, pageNumber, pageSize);
+            var results = await _factory.AirlineStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
 
             if (!results.Any())
             {
@@ -70,7 +70,7 @@ namespace FlightRecorder.Api.Controllers
             DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
 
             // Get the report content
-            var results = await _factory.LocationStatistics.GenerateReport(startDate, endDate, pageNumber, pageSize);
+            var results = await _factory.LocationStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
 
             if (!results.Any())
             {
@@ -98,7 +98,7 @@ namespace FlightRecorder.Api.Controllers
             DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
 
             // Get the report content
-            var results = await _factory.ManufacturerStatistics.GenerateReport(startDate, endDate, pageNumber, pageSize);
+            var results = await _factory.ManufacturerStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
 
             if (!results.Any())
             {
@@ -126,7 +126,7 @@ namespace FlightRecorder.Api.Controllers
             DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
 
             // Get the report content
-            var results = await _factory.ModelStatistics.GenerateReport(startDate, endDate, pageNumber, pageSize);
+            var results = await _factory.ModelStatistics.GenerateReportAsync(startDate, endDate, pageNumber, pageSize);
 
             if (!results.Any())
             {
