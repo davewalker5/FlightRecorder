@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace FlightRecorder.DataExchange
 {
-    [ExcludeFromCodeCoverage]
     public class AirportImporter: IDataImporter
     {
         public EventHandler<AirportDataExchangeEventArgs> RecordImport;

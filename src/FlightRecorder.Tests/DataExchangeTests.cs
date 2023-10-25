@@ -1,13 +1,16 @@
-﻿using System;
+﻿using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Data;
+using FlightRecorder.DataExchange;
+using FlightRecorder.Entities.DataExchange;
+using FlightRecorder.Entities.Db;
+using FlightRecorder.Tests.RandomGenerators;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Data;
-using FlightRecorder.Entities.DataExchange;
-using FlightRecorder.Entities.Db;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FlightRecorder.Tests
 {
@@ -137,6 +140,94 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(flattened.Altitude, inflated.Altitude);
             Assert.AreEqual(flattened.Date, inflated.Date);
             Assert.AreEqual(flattened.Location, inflated.Location);
+        }
+
+        [TestMethod]
+        public void ExportSightingsTest()
+        {
+            var sightings = FlightRecorderGenerators.GenerateListOfRandomSightings(10);
+
+            var filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            new CsvExporter().Export(sightings, filePath);
+
+            var info = new FileInfo(filePath);
+            Assert.AreEqual(info.FullName, filePath);
+            Assert.IsTrue(info.Length > 0);
+
+            File.Delete(filePath);
+        }
+
+        [TestMethod]
+        public async Task ImportSightingsTest()
+        {
+            var sightings = FlightRecorderGenerators.GenerateListOfRandomSightings(10);
+            var aircraft = sightings.Select(x => x.Aircraft).Distinct();
+            var models = sightings.Select(x => x.Aircraft.Model).Distinct();
+            var manufacturers = sightings.Select(x => x.Aircraft.Model.Manufacturer).Distinct();
+            var flights = sightings.Select(x => x.Flight).Distinct();
+            var locations = sightings.Select(x => x.Location).Distinct();
+
+            var filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            new CsvExporter().Export(sightings, filePath);
+
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
+            FlightRecorderFactory factory = new FlightRecorderFactory(context);
+            await new CsvImporter().Import(filePath, factory);
+
+            File.Delete(filePath);
+
+            var imported = await factory.Sightings.ListAsync(x => true, 1, 1000000).ToListAsync();
+            var importedAircraft = imported.Select(x => x.Aircraft).Distinct();
+            var importedModels = imported.Select(x => x.Aircraft.Model).Distinct();
+            var importedManufacturers = imported.Select(x => x.Aircraft.Model.Manufacturer).Distinct();
+            var importedFlights = imported.Select(x => x.Flight).Distinct();
+            var importedLocations = imported.Select(x => x.Location).Distinct();
+
+            Assert.IsNotNull(imported);
+            Assert.AreEqual(sightings.Count, imported.Count);
+            Assert.AreEqual(aircraft.Count(), importedAircraft.Count());
+            Assert.AreEqual(models.Count(), importedModels.Count());
+            Assert.AreEqual(manufacturers.Count(), importedManufacturers.Count());
+            Assert.AreEqual(flights.Count(), importedFlights.Count());
+            Assert.AreEqual(locations.Count(), importedLocations.Count());
+        }
+
+        [TestMethod]
+        public void ExportAirportsTest()
+        {
+            var airports = FlightRecorderGenerators.GenerateListOfRandomAirports(10);
+
+            var filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            new AirportExporter().Export(airports, filePath);
+
+            var info = new FileInfo(filePath);
+            Assert.AreEqual(info.FullName, filePath);
+            Assert.IsTrue(info.Length > 0);
+
+            File.Delete(filePath);
+        }
+
+        [TestMethod]
+        public async Task ImportAirportsTest()
+        {
+            var airports = FlightRecorderGenerators.GenerateListOfRandomAirports(10);
+            var countries = airports.Select(x => x.Country).Distinct();
+            var filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
+            new AirportExporter().Export(airports, filePath);
+
+            FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
+            FlightRecorderFactory factory = new FlightRecorderFactory(context);
+            await new AirportImporter().Import(filePath, factory);
+
+            File.Delete(filePath);
+
+            var importedAirports = await factory.Airports.ListAsync(x => true, 1, 1000000).ToListAsync();
+            Assert.IsNotNull(importedAirports);
+            Assert.AreEqual(airports.Count, importedAirports.Count);
+
+            var importedCountries = await factory.Countries.ListAsync(x => true, 1, 1000000).ToListAsync();
+            Assert.IsNotNull(importedCountries);
+            Assert.AreEqual(countries.Count(), importedCountries.Count);
         }
     }
 }

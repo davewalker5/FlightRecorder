@@ -19,12 +19,15 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IUserManager> _users = null;
         private readonly Lazy<ICountryManager> _countries = null;
         private readonly Lazy<IAirportManager> _airports = null;
+        private readonly Lazy<IJobStatusManager> _jobStatuses = null;
         private readonly Lazy<IDateBasedReport<AirlineStatistics>> _airlineStatistics = null;
         private readonly Lazy<IDateBasedReport<LocationStatistics>> _locationStatistics = null;
         private readonly Lazy<IDateBasedReport<ManufacturerStatistics>> _manufacturerStatistics = null;
         private readonly Lazy<IDateBasedReport<ModelStatistics>> _modelStatistics = null;
         private readonly Lazy<IDateBasedReport<FlightsByMonth>> _flightsByMonth = null;
+
         public FlightRecorderDbContext Context { get; private set; }
+
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
         public IManufacturerManager Manufacturers { get { return _manufacturers.Value; } }
@@ -35,6 +38,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         public IUserManager Users { get { return _users.Value; } }
         public ICountryManager Countries { get { return _countries.Value; } }
         public IAirportManager Airports { get { return _airports.Value; } }
+        public IJobStatusManager JobStatuses { get { return _jobStatuses.Value; } }
 
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<AirlineStatistics> AirlineStatistics { get { return _airlineStatistics.Value; } }
@@ -51,10 +55,13 @@ namespace FlightRecorder.BusinessLogic.Factory
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<FlightsByMonth> FlightsByMonth { get { return _flightsByMonth.Value; } }
 
-
         public FlightRecorderFactory(FlightRecorderDbContext context)
         {
+            // Store the database context
             Context = context;
+
+            // Lazily instantiate the database managers : They'll only actually be created if called by
+            // the application
             _airlines = new Lazy<IAirlineManager>(() => new AirlineManager(context));
             _locations = new Lazy<ILocationManager>(() => new LocationManager(context));
             _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(context));
@@ -65,6 +72,10 @@ namespace FlightRecorder.BusinessLogic.Factory
             _users = new Lazy<IUserManager>(() => new UserManager(context));
             _countries = new Lazy<ICountryManager>(() => new CountryManager(context));
             _airports = new Lazy<IAirportManager>(() => new AirportManager(this));
+            _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(context));
+
+            // Lazily instantiate the reporting managers : Once again, they'll only actually be created if called by
+            // the application
             _airlineStatistics = new Lazy<IDateBasedReport<AirlineStatistics>>(() => new DateBasedReport<AirlineStatistics>(context));
             _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(context));
             _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(context));
