@@ -8,9 +8,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace FlightRecorder.DataExchange
+namespace FlightRecorder.DataExchange.Import
 {
-    public class CsvImporter : IDataImporter
+    public class SightingsImporter : IDataImporter
     {
         public EventHandler<SightingDataExchangeEventArgs> RecordImport;
 

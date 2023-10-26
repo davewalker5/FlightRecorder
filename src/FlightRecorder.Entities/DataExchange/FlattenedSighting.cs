@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlightRecorder.Entities.Attributes;
+using System;
 using System.Globalization;
 
 namespace FlightRecorder.Entities.DataExchange
@@ -8,25 +9,41 @@ namespace FlightRecorder.Entities.DataExchange
         public const string CsvRecordPattern = @"^(""[a-zA-Z0-9-() \/']+"",){6}""[0-9]+"",(""[a-zA-Z0-9-() \/']+"",){3}""[0-9]+\/[0-9]+\/[0-9]+"",""[a-zA-Z0-9-() \/']+""$";
         private const string DateTimeFormat = "dd/MM/yyyy";
 
+        [Export("Flight", 1)]
         public string FlightNumber { get; set; }
-        public string Airline { get; set; }
-        public string Registration { get; set; }
-        public string SerialNumber { get; set; }
-        public string Manufacturer { get; set; }
-        public string Model { get; set; }
-        public string Age { get; set; }
-        public string Embarkation { get; set; }
-        public string Destination { get; set; }
-        public long Altitude { get; set; }
-        public DateTime Date { get; set; }
-        public string Location  { get; set; }
 
-        public string ToCsv()
-        {
-            string date = Date.ToString(DateTimeFormat);
-            string representation = $"\"{FlightNumber}\",\"{Airline}\",\"{Registration}\",\"{SerialNumber}\",\"{Manufacturer}\",\"{Model}\",\"{Age}\",\"{Embarkation}\",\"{Destination}\",\"{Altitude}\",\"{date}\",\"{Location}\"";
-            return representation;
-        }
+        [Export("Airline", 2)]
+        public string Airline { get; set; }
+
+        [Export("Registration", 3)]
+        public string Registration { get; set; }
+
+        [Export("Serial Number", 4)]
+        public string SerialNumber { get; set; }
+
+        [Export("Manufacturer", 5)]
+        public string Manufacturer { get; set; }
+
+        [Export("Type", 6)]
+        public string Model { get; set; }
+
+        [Export("Age", 7)]
+        public string Age { get; set; }
+
+        [Export("From", 8)]
+        public string Embarkation { get; set; }
+
+        [Export("To", 9)]
+        public string Destination { get; set; }
+
+        [Export("Height", 10)]
+        public long Altitude { get; set; }
+
+        [Export("Date", 11)]
+        public DateTime Date { get; set; }
+
+        [Export("Location", 12)]
+        public string Location  { get; set; }
 
         public static FlattenedSighting FromCsv(string record)
         {

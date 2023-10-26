@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlightRecorder.Entities.Attributes;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FlightRecorder.Entities.DataExchange
@@ -8,15 +9,14 @@ namespace FlightRecorder.Entities.DataExchange
     {
         public const string CsvRecordPattern = @"^""[a-zA-Z]{3}"","".*"","".*""$";
 
+        [Export("Code", 1)]
         public string Code { get; set; }
-        public string Name { get; set; }
-        public string Country { get; set; }
 
-        public string ToCsv()
-        {
-            string representation = $"\"{Code}\",\"{Name}\",\"{Country}\"";
-            return representation;
-        }
+        [Export("Name", 2)]
+        public string Name { get; set; }
+
+        [Export("Country", 3)]
+        public string Country { get; set; }
 
         public static FlattenedAirport FromCsv(string record)
         {

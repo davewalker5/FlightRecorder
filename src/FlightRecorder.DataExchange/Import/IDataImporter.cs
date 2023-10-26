@@ -1,7 +1,7 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using System.Threading.Tasks;
 
-namespace FlightRecorder.DataExchange
+namespace FlightRecorder.DataExchange.Import
 {
     public interface IDataImporter
     {

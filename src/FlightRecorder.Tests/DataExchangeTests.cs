@@ -1,6 +1,7 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
-using FlightRecorder.DataExchange;
+using FlightRecorder.DataExchange.Export;
+using FlightRecorder.DataExchange.Import;
 using FlightRecorder.Entities.DataExchange;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Tests.RandomGenerators;
@@ -9,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.Tests
@@ -111,44 +111,12 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public async Task FlattenedToCsvTest()
-        {
-            Sighting sighting = await _factory.Sightings.GetAsync(a => a.Id == _sightingId);
-            FlattenedSighting flattened = sighting.Flatten();
-            string csvRecord = flattened.ToCsv();
-            Regex regex = new Regex(FlattenedSighting.CsvRecordPattern);
-            bool matches = regex.Matches(csvRecord).Any();
-            Assert.IsTrue(matches);
-        }
-
-        [TestMethod]
-        public async Task InflateFromCsvTest()
-        {
-            Sighting sighting = await _factory.Sightings.GetAsync(a => a.Id == _sightingId);
-            FlattenedSighting flattened = sighting.Flatten();
-            string csvRecord = flattened.ToCsv();
-            FlattenedSighting inflated = FlattenedSighting.FromCsv(csvRecord);
-            Assert.AreEqual(flattened.FlightNumber, inflated.FlightNumber);
-            Assert.AreEqual(flattened.Airline, inflated.Airline);
-            Assert.AreEqual(flattened.Registration, inflated.Registration);
-            Assert.AreEqual(flattened.SerialNumber, inflated.SerialNumber);
-            Assert.AreEqual(flattened.Manufacturer, inflated.Manufacturer);
-            Assert.AreEqual(flattened.Model, inflated.Model);
-            Assert.AreEqual(flattened.Age, inflated.Age);
-            Assert.AreEqual(flattened.Embarkation, inflated.Embarkation);
-            Assert.AreEqual(flattened.Destination, inflated.Destination);
-            Assert.AreEqual(flattened.Altitude, inflated.Altitude);
-            Assert.AreEqual(flattened.Date, inflated.Date);
-            Assert.AreEqual(flattened.Location, inflated.Location);
-        }
-
-        [TestMethod]
         public void ExportSightingsTest()
         {
             var sightings = FlightRecorderGenerators.GenerateListOfRandomSightings(10);
 
             var filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
-            new CsvExporter().Export(sightings, filePath);
+            new SightingsExporter().Export(sightings, filePath);
 
             var info = new FileInfo(filePath);
             Assert.AreEqual(info.FullName, filePath);
@@ -168,11 +136,11 @@ namespace FlightRecorder.Tests
             var locations = sightings.Select(x => x.Location).Distinct();
 
             var filePath = Path.ChangeExtension(Path.GetTempFileName(), "csv");
-            new CsvExporter().Export(sightings, filePath);
+            new SightingsExporter().Export(sightings, filePath);
 
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             FlightRecorderFactory factory = new FlightRecorderFactory(context);
-            await new CsvImporter().Import(filePath, factory);
+            await new SightingsImporter().Import(filePath, factory);
 
             File.Delete(filePath);
 

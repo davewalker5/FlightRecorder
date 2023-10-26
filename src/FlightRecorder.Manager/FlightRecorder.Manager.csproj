@@ -3,9 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <ReleaseVersion>1.2.0.0</ReleaseVersion>
-    <FileVersion>1.2.0.0</FileVersion>
-    <ProductVersion>1.2.0.0</ProductVersion>
+    <ReleaseVersion>1.3.0.0</ReleaseVersion>
+    <FileVersion>1.3.0.0</FileVersion>
+    <ProductVersion>1.3.0.0</ProductVersion>
     <Configurations>Release;Debug</Configurations>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

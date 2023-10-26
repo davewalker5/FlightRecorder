@@ -1,12 +1,12 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
-using FlightRecorder.DataExchange;
-using FlightRecorder.Entities.Db;
+using FlightRecorder.DataExchange.Export;
+using FlightRecorder.DataExchange.Import;
+using FlightRecorder.Entities.Reporting;
 using FlightRecorder.Manager.Entities;
 using FlightRecorder.Manager.Logic;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -46,20 +46,13 @@ namespace FlightRecorder.Manager
                             Console.WriteLine($"Deleted user {op.UserName}");
                             break;
                         case OperationType.import:
-                            IDataImporter importer = (op.EntityType == DataExchangeEntityType.sightings) ? new CsvImporter() : new AirportImporter();
+                            IDataImporter importer = (op.EntityType == DataExchangeEntityType.sightings) ? new SightingsImporter() : new AirportImporter();
                             Task.Run(() => importer.Import(op.FileName, factory)).Wait();
                             Console.WriteLine($"Imported {op.EntityType.ToString()} data from {op.FileName}");
                             break;
                         case OperationType.export:
-                            if (op.EntityType == DataExchangeEntityType.sightings)
-                            {
-                                Task.Run(() => ExportSightings(op.FileName)).Wait();
-                            }
-                            else
-                            {
-                                Task.Run(() => ExportAirports(op.FileName)).Wait();
-                            }
-                            Console.WriteLine($"Exported the database to {op.FileName}");
+                            Console.WriteLine($"Exporting {op.EntityType.ToString()} to {op.FileName}");
+                            Task.Run(() => Export(op.EntityType, op.FileName)).Wait();
                             break;
                         case OperationType.update:
                             context.Database.Migrate();
@@ -77,13 +70,51 @@ namespace FlightRecorder.Manager
             else
             {
                 string executable = AppDomain.CurrentDomain.FriendlyName;
-                Console.WriteLine("Usage:");
+                string exportEntityList = string.Join("|", Enum.GetValues<DataExchangeEntityType>());
+
+                Console.WriteLine("\nUsage:\n");
                 Console.WriteLine($"[1] {executable} add username password");
                 Console.WriteLine($"[2] {executable} setpassword username password");
                 Console.WriteLine($"[3] {executable} delete username");
                 Console.WriteLine($"[4] {executable} import airports|sightings csv_file_path");
-                Console.WriteLine($"[5] {executable} export airports|sightings csv_file_path");
+                Console.WriteLine($"[5] {executable} export {exportEntityList} csv_file_path");
                 Console.WriteLine($"[6] {executable} update");
+            }
+        }
+
+        /// <summary>
+        /// Export the specified entities/report to the specified file
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task Export(DataExchangeEntityType type, string fileName)
+        {
+            switch (type)
+            {
+                case DataExchangeEntityType.sightings:
+                    await ExportSightings(fileName);
+                    break;
+                case DataExchangeEntityType.airports:
+                    await ExportAirports(fileName);
+                    break;
+                case DataExchangeEntityType.airlines:
+                    await ExportAirlineStatistics(fileName);
+                    break;
+                case DataExchangeEntityType.locations:
+                    await ExportLocationStatistics(fileName);
+                    break;
+                case DataExchangeEntityType.manufacturers:
+                    await ExportManufacturerStatistics(fileName);
+                    break;
+                case DataExchangeEntityType.models:
+                    await ExportModelStatistics(fileName);
+                    break;
+                case DataExchangeEntityType.flights:
+                    await ExportFlightsByMonth(fileName);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -94,10 +125,10 @@ namespace FlightRecorder.Manager
         /// <returns></returns>
         private static async Task ExportSightings(string fileName)
         {
-            // The third argument to the "List" methods is an arbitrarily large value intended
+            // The third argument to the "List" method is an arbitrarily large value intended
             // to return all records
-            IEnumerable<Sighting> sightings = await factory.Sightings.ListAsync(null, 1, 99999999).ToListAsync();
-            CsvExporter exporter = new();
+            var sightings = await factory.Sightings.ListAsync(null, 1, int.MaxValue).ToListAsync();
+            SightingsExporter exporter = new();
             exporter.Export(sightings, fileName);
         }
 
@@ -108,11 +139,81 @@ namespace FlightRecorder.Manager
         /// <returns></returns>
         private static async Task ExportAirports(string fileName)
         {
-            // The third argument to the "List" methods is an arbitrarily large value intended
+            // The third argument to the "List" method is an arbitrarily large value intended
             // to return all records
-            IEnumerable<Airport> airports = await factory.Airports.ListAsync(null, 1, 99999999).ToListAsync();
+            var airports = await factory.Airports.ListAsync(null, 1, int.MaxValue).ToListAsync();
             AirportExporter exporter = new AirportExporter();
             exporter.Export(airports, fileName);
+        }
+
+        /// <summary>
+        /// Export the airline statistics report
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportAirlineStatistics(string fileName)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.AirlineStatistics.GenerateReportAsync(null, null, 1, int.MaxValue);
+            var exporter = new CsvExporter<AirlineStatistics>();
+            exporter.Export(records, fileName, ',');
+        }
+
+        /// <summary>
+        /// Export the location statistics report
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportLocationStatistics(string fileName)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.LocationStatistics.GenerateReportAsync(null, null, 1, int.MaxValue);
+            var exporter = new CsvExporter<LocationStatistics>();
+            exporter.Export(records, fileName, ',');
+        }
+
+        /// <summary>
+        /// Export the manufacturer statistics report
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportManufacturerStatistics(string fileName)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.ManufacturerStatistics.GenerateReportAsync(null, null, 1, int.MaxValue);
+            var exporter = new CsvExporter<ManufacturerStatistics>();
+            exporter.Export(records, fileName, ',');
+        }
+
+        /// <summary>
+        /// Export the model statistics report
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportModelStatistics(string fileName)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.ModelStatistics.GenerateReportAsync(null, null, 1, int.MaxValue);
+            var exporter = new CsvExporter<ModelStatistics>();
+            exporter.Export(records, fileName, ',');
+        }
+
+        /// <summary>
+        /// Export the flights by month report
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static async Task ExportFlightsByMonth(string fileName)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.FlightsByMonth.GenerateReportAsync(null, null, 1, int.MaxValue);
+            var exporter = new CsvExporter<FlightsByMonth>();
+            exporter.Export(records, fileName, ',');
         }
     }
 }
