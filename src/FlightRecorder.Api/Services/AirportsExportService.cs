@@ -1,7 +1,7 @@
 ﻿using FlightRecorder.Api.Entities;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.BusinessLogic.Logic;
-using FlightRecorder.DataExchange;
+using FlightRecorder.DataExchange.Export;
 using FlightRecorder.Entities.Db;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

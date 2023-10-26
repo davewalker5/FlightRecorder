@@ -49,6 +49,10 @@ namespace FlightRecorder.Api
             services.AddSingleton<IBackgroundQueue<AirportsExportWorkItem>, BackgroundQueue<AirportsExportWorkItem>>();
             services.AddHostedService<AirportsExportService>();
 
+            // Add the report exporter hosted service
+            services.AddSingleton<IBackgroundQueue<ReportExportWorkItem>, BackgroundQueue<ReportExportWorkItem>>();
+            services.AddHostedService<ReportExportService>();
+
             // Configure strongly typed application settings
             IConfigurationSection section = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(section);
