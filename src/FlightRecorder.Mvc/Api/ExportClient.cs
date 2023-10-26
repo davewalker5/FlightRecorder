@@ -29,5 +29,17 @@ namespace FlightRecorder.Mvc.Api
             string data = JsonConvert.SerializeObject(template);
             await SendIndirectAsync("ExportSightings", data, HttpMethod.Post);
         }
+
+        /// <summary>
+        /// Trigger an airports export via the API
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ExportAirports(string fileName)
+        {
+            dynamic template = new { FileName = fileName };
+            string data = JsonConvert.SerializeObject(template);
+            await SendIndirectAsync("ExportAirports", data, HttpMethod.Post);
+        }
     }
 }

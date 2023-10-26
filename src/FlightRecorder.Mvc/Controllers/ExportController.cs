@@ -52,5 +52,39 @@ namespace FlightRecorder.Mvc.Controllers
 
             return View(model);
         }
+
+        /// <summary>
+        /// Serve the export settings page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Airports()
+        {
+            ExportViewModel model = new ExportViewModel
+            {
+            };
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Airports(ExportViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var fileName = model.FileName;
+                await _client.ExportAirports(fileName);
+                model.Message = $"Background export of airports to {fileName} has been submitted";
+                model.FileName = null;
+                ModelState.Clear();
+            }
+
+            return View(model);
+        }
     }
 }

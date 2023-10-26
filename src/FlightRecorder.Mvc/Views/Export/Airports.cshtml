@@ -1,0 +1,20 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.ExportViewModel
+
+@{
+    ViewData["Title"] = "Airports Export";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Export Airports
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Export airports from the database
+        </em>
+    </small>
+</p>
+
+@await Html.PartialAsync("FileName", Model)
