@@ -4,5 +4,6 @@
     {
         public string Secret { get; set; }
         public int TokenLifespanMinutes { get; set; }
+        public string SightingsExportPath { get; set; }
     }
 }

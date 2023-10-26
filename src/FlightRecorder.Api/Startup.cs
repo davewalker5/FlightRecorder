@@ -3,7 +3,10 @@ using FlightRecorder.Api.Entities;
 using FlightRecorder.Api.Interfaces;
 using FlightRecorder.Api.Services;
 using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.BusinessLogic.Logic;
 using FlightRecorder.Data;
+using FlightRecorder.DataExchange;
+using FlightRecorder.Entities.DataExchange;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,6 +40,10 @@ namespace FlightRecorder.Api
                 options.UseSqlite(Configuration.GetConnectionString("FlightRecorderDB"));
             });
             services.AddScoped<FlightRecorderFactory>();
+
+            // Add the exporter hosted service
+            services.AddSingleton<IBackgroundQueue<ExportWorkItem>, BackgroundQueue<ExportWorkItem>>();
+            services.AddHostedService<SightingsExportService>();
 
             // Configure strongly typed application settings
             IConfigurationSection section = Configuration.GetSection("AppSettings");
