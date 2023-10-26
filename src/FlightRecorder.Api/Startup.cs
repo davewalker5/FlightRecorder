@@ -41,9 +41,13 @@ namespace FlightRecorder.Api
             });
             services.AddScoped<FlightRecorderFactory>();
 
-            // Add the exporter hosted service
-            services.AddSingleton<IBackgroundQueue<ExportWorkItem>, BackgroundQueue<ExportWorkItem>>();
+            // Add the sightings exporter hosted service
+            services.AddSingleton<IBackgroundQueue<SightingsExportWorkItem>, BackgroundQueue<SightingsExportWorkItem>>();
             services.AddHostedService<SightingsExportService>();
+
+            // Add the airports exporter hosted service
+            services.AddSingleton<IBackgroundQueue<AirportsExportWorkItem>, BackgroundQueue<AirportsExportWorkItem>>();
+            services.AddHostedService<AirportsExportService>();
 
             // Configure strongly typed application settings
             IConfigurationSection section = Configuration.GetSection("AppSettings");
