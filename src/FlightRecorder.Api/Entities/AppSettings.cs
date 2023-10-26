@@ -5,5 +5,6 @@
         public string Secret { get; set; }
         public int TokenLifespanMinutes { get; set; }
         public string SightingsExportPath { get; set; }
+        public string AirportsExportPath { get; set; }
     }
 }

@@ -11,22 +11,38 @@ namespace FlightRecorder.Api.Controllers
     [Route("[controller]")]
     public class ExportController : Controller
     {
-        private readonly IBackgroundQueue<ExportWorkItem> _queue;
+        private readonly IBackgroundQueue<SightingsExportWorkItem> _sightingsQueue;
+        private readonly IBackgroundQueue<AirportsExportWorkItem> _airportsQueue;
 
-        public ExportController(IBackgroundQueue<ExportWorkItem> queue)
+        public ExportController(
+            IBackgroundQueue<SightingsExportWorkItem> sightingsQueue,
+            IBackgroundQueue<AirportsExportWorkItem> airportsQueue)
         {
-            _queue = queue;
+            _sightingsQueue = sightingsQueue;
+            _airportsQueue = airportsQueue;
         }
 
         [HttpPost]
         [Route("sightings")]
-        public IActionResult ExportSightings([FromBody] ExportWorkItem item)
+        public IActionResult ExportSightings([FromBody] SightingsExportWorkItem item)
         {
             // Set the job name used in the job status record
             item.JobName = "Sightings Export";
 
             // Queue the work item
-            _queue.Enqueue(item);
+            _sightingsQueue.Enqueue(item);
+            return Accepted();
+        }
+
+        [HttpPost]
+        [Route("airports")]
+        public IActionResult ExportAirports([FromBody] AirportsExportWorkItem item)
+        {
+            // Set the job name used in the job status record
+            item.JobName = "Airports Export";
+
+            // Queue the work item
+            _airportsQueue.Enqueue(item);
             return Accepted();
         }
     }

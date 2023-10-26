@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <ReleaseVersion>1.4.0.0</ReleaseVersion>
+    <ReleaseVersion>1.5.0.0</ReleaseVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FlightRecorder.BusinessLogic" Version="1.2.0" />

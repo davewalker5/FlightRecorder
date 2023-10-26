@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 namespace FlightRecorder.DataExchange
 {
     [ExcludeFromCodeCoverage]
-    public class SightingsExportService : BackgroundQueueProcessor<ExportWorkItem>
+    public class SightingsExportService : BackgroundQueueProcessor<SightingsExportWorkItem>
     {
         private readonly AppSettings _settings;
 
         public SightingsExportService(
-            ILogger<BackgroundQueueProcessor<ExportWorkItem>> logger,
-            IBackgroundQueue<ExportWorkItem> queue,
+            ILogger<BackgroundQueueProcessor<SightingsExportWorkItem>> logger,
+            IBackgroundQueue<SightingsExportWorkItem> queue,
             IServiceScopeFactory serviceScopeFactory,
             IOptions<AppSettings> settings)
             : base(logger, queue, serviceScopeFactory)
@@ -34,7 +34,7 @@ namespace FlightRecorder.DataExchange
         /// <param name="item"></param>
         /// <param name="factory"></param>
         /// <returns></returns>
-        protected override async Task ProcessWorkItem(ExportWorkItem item, FlightRecorderFactory factory)
+        protected override async Task ProcessWorkItem(SightingsExportWorkItem item, FlightRecorderFactory factory)
         {
             // Get the list of sightings to export
             MessageLogger.LogInformation("Retrieving sightings for export");
