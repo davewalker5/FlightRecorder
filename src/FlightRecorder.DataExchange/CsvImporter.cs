@@ -1,17 +1,15 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.DataExchange;
+using FlightRecorder.Entities.Exceptions;
+using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Entities.Exceptions;
-using FlightRecorder.Entities.DataExchange;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.DataExchange
 {
-    [ExcludeFromCodeCoverage]
     public class CsvImporter : IDataImporter
     {
         public EventHandler<SightingDataExchangeEventArgs> RecordImport;

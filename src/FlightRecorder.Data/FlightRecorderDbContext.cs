@@ -17,6 +17,7 @@ namespace FlightRecorder.Data
         public virtual DbSet<Manufacturer> Manufacturers { get; set; }
         public virtual DbSet<Model> Models { get; set; }
         public virtual DbSet<Sighting> Sightings { get; set; }
+        public virtual DbSet<JobStatus> JobStatuses { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<AirlineStatistics> AirlineStatistics { get; set; }
         public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
@@ -203,6 +204,20 @@ namespace FlightRecorder.Data
                 entity.Property(e => e.LocationId).HasColumnName("location_id");
             });
 
+            modelBuilder.Entity<JobStatus>(entity =>
+            {
+                entity.ToTable("JOB_STATUS");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name).IsRequired().HasColumnName("name");
+                entity.Property(e => e.Parameters).HasColumnName("parameters");
+                entity.Property(e => e.Start).IsRequired().HasColumnName("start").HasColumnType("DATETIME");
+                entity.Property(e => e.End).HasColumnName("end").HasColumnType("DATETIME");
+                entity.Property(e => e.Error).HasColumnName("error");
+            });
 
             modelBuilder.Entity<User>(entity =>
             {

@@ -1,12 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FlightRecorder.Entities.Db
 {
-    internal class JobStatus
+    [ExcludeFromCodeCoverage]
+    public class JobStatus
     {
+        [Key]
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string Parameters { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime? End { get; set; }
+        public string Error { get; set; }
     }
 }

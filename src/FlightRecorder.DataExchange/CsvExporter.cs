@@ -1,14 +1,12 @@
-﻿using System;
+﻿using FlightRecorder.Entities.DataExchange;
+using FlightRecorder.Entities.Db;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
-using FlightRecorder.Entities.DataExchange;
-using FlightRecorder.Entities.Db;
 
 namespace FlightRecorder.DataExchange
 {
-    [ExcludeFromCodeCoverage]
     public class CsvExporter
     {
         private readonly string[] ColumnHeaders =
