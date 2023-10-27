@@ -1,0 +1,51 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.ExportReportViewModel
+
+@{
+    ViewData["Title"] = "Export Report";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Export Report
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Export a report
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>@Html.Raw(Model.Message)</span>
+                </div>
+            </div>
+            <hr />
+        }
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.ReportType)</strong>
+                <div class="input-group">
+                    @Html.DropDownListFor(m => m.ReportType, Model.ReportTypes, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.ReportType, "", new { @class = "text-danger" })</span>
+            </div>
+            <div id="ModelsList" class="col">
+            </div>
+        </div>
+        <br/>
+
+        @await Html.PartialAsync("FileName", Model)
+    }
+</div>

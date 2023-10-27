@@ -14,12 +14,17 @@ namespace FlightRecorder.Mvc.Controllers
     [Authorize]
     public class AirlineStatisticsController : Controller
     {
-        private readonly ReportsClient _client;
+        private readonly ReportsClient _reportsClient;
+        private readonly ExportClient _exportClient;
         private readonly IOptions<AppSettings> _settings;
 
-        public AirlineStatisticsController(ReportsClient reports, IOptions<AppSettings> settings)
+        public AirlineStatisticsController(
+            ReportsClient reportsClient,
+            ExportClient exportsClient,
+            IOptions<AppSettings> settings)
         {
-            _client = reports;
+            _reportsClient = reportsClient;
+            _exportClient = exportsClient;
             _settings = settings;
         }
 
@@ -69,14 +74,28 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
+                // Get the date and time
                 DateTime start = !string.IsNullOrEmpty(model.From) ? DateTime.Parse(model.From) : DateTime.MinValue;
                 DateTime end = !string.IsNullOrEmpty(model.To) ? DateTime.Parse(model.To) : DateTime.MaxValue;
 
-                List<AirlineStatistics> records = await _client.AirlineStatisticsAsync(start, end, page, _settings.Value.SearchPageSize);
+                // Retrieve the matching report records
+                List<AirlineStatistics> records = await _reportsClient.AirlineStatisticsAsync(start, end, page, _settings.Value.SearchPageSize);
                 model.SetRecords(records, page, _settings.Value.SearchPageSize);
             }
 
             return View(model);
+        }
+
+        /// <summary>
+        /// Request export of the report
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Export([FromBody] AirlineStatisticsViewModel model)
+        {
+            await _exportClient.ExportReport<AirlineStatistics>(model);
+            return Ok();
         }
     }
 }
