@@ -1,18 +1,16 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.DataExchange;
-using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Exceptions;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace FlightRecorder.DataExchange
+namespace FlightRecorder.DataExchange.Import
 {
-    public class AirportImporter: IDataImporter
+    public class AirportImporter : IDataImporter
     {
         public EventHandler<AirportDataExchangeEventArgs> RecordImport;
 

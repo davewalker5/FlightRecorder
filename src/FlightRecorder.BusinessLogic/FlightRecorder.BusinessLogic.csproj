@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <PackageId>FlightRecorder.BusinessLogic</PackageId>
-    <PackageVersion>1.2.0.0</PackageVersion>
+    <PackageVersion>1.3.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023</Copyright>
     <Owners>Dave Walker</Owners>
@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <ReleaseVersion>1.2.0.0</ReleaseVersion>
+    <ReleaseVersion>1.3.0.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
