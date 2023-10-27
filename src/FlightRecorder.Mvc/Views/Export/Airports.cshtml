@@ -17,4 +17,22 @@
     </small>
 </p>
 
-@await Html.PartialAsync("FileName", Model)
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>@Html.Raw(Model.Message)</span>
+                </div>
+            </div>
+            <hr />
+        }
+
+        @await Html.PartialAsync("FileName", Model)
+    }
+</div>

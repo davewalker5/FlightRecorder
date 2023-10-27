@@ -3,6 +3,7 @@ using FlightRecorder.Mvc.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -40,6 +41,28 @@ namespace FlightRecorder.Mvc.Api
             dynamic template = new { FileName = fileName };
             string data = JsonConvert.SerializeObject(template);
             await SendIndirectAsync("ExportAirports", data, HttpMethod.Post);
+        }
+
+        /// <summary>
+        /// Trigger a reports export via the API
+        /// </summary>
+        /// <param name="reportType"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task ExportReports(int reportType, DateTime? from, DateTime? to, string fileName)
+        {
+            dynamic template = new
+            {
+                Type = reportType,
+                Start = from,
+                End = to,
+                FileName = fileName
+            };
+
+            string data = JsonConvert.SerializeObject(template);
+            await SendIndirectAsync("ExportReports", data, HttpMethod.Post);
         }
     }
 }

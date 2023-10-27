@@ -20,7 +20,7 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Serve the export settings page
+        /// Serve the sightings export page
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -34,7 +34,7 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Handle
+        /// Handle POST events to trigger sightings exports
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -43,10 +43,9 @@ namespace FlightRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                var fileName = model.FileName;
-                await _client.ExportSightings(fileName);
-                model.Message = $"Background export of sightings to {fileName} has been submitted";
-                model.FileName = null;
+                await _client.ExportSightings(model.FileName);
+                model.Message = $"Background export of sightings to {model.FileName} has been submitted";
+                model.Clear();
                 ModelState.Clear();
             }
 
@@ -54,7 +53,7 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Serve the export settings page
+        /// Serve the airports export page
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -68,7 +67,7 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
-        /// Handle
+        /// Handle POST events to export the current airports
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -77,10 +76,43 @@ namespace FlightRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                var fileName = model.FileName;
-                await _client.ExportAirports(fileName);
-                model.Message = $"Background export of airports to {fileName} has been submitted";
-                model.FileName = null;
+                await _client.ExportAirports(model.FileName);
+                model.Message = $"Background export of airports to {model.FileName} has been submitted";
+                model.Clear();
+                ModelState.Clear();
+            }
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Serve the report export page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Reports()
+        {
+            ExportReportViewModel model = new ExportReportViewModel
+            {
+            };
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle POST events to export reports
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Reports(ExportReportViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var selectedReportType = model.ReportType ?? 0;
+                await _client.ExportReports(selectedReportType, null, null, model.FileName);
+                model.Message = $"Background export of the {model.ReportTypeNames[selectedReportType]} report to {model.FileName} has been submitted";
+                model.Clear();
                 ModelState.Clear();
             }
 
