@@ -6,5 +6,6 @@
         public int TokenLifespanMinutes { get; set; }
         public string SightingsExportPath { get; set; }
         public string AirportsExportPath { get; set; }
+        public string ReportsExportPath { get; set; }
     }
 }

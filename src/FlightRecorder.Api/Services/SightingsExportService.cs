@@ -1,6 +1,7 @@
 ﻿using FlightRecorder.Api.Entities;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.BusinessLogic.Logic;
+using FlightRecorder.DataExchange.Export;
 using FlightRecorder.Entities.Db;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,7 @@ namespace FlightRecorder.DataExchange
 
             // Export the sightings
             MessageLogger.LogInformation($"Exporting {sightings.Count} sightings to {filePath}");
-            CsvExporter exporter = new();
+            SightingsExporter exporter = new();
             exporter.Export(sightings, filePath);
             MessageLogger.LogInformation("Sightings export completed");
         }
