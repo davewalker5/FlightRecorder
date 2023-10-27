@@ -14,12 +14,17 @@ namespace FlightRecorder.Mvc.Controllers
     [Authorize]
     public class FlightsByMonthController : Controller
     {
-        private readonly ReportsClient _client;
+        private readonly ReportsClient _reportsClient;
+        private readonly ExportClient _exportClient;
         private readonly IOptions<AppSettings> _settings;
 
-        public FlightsByMonthController(ReportsClient reports, IOptions<AppSettings> settings)
+        public FlightsByMonthController(
+            ReportsClient reportsClient,
+            ExportClient exportsClient,
+            IOptions<AppSettings> settings)
         {
-            _client = reports;
+            _reportsClient = reportsClient;
+            _exportClient = exportsClient;
             _settings = settings;
         }
 
@@ -72,11 +77,23 @@ namespace FlightRecorder.Mvc.Controllers
                 DateTime start = !string.IsNullOrEmpty(model.From) ? DateTime.Parse(model.From) : DateTime.MinValue;
                 DateTime end = !string.IsNullOrEmpty(model.To) ? DateTime.Parse(model.To) : DateTime.MaxValue;
 
-                List<FlightsByMonth> records = await _client.FlightsByMonthAsync(start, end, page, _settings.Value.SearchPageSize);
+                List<FlightsByMonth> records = await _reportsClient.FlightsByMonthAsync(start, end, page, _settings.Value.SearchPageSize);
                 model.SetRecords(records, page, _settings.Value.SearchPageSize);
             }
 
             return View(model);
+        }
+
+        /// <summary>
+        /// Request export of the report
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Export([FromBody] FlightsByMonthViewModel model)
+        {
+            await _exportClient.ExportReport<FlightsByMonth>(model);
+            return Ok();
         }
     }
 }

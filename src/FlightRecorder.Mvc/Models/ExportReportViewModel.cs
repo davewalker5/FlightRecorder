@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using FlightRecorder.Mvc.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,15 +8,6 @@ namespace FlightRecorder.Mvc.Models
 {
     public class ExportReportViewModel : ExportViewModel
     {
-        public readonly List<string> ReportTypeNames = new()
-        {
-            "Airline Statistics",
-            "Location Statistics",
-            "Manufacturer Statistics",
-            "Model Statistics",
-            "Flights By Month"
-        };
-
         [DisplayName("Report Type")]
         [Required(ErrorMessage = "You must select a report type")]
         public int? ReportType { get; set; }
@@ -31,9 +23,9 @@ namespace FlightRecorder.Mvc.Models
             };
 
             // Add each of the report types
-            for (int i = 0; i < ReportTypeNames.Count; i++)
+            foreach (var definition in ReportDefinitions.Definitions)
             {
-                ReportTypes.Add(new SelectListItem(ReportTypeNames[i], i.ToString()));
+                ReportTypes.Add(new SelectListItem(definition.DisplayName, ((int)definition.ReportType).ToString()));
             }
         }
 

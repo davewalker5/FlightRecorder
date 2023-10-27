@@ -3,8 +3,7 @@ using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Controllers
@@ -109,9 +108,10 @@ namespace FlightRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
-                var selectedReportType = model.ReportType ?? 0;
-                await _client.ExportReports(selectedReportType, null, null, model.FileName);
-                model.Message = $"Background export of the {model.ReportTypeNames[selectedReportType]} report to {model.FileName} has been submitted";
+                var selectedReportType = (ReportType)(model.ReportType ?? 0);
+                var reportDisplayName = ReportDefinitions.Definitions.First(x => x.ReportType == selectedReportType).DisplayName;
+                await _client.ExportReport(selectedReportType, null, null, model.FileName);
+                model.Message = $"Background export of the {reportDisplayName} report to {model.FileName} has been submitted";
                 model.Clear();
                 ModelState.Clear();
             }

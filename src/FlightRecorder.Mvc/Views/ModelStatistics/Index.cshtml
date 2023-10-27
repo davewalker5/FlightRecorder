@@ -19,6 +19,24 @@
     </small>
 </p>
 
+<div id="MessageContainer" style="display:none">
+    <div class="row">
+        <div class="col-md-12 message">
+            <span id="MessageText"></span>
+        </div>
+    </div>
+    <hr />
+</div>
+
+<div id="ErrorContainer" style="display:none">
+    <div class="row">
+        <div class="col-md-12 error">
+            <span id="ErrorText"></span>
+        </div>
+    </div>
+    <hr />
+</div>
+
 <div class="container-fluid">
     @using (Html.BeginForm())
     {
@@ -48,6 +66,11 @@
             <div class="col">
                 <strong><label>&nbsp;</label></strong>
                 <div class="input-group">
+                    @if (Model.Records != null)
+                    {
+                        <button id="Export" class="btn btn-secondary">Export</button>
+                        <strong><label>&nbsp;</label></strong>
+                    }
                     <button type="submit" name="Action" value="@ControllerActions.ActionSearch" class="btn btn-primary">Search</button>
                 </div>
             </div>
@@ -92,3 +115,51 @@
         }
     }
 </div>
+
+<script type="text/javascript">
+    function ExportReport(url) {
+        // Hide the error and message elements
+        $("#MessageContainer").hide();
+        $("#WarningContainer").hide();
+        $("#ErrorContainer").hide();
+
+        // Construct the model holding the export parameters to POST to the controller
+        const model = {
+            "From": $("#From").val(),
+            "To": $("#To").val()
+        };
+
+        // Set a busy cursor
+        $('html, body').css("cursor", "wait");
+
+        // POST the data to the controller
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: JSON.stringify(model),
+            contentType: "application/json",
+            cache: false,
+            success: function (result) {
+                // Worked, so show an "OK" message
+                $("#MessageText").text("The report export has been queued in the background");
+                $("#MessageContainer").show();
+                $('html, body').css("cursor", "auto");
+            },
+            error: function (xhr, status, error) {
+                // Failed, so show an error message
+                var errorMessage = xhr.status + ': ' + xhr.statusText
+                $("#ErrorText").text(errorMessage);
+                $("#ErrorContainer").show();
+                $('html, body').css("cursor", "auto");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Respond to a click on the "Export" button by POSTing an export request back
+        $("#Export").click(function (e) {
+            e.preventDefault();
+            ExportReport("/ModelStatistics/Export");
+        });
+    });
+</script>
