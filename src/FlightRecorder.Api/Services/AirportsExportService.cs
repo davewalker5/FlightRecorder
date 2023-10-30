@@ -33,7 +33,7 @@ namespace FlightRecorder.Api.Services
         /// <param name="item"></param>
         /// <param name="factory"></param>
         /// <returns></returns>
-        protected override async Task ProcessWorkItem(AirportsExportWorkItem item, FlightRecorderFactory factory)
+        protected override async Task ProcessWorkItemAsync(AirportsExportWorkItem item, FlightRecorderFactory factory)
         {
             // Get the list of sightings to export
             MessageLogger.LogInformation("Retrieving airports for export");
