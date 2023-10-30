@@ -9,7 +9,7 @@ namespace FlightRecorder.Mvc.Models
         public IEnumerable<Manufacturer> Manufacturers { get; private set; }
 
         /// <summary>
-        /// Set the list of countries to be exposed by this view model
+        /// Set the list of manufacturers to be exposed by this view model
         /// </summary>
         /// <param name="manufacturers"></param>
         /// <param name="pageNumber"></param>

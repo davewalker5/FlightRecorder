@@ -64,7 +64,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <returns></returns>
         public async Task<List<Location>> GetLocationsAsync()
-            => await _locations.GetLocationsAsync();
+            => await _locations.GetLocationsAsync(1, int.MaxValue);
 
         /// <summary>
         /// Return flights with the specified number

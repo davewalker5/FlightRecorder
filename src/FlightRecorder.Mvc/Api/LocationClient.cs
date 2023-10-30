@@ -15,7 +15,6 @@ namespace FlightRecorder.Mvc.Api
     {
         private const string RouteKey = "Locations";
         private const string CacheKey = "Locations";
-        private const int AllLocationsPageSize = 1000000;
 
         public LocationClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
             : base(client, settings, accessor, cache)
@@ -25,18 +24,25 @@ namespace FlightRecorder.Mvc.Api
         /// <summary>
         /// Return a list of locations
         /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Location>> GetLocationsAsync()
+        public async Task<List<Location>> GetLocationsAsync(int pageNumber, int pageSize)
         {
+            // Attempt to get the list of locations from the cache
             List<Location> locations = Cache.Get<List<Location>>(CacheKey);
             if (locations == null)
             {
-                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllLocationsPageSize}";
+                // Not cached, so retrieve them from the service and cache them
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 locations = JsonConvert.DeserializeObject<List<Location>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
                 Cache.Set(CacheKey, locations, Settings.Value.CacheLifetimeSeconds);
             }
-            return locations;
+
+            // Extract and return the page of interest
+            var page = locations.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            return page;
         }
 
         /// <summary>
