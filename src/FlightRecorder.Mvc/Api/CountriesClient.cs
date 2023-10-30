@@ -33,7 +33,7 @@ namespace FlightRecorder.Mvc.Api
             List<Country> countries = Cache.Get<List<Country>>(CacheKey);
             if (countries == null)
             {
-                // Not cahced, so retrieve them from the service and cache them
+                // Not cached, so retrieve them from the service and cache them
                 string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 countries = JsonConvert.DeserializeObject<List<Country>>(json, JsonSettings).OrderBy(m => m.Name).ToList();

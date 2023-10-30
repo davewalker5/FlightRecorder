@@ -1,9 +1,10 @@
-﻿@using System.Collections.Generic
-@using FlightRecorder.Mvc.Entities
-@model List<Manufacturer>
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.ManufacturerListViewModel
 
 @{
     ViewData["Title"] = "Manufacturers";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
 }
 
 <p class="text-center font-weight-bold">
@@ -18,25 +19,34 @@
     </small>
 </p>
 
-<table class="table">
-    <tr>
-        <th>Name</th>
-        <th />
-    </tr>
-    @foreach (var manufacturer in Model)
+<div class="container-fluid">
+    @using (Html.BeginForm())
     {
-        <tr>
-            <td valign="center">@manufacturer.Name</td>
-            <td valign="center">
-                <a class="btn btn-lg" asp-area="" asp-controller="Manufacturers" asp-action="Edit" asp-route-id="@manufacturer.Id">
-                    <i class="fas fa-edit"></i>
-                </a>
-            </td>
-        </tr>
-    }
-</table>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PageNumber)
 
-<hr />
-<p class="text-right">
-    <a class="btn btn-primary" href="/Manufacturers/Add" role="button">Add</a>
-</p>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th />
+            </tr>
+            @foreach (var manufacturer in Model.Manufacturers)
+            {
+                <tr>
+                    <td valign="center">@manufacturer.Name</td>
+                    <td valign="center">
+                        <a class="btn btn-lg" asp-area="" asp-controller="Manufacturers" asp-action="Edit" asp-route-id="@manufacturer.Id">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </table>
+        <hr />
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
+            <a class="btn btn-primary" href="/Manufacturers/Add" role="button">Add</a>
+        </p>
+    }
+</div>

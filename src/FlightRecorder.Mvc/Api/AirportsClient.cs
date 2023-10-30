@@ -37,7 +37,7 @@ namespace FlightRecorder.Mvc.Api
             List<Airport> airports = Cache.Get<List<Airport>>(CacheKeyPrefix);
             if (airports == null)
             {
-                // Not cahced, so retrieve them from the service and cache them
+                // Not cached, so retrieve them from the service and cache them
                 string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 airports = JsonConvert.DeserializeObject<List<Airport>>(json, JsonSettings).OrderBy(m => m.Name).OrderBy(m => m.Code).ToList();

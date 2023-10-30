@@ -15,7 +15,6 @@ namespace FlightRecorder.Mvc.Api
     {
         private const string RouteKey = "Manufacturers";
         private const string CacheKey = "Manufacturers";
-        private const int AllManufacturersPageSize = 1000000;
 
         public ManufacturerClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
             : base(client, settings, accessor, cache)
@@ -25,18 +24,25 @@ namespace FlightRecorder.Mvc.Api
         /// <summary>
         /// Return a list of manufacturers
         /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Manufacturer>> GetManufacturersAsync()
+        public async Task<List<Manufacturer>> GetManufacturersAsync(int pageNumber, int pageSize)
         {
+            // Attempt to get the list of countries from the cache
             List<Manufacturer> manufacturers = Cache.Get<List<Manufacturer>>(CacheKey);
             if (manufacturers == null)
             {
-                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllManufacturersPageSize}";
+                // Not cached, so retrieve them from the service and cache them
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 manufacturers = JsonConvert.DeserializeObject<List<Manufacturer>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
                 Cache.Set(CacheKey, manufacturers, Settings.Value.CacheLifetimeSeconds);
             }
-            return manufacturers;
+
+            // Extract and return the page of interest
+            var page = manufacturers.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            return page;
         }
 
         /// <summary>
