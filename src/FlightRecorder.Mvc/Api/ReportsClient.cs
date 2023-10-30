@@ -28,7 +28,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<List<AirlineStatistics>> AirlineStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
-            => await DateBasedStatisticsReportAsync<AirlineStatistics>("AirlineStatistics", from, to, pageNumber, pageSize);
+            => await DateBasedReportAsync<AirlineStatistics>("AirlineStatistics", from, to, pageNumber, pageSize);
 
         /// <summary>
         /// Return the location statistics report
@@ -39,7 +39,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<List<LocationStatistics>> LocationStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
-            => await DateBasedStatisticsReportAsync<LocationStatistics>("LocationStatistics", from, to, pageNumber, pageSize);
+            => await DateBasedReportAsync<LocationStatistics>("LocationStatistics", from, to, pageNumber, pageSize);
 
         /// <summary>
         /// Return the manufacturer statistics report
@@ -50,7 +50,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<List<ManufacturerStatistics>> ManufacturerStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
-            => await DateBasedStatisticsReportAsync<ManufacturerStatistics>("ManufacturerStatistics", from, to, pageNumber, pageSize);
+            => await DateBasedReportAsync<ManufacturerStatistics>("ManufacturerStatistics", from, to, pageNumber, pageSize);
 
         /// <summary>
         /// Return the model statistics report
@@ -61,7 +61,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<List<ModelStatistics>> ModelStatisticsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
-            => await DateBasedStatisticsReportAsync<ModelStatistics>("ModelStatistics", from, to, pageNumber, pageSize);
+            => await DateBasedReportAsync<ModelStatistics>("ModelStatistics", from, to, pageNumber, pageSize);
 
         /// <summary>
         /// Return the flights by month report
@@ -72,7 +72,18 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="pageSize"></param>
         /// <returns></returns>
         public async Task<List<FlightsByMonth>> FlightsByMonthAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
-            => await DateBasedStatisticsReportAsync<FlightsByMonth>("FlightsByMonth", from, to, pageNumber, pageSize);
+            => await DateBasedReportAsync<FlightsByMonth>("FlightsByMonth", from, to, pageNumber, pageSize);
+
+        /// <summary>
+        /// Return the job status report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<JobStatus>> JobStatusAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<JobStatus>("JobStatus", from, to, pageNumber, pageSize);
 
         /// <summary>
         /// Return a date-based statistics report
@@ -84,7 +95,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        private async Task<List<T>> DateBasedStatisticsReportAsync<T>(string routeName, DateTime? from, DateTime? to, int pageNumber, int pageSize)
+        private async Task<List<T>> DateBasedReportAsync<T>(string routeName, DateTime? from, DateTime? to, int pageNumber, int pageSize)
         {
             // URL encode the dates
             string fromRouteSegment = (from ?? DateTime.MinValue).ToString(Settings.Value.DateTimeFormat);
