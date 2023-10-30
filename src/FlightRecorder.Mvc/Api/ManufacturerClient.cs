@@ -29,7 +29,7 @@ namespace FlightRecorder.Mvc.Api
         /// <returns></returns>
         public async Task<List<Manufacturer>> GetManufacturersAsync(int pageNumber, int pageSize)
         {
-            // Attempt to get the list of countries from the cache
+            // Attempt to get the list of manufacturers from the cache
             List<Manufacturer> manufacturers = Cache.Get<List<Manufacturer>>(CacheKey);
             if (manufacturers == null)
             {
