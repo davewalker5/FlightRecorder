@@ -15,7 +15,7 @@ namespace FlightRecorder.Mvc.Attributes
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             FlightDetailsViewModel model = (FlightDetailsViewModel)validationContext.ObjectInstance;
-            List<string> codes = _client.GetAirportsAsync().Result.Select(x => x.Code).ToList();
+            List<string> codes = _client.GetAirportsAsync(1, int.MaxValue).Result.Select(x => x.Code).ToList();
 
             if ((validationContext.MemberName == "Embarkation") && !codes.Contains(model.Embarkation.ToUpper()))
             {

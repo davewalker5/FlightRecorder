@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using FlightRecorder.Mvc.Api;
+using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
@@ -15,12 +17,18 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly CountriesClient _countries;
         private readonly AirportsClient _airports;
         private readonly IMapper _mapper;
+        private readonly IOptions<AppSettings> _settings;
 
-        public AirportsController(CountriesClient countries, AirportsClient airports, IMapper mapper)
+        public AirportsController(
+            CountriesClient countries,
+            AirportsClient airports,
+            IMapper mapper,
+            IOptions<AppSettings> settings)
         {
             _countries = countries;
             _airports = airports;
             _mapper = mapper;
+            _settings = settings;
         }
 
         /// <summary>
@@ -30,8 +38,47 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Airport> airports = await _airports.GetAirportsAsync();
-            return View(airports);
+            var airports = await _airports.GetAirportsAsync(1, _settings.Value.SearchPageSize);
+            var model = new AirportListViewModel();
+            model.SetAirports(airports, 1, _settings.Value.SearchPageSize);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Handle POST events for page navigation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(AirportListViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int page = model.PageNumber;
+                switch (model.Action)
+                {
+                    case ControllerActions.ActionPreviousPage:
+                        page -= 1;
+                        break;
+                    case ControllerActions.ActionNextPage:
+                        page += 1;
+                        break;
+                    default:
+                        break;
+                }
+
+                // Need to clear model state here or the page number that was posted
+                // is returned and page navigation doesn't work correctly. So, capture
+                // and amend the page number, above, then apply it, below
+                ModelState.Clear();
+
+                // Retrieve the matching airport records
+                var airports = await _airports.GetAirportsAsync(page, _settings.Value.SearchPageSize);
+                model.SetAirports(airports, page, _settings.Value.SearchPageSize);
+            }
+
+            return View(model);
         }
 
         /// <summary>

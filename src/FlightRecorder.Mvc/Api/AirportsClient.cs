@@ -16,7 +16,6 @@ namespace FlightRecorder.Mvc.Api
     {
         private const string RouteKey = "Airports";
         private const string CacheKeyPrefix = "Airports";
-        private const int AllAirportsPageSize = 1000000;
 
         private CountriesClient _countries;
 
@@ -29,18 +28,25 @@ namespace FlightRecorder.Mvc.Api
         /// <summary>
         /// Return a list of airports
         /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Airport>> GetAirportsAsync()
+        public async Task<List<Airport>> GetAirportsAsync(int pageNumber, int pageSize)
         {
+            // Attempt to get the list of airports from the cache
             List<Airport> airports = Cache.Get<List<Airport>>(CacheKeyPrefix);
             if (airports == null)
             {
-                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllAirportsPageSize}";
+                // Not cahced, so retrieve them from the service and cache them
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 airports = JsonConvert.DeserializeObject<List<Airport>>(json, JsonSettings).OrderBy(m => m.Name).OrderBy(m => m.Code).ToList();
                 Cache.Set(CacheKeyPrefix, airports, Settings.Value.CacheLifetimeSeconds);
             }
-            return airports;
+
+            // Extract and return the page of interest
+            var page = airports.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            return page;
         }
 
         /// <summary>
@@ -54,7 +60,7 @@ namespace FlightRecorder.Mvc.Api
             List<Airport> airports = Cache.Get<List<Airport>>(key);
             if (airports == null)
             {
-                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/code/{code}/1/{AllAirportsPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/code/{code}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
