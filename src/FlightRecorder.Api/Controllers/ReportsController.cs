@@ -1,4 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Reporting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -163,6 +164,37 @@ namespace FlightRecorder.Api.Controllers
 
             // Convert to a list and return the results
             return results.ToList();
+        }
+
+        /// <summary>
+        /// Generate the job statistics report
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("jobs/{start}/{end}/{pageNumber}/{pageSize}")]
+        public async Task<ActionResult<List<JobStatus>>> GetJobsAsync(string start, string end, int pageNumber, int pageSize)
+        {
+            // Decode the start and end date and convert them to dates
+            DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
+            DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
+
+            // Get the report content
+            var results = await _factory.JobStatuses
+                                        .ListAsync(x => (x.Start >= startDate) && (x.End <= endDate), pageNumber, pageSize)
+                                        .OrderByDescending(x => x.Start)
+                                        .ToListAsync();
+
+            if (!results.Any())
+            {
+                return NoContent();
+            }
+
+            // Convert to a list and return the results
+            return results;
         }
     }
 }
