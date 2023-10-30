@@ -15,7 +15,6 @@ namespace FlightRecorder.Mvc.Api
     {
         private const string RouteKey = "Countries";
         private const string CacheKey = "Countries";
-        private const int AllCountriesPageSize = 1000000;
 
         public CountriesClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
             : base(client, settings, accessor, cache)
@@ -35,7 +34,7 @@ namespace FlightRecorder.Mvc.Api
             if (countries == null)
             {
                 // Not cahced, so retrieve them from the service and cache them
-                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllCountriesPageSize}";
+                string route = @$"{Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 countries = JsonConvert.DeserializeObject<List<Country>>(json, JsonSettings).OrderBy(m => m.Name).ToList();
                 Cache.Set(CacheKey, countries, Settings.Value.CacheLifetimeSeconds);

@@ -29,14 +29,19 @@ namespace FlightRecorder.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             var countries = await _client.GetCountriesAsync(1, _settings.Value.SearchPageSize);
-            var model = new CountriesViewModel();
+            var model = new CountryListViewModel();
             model.SetCountries(countries, 1, _settings.Value.SearchPageSize);
             return View(model);
         }
 
+        /// <summary>
+        /// Handle POST events for page navigation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(CountriesViewModel model)
+        public async Task<IActionResult> Index(CountryListViewModel model)
         {
             if (ModelState.IsValid)
             {
