@@ -86,7 +86,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <returns></returns>
         public async Task<List<Manufacturer>> GetManufacturersAsync()
-            => await _manufacturers.GetManufacturersAsync();
+            => await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
 
         /// <summary>
         /// Return the available models for a specified manufacturer

@@ -43,7 +43,7 @@ namespace FlightRecorder.Mvc.Controllers
             model.ModelId = modelId;
 
             // Load the manufacturer list
-            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
             model.SetManufacturers(manufacturers);
 
             return View(model);
@@ -100,7 +100,7 @@ namespace FlightRecorder.Mvc.Controllers
         public async Task<IActionResult> Add()
         {
             AddAircraftViewModel viewModel = new AddAircraftViewModel();
-            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
             viewModel.SetManufacturers(manufacturers);
             return View(viewModel);
         }
@@ -123,7 +123,7 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Message = $"Aircraft '{aircraft.Registration}' added successfully";
             }
 
-            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
             model.SetManufacturers(manufacturers);
 
             return View(model);
@@ -139,7 +139,7 @@ namespace FlightRecorder.Mvc.Controllers
         {
             Aircraft aircraft = await _aircraft.GetAircraftByIdAsync(id);
             EditAircraftViewModel viewModel = _mapper.Map<EditAircraftViewModel>(aircraft);
-            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+            List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
             viewModel.SetManufacturers(manufacturers);
             return View(viewModel);
         }
@@ -163,7 +163,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
-                List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync();
+                List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
                 viewModel.SetManufacturers(manufacturers);
                 result = View(viewModel);
             }
