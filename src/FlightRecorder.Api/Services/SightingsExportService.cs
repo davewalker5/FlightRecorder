@@ -35,7 +35,7 @@ namespace FlightRecorder.DataExchange
         /// <param name="item"></param>
         /// <param name="factory"></param>
         /// <returns></returns>
-        protected override async Task ProcessWorkItem(SightingsExportWorkItem item, FlightRecorderFactory factory)
+        protected override async Task ProcessWorkItemAsync(SightingsExportWorkItem item, FlightRecorderFactory factory)
         {
             // Get the list of sightings to export
             MessageLogger.LogInformation("Retrieving sightings for export");

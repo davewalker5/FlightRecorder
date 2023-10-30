@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -184,7 +185,9 @@ namespace FlightRecorder.Api.Controllers
 
             // Get the report content
             var results = await _factory.JobStatuses
-                                        .ListAsync(x => (x.Start >= startDate) && (x.End <= endDate), pageNumber, pageSize)
+                                        .ListAsync(x => (x.Start >= startDate) && ((x.End == null) || (x.End <= endDate)),
+                                                   pageNumber,
+                                                   pageSize)
                                         .OrderByDescending(x => x.Start)
                                         .ToListAsync();
 

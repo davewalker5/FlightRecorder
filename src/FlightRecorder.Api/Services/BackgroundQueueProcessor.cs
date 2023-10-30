@@ -65,7 +65,7 @@ namespace FlightRecorder.BusinessLogic.Logic
                             // Process the work item and, if successful, complete the job status record with
                             // no error
                             MessageLogger.LogInformation($"Processing work item {item.ToString()}");
-                            await ProcessWorkItem(item, factory);
+                            await ProcessWorkItemAsync(item, factory);
                             await factory.JobStatuses.UpdateAsync(status.Id, null);
                             MessageLogger.LogInformation($"Finished processing work item {item.ToString()}");
                         }
@@ -88,7 +88,7 @@ namespace FlightRecorder.BusinessLogic.Logic
         /// </summary>
         /// <param name="item"></param>
 #pragma warning disable CS1998
-        protected virtual async Task ProcessWorkItem(T item, FlightRecorderFactory factory)
+        protected virtual async Task ProcessWorkItemAsync(T item, FlightRecorderFactory factory)
         {
             // Ideally, this would be an abstract method with no body but that's not possible with
             // async methods so it's declared with an empty body in the expectation that the child

@@ -2,11 +2,13 @@
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.BusinessLogic.Logic;
 using FlightRecorder.DataExchange.Export;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Reporting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.Api.Services
@@ -31,26 +33,29 @@ namespace FlightRecorder.Api.Services
         /// <param name="item"></param>
         /// <param name="factory"></param>
         /// <returns></returns>
-        protected override async Task ProcessWorkItem(ReportExportWorkItem item, FlightRecorderFactory factory)
+        protected override async Task ProcessWorkItemAsync(ReportExportWorkItem item, FlightRecorderFactory factory)
         {
             MessageLogger.LogInformation($"Exporting the {item.Type} report");
 
             switch (item.Type)
             {
                 case ReportType.AirlineStatistics:
-                    await ExportAirlineStatistics(factory, item);
+                    await ExportAirlineStatisticsAsync(factory, item);
                     break;
                 case ReportType.LocationStatistics:
-                    await ExportLocationStatistics(factory, item);
+                    await ExportLocationStatisticsAsync(factory, item);
                     break;
                 case ReportType.ManufacturerStatistics:
-                    await ExportManufacturerStatistics(factory, item);
+                    await ExportManufacturerStatisticsAsync(factory, item);
                     break;
                 case ReportType.ModelStatistics:
-                    await ExportModelStatistics(factory, item);
+                    await ExportModelStatisticsAsync(factory, item);
                     break;
                 case ReportType.FlightsByMonth:
-                    await ExportFlightsByMonth(factory, item);
+                    await ExportFlightsByMonthAsync(factory, item);
+                    break;
+                case ReportType.JobStatus:
+                    await ExportJobStatusAsync(factory, item);
                     break;
                 default:
                     break;
@@ -65,7 +70,7 @@ namespace FlightRecorder.Api.Services
         /// <param name="factory"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task ExportAirlineStatistics(FlightRecorderFactory factory, ReportExportWorkItem item)
+        private async Task ExportAirlineStatisticsAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
         {
             // The third argument to the report generation method is an arbitrarily large value intended
             // to return all records
@@ -81,7 +86,7 @@ namespace FlightRecorder.Api.Services
         /// <param name="factory"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task ExportLocationStatistics(FlightRecorderFactory factory, ReportExportWorkItem item)
+        private async Task ExportLocationStatisticsAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
         {
             // The third argument to the report generation method is an arbitrarily large value intended
             // to return all records
@@ -97,7 +102,7 @@ namespace FlightRecorder.Api.Services
         /// <param name="factory"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task ExportManufacturerStatistics(FlightRecorderFactory factory, ReportExportWorkItem item)
+        private async Task ExportManufacturerStatisticsAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
         {
             // The third argument to the report generation method is an arbitrarily large value intended
             // to return all records
@@ -113,7 +118,7 @@ namespace FlightRecorder.Api.Services
         /// <param name="factory"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task ExportModelStatistics(FlightRecorderFactory factory, ReportExportWorkItem item)
+        private async Task ExportModelStatisticsAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
         {
             // The third argument to the report generation method is an arbitrarily large value intended
             // to return all records
@@ -129,13 +134,34 @@ namespace FlightRecorder.Api.Services
         /// <param name="factory"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task ExportFlightsByMonth(FlightRecorderFactory factory, ReportExportWorkItem item)
+        private async Task ExportFlightsByMonthAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
         {
             // The third argument to the report generation method is an arbitrarily large value intended
             // to return all records
             var records = await factory.FlightsByMonth.GenerateReportAsync(item.Start, item.End, 1, int.MaxValue);
             var filePath = Path.Combine(_settings.ReportsExportPath, item.FileName);
             var exporter = new CsvExporter<FlightsByMonth>();
+            exporter.Export(records, filePath, ',');
+        }
+
+        /// <summary>
+        /// Export the job status report
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private async Task ExportJobStatusAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.JobStatuses
+                                       .ListAsync(x => ((item.Start == null) || (x.Start >= item.Start)) &&
+                                                       ((item.End == null) || (x.End == null) || (x.End <= item.End)),
+                                                  1,
+                                                  int.MaxValue)
+                                       .ToListAsync();
+            var filePath = Path.Combine(_settings.ReportsExportPath, item.FileName);
+            var exporter = new CsvExporter<JobStatus>();
             exporter.Export(records, filePath, ',');
         }
     }
