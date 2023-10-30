@@ -42,7 +42,7 @@ namespace FlightRecorder.Mvc.Controllers
         public async Task<IActionResult> Add()
         {
             AddAirportViewModel model = new AddAirportViewModel();
-            List<Country> countries = await _countries.GetCountriesAsync();
+            List<Country> countries = await _countries.GetCountriesAsync(1, int.MaxValue);
             model.SetCountries(countries);
             return View(model);
         }
@@ -66,7 +66,7 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Message = $"Airport '{code} - {name}' added successfully";
             }
 
-            List<Country> countries = await _countries.GetCountriesAsync();
+            List<Country> countries = await _countries.GetCountriesAsync(1, int.MaxValue);
             model.SetCountries(countries);
 
             return View(model);
@@ -82,7 +82,7 @@ namespace FlightRecorder.Mvc.Controllers
         {
             Airport airport = await _airports.GetAirportByIdAsync(id);
             EditAirportViewModel model = _mapper.Map<EditAirportViewModel>(airport);
-            List<Country> countries = await _countries.GetCountriesAsync();
+            List<Country> countries = await _countries.GetCountriesAsync(1, int.MaxValue);
             model.SetCountries(countries);
             return View(model);
         }
@@ -111,7 +111,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
-                List<Country> countries = await _countries.GetCountriesAsync();
+                List<Country> countries = await _countries.GetCountriesAsync(1, int.MaxValue);
                 model.SetCountries(countries);
                 result = View(model);
             }
