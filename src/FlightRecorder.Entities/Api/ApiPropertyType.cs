@@ -4,6 +4,8 @@
     {
         DepartureAirportIATA,
         DestinationAirportIATA,
-        AirlineName
+        AirlineName,
+        AirportName,
+        CountryName
     }
 }

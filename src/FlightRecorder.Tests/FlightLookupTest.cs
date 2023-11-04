@@ -18,8 +18,8 @@ namespace FlightRecorder.Tests
     {
         private const string EndpointBaseUrl = "https://aerodatabox.p.rapidapi.com/flights/number/";
         private const string FlightNumber = "LS803";
-        private string MalformedResponse = "{\"departure\": {\"airport\": {\"iata\": \"MAN\"}}}";
-        private string Response = "[{\"departure\": {\"airport\": {\"iata\": \"MAN\"}},\"arrival\": {\"airport\": {\"iata\": \"BCN\"}},\"airline\": {\"name\": \"Jet2\"}}]";
+        private const string MalformedResponse = "{\"departure\": {\"airport\": {\"iata\": \"MAN\"}}}";
+        private const string Response = "[{\"departure\": {\"airport\": {\"iata\": \"MAN\"}},\"arrival\": {\"airport\": {\"iata\": \"BCN\"}},\"airline\": {\"name\": \"Jet2\"}}]";
 
         private MockHttpClient _client;
         private IFlightsApi _api;
@@ -85,7 +85,7 @@ namespace FlightRecorder.Tests
         public void LookupFlightByNumberAndDateTest()
         {
             _client!.AddResponse(Response);
-            var properties = Task.Run(() => _api.LookupFlightByNumberAndDate(FlightNumber,DateTime.Now)).Result;
+            var properties = Task.Run(() => _api.LookupFlightByNumberAndDate(FlightNumber, DateTime.Now)).Result;
             Assert.IsNotNull(properties);
 
             var embarkation = properties[ApiPropertyType.DepartureAirportIATA];

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
 {
-    public class AeroDataBoxFlightsApi : ExternalApiBase, IFlightsApi
+    public class AeroDataBoxAirportsApi : ExternalApiBase, IAirportsApi
     {
         private const string DateFormat = "yyyy-MM-dd";
 
@@ -15,7 +15,7 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
         private readonly string _host;
         private readonly string _key;
 
-        public AeroDataBoxFlightsApi(
+        public AeroDataBoxAirportsApi(
             IFlightRecorderLogger logger,
             IFlightRecorderHttpClient client,
             string url,
@@ -34,26 +34,12 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
         /// <summary>
         /// Look up flight details given a flight number
         /// </summary>
-        /// <param name="number"></param>
+        /// <param name="code"></param>
         /// <returns></returns>
-        public async Task<Dictionary<ApiPropertyType, string>> LookupFlightByNumber(string number)
+        public async Task<Dictionary<ApiPropertyType, string>> LookupAirportByIATACode(string code)
         {
-            Logger.LogMessage(Severity.Info, $"Looking up flight {number}");
-            var properties = await MakeApiRequest(number);
-            return properties;
-        }
-
-        /// <summary>
-        /// Look up flight details given a flight number and date
-        /// </summary>
-        /// <param name="number"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        public async Task<Dictionary<ApiPropertyType, string>> LookupFlightByNumberAndDate(string number, DateTime date)
-        {
-            Logger.LogMessage(Severity.Info, $"Looking up flight {number} on {date}");
-            var parameters = $"{number}/{date.ToString(DateFormat)}";
-            var properties = await MakeApiRequest(parameters);
+            Logger.LogMessage(Severity.Info, $"Looking up airport {code}");
+            var properties = await MakeApiRequest(code);
             return properties;
         }
 
@@ -69,9 +55,8 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
             // Define the properties to be extracted from the response
             List<ApiPropertyDefinition> definitions = new()
             {
-                new ApiPropertyDefinition{ PropertyType = ApiPropertyType.DepartureAirportIATA, JsonPath = "departure.airport.iata" },
-                new ApiPropertyDefinition{ PropertyType = ApiPropertyType.DestinationAirportIATA, JsonPath = "arrival.airport.iata" },
-                new ApiPropertyDefinition{ PropertyType = ApiPropertyType.AirlineName, JsonPath = "airline.name" }
+                new ApiPropertyDefinition{ PropertyType = ApiPropertyType.AirportName, JsonPath = "fullName" },
+                new ApiPropertyDefinition{ PropertyType = ApiPropertyType.CountryName, JsonPath = "country.name" }
             };
 
             // Set the headers
@@ -90,7 +75,7 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
                 try
                 {
                     // Extract the required properties from the response
-                    properties = GetPropertyValuesFromResponse(node![0], definitions);
+                    properties = GetPropertyValuesFromResponse(node, definitions);
 
                     // Log the properties dictionary
                     LogProperties(properties!);
