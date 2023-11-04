@@ -1,0 +1,71 @@
+﻿using FlightRecorder.Entities.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace FlightRecorder.Tests.Mocks
+{
+    internal class MockHttpClient : IFlightRecorderHttpClient
+    {
+        private readonly Queue<string> _responses = new();
+
+        /// <summary>
+        /// Queue a response
+        /// </summary>
+        /// <param name="response"></param>
+        public void AddResponse(string? response)
+        {
+            _responses.Enqueue(response);
+        }
+
+        /// <summary>
+        /// Queue a set of responses
+        /// </summary>
+        /// <param name="responses"></param>
+        public void AddResponses(IEnumerable<string> responses)
+        {
+            foreach (string response in responses)
+            {
+                _responses.Enqueue(response);
+            }
+        }
+
+        /// <summary>
+        /// Set the HTTP request headers
+        /// </summary>
+        /// <param name="headers"></param>
+        public void SetHeaders(Dictionary<string, string> headers)
+        {
+        }
+
+        /// <summary>
+        /// Construct and return the next response
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+#pragma warning disable CS1998
+        public async Task<HttpResponseMessage> GetAsync(string uri)
+        {
+            // De-queue the next message
+            var content = _responses.Dequeue();
+
+            // If the content is null, raise an exception to test the exception handling
+            if (content == null)
+            {
+                throw new Exception();
+            }
+
+            // Construct an HTTP response
+            var response = new HttpResponseMessage
+            {
+                Content = new StringContent(content ?? ""),
+                StatusCode = HttpStatusCode.OK
+            };
+
+            return response;
+        }
+#pragma warning restore CS1998
+    }
+}

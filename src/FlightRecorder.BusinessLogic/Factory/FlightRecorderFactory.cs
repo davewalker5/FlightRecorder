@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using FlightRecorder.BusinessLogic.Logic;
+using FlightRecorder.BusinessLogic.Database;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Reporting;

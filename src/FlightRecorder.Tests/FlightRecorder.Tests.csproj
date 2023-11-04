@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
-    <ReleaseVersion>1.4.0.0</ReleaseVersion>
+    <ReleaseVersion>1.5.0.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,5 +25,9 @@
     <ProjectReference Include="..\FlightRecorder.Data\FlightRecorder.Data.csproj" />
     <ProjectReference Include="..\FlightRecorder.Entities\FlightRecorder.Entities.csproj" />
     <ProjectReference Include="..\FlightRecorder.BusinessLogic\FlightRecorder.BusinessLogic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mocks\" />
   </ItemGroup>
 </Project>
