@@ -15,9 +15,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Logic\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\FlightRecorder.Data\FlightRecorder.Data.csproj" />
     <ProjectReference Include="..\FlightRecorder.BusinessLogic\FlightRecorder.BusinessLogic.csproj" />
     <ProjectReference Include="..\FlightRecorder.DataExchange\FlightRecorder.DataExchange.csproj" />
