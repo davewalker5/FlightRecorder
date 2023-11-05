@@ -1,12 +1,14 @@
 ﻿using FlightRecorder.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.Tests.Mocks
 {
+    [ExcludeFromCodeCoverage]
     internal class MockHttpClient : IFlightRecorderHttpClient
     {
         private readonly Queue<string> _responses = new();

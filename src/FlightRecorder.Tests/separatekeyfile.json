@@ -1,0 +1,10 @@
+{
+  "ApplicationSettings": {
+    "ApiServiceKeys": [
+      {
+        "Service": "AeroDataBox",
+        "Key": "keyfile.txt"
+      }
+    ]
+  }
+}

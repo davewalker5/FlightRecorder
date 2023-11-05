@@ -7,7 +7,7 @@ namespace FlightRecorder.Manager.Logic
     {
         // The index into this array is one of the values from the OperationType
         // enumeration, mapping the operation to the required argument count
-        private readonly int[] _requiredArgumentCount = { 3, 3, 2, 3, 3, 1 };
+        private readonly int[] _requiredArgumentCount = { 3, 3, 2, 3, 3, 1, 3 };
 
         /// <summary>
         /// Parse the command line, extracting the operation to be performed
@@ -46,6 +46,8 @@ namespace FlightRecorder.Manager.Logic
         /// <param name="args"></param>
         private static void AssignOperationParameters(Operation op, string[] args)
         {
+            CommandLineEntityType entityType;
+
             switch (op.Type)
             {
                 case OperationType.setpassword:
@@ -58,9 +60,14 @@ namespace FlightRecorder.Manager.Logic
                     break;
                 case OperationType.import:
                 case OperationType.export:
-                    op.Valid = Enum.TryParse<DataExchangeEntityType>(args[1], out DataExchangeEntityType entityType);
+                    op.Valid = Enum.TryParse<CommandLineEntityType>(args[1], out entityType);
                     op.EntityType = entityType;
                     op.FileName = args[2];
+                    break;
+                case OperationType.lookup:
+                    op.Valid = Enum.TryParse<CommandLineEntityType>(args[1], out entityType);
+                    op.EntityType = entityType;
+                    op.Identifier = args[2];
                     break;
                 default:
                     break;

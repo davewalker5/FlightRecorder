@@ -27,7 +27,7 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
 
             // The URL contains the protocol, host and base route (if any), but we need to extract the host name only
             // to pass in the headers as the RapidAPI host, so capture the host and the full URL
-            Uri uri = new Uri(url);
+            Uri uri = new(url);
             _host = uri.Host;
         }
 

@@ -9,8 +9,6 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
 {
     public class AeroDataBoxAirportsApi : ExternalApiBase, IAirportsApi
     {
-        private const string DateFormat = "yyyy-MM-dd";
-
         private readonly string _baseAddress;
         private readonly string _host;
         private readonly string _key;
@@ -27,12 +25,12 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
 
             // The URL contains the protocol, host and base route (if any), but we need to extract the host name only
             // to pass in the headers as the RapidAPI host, so capture the host and the full URL
-            Uri uri = new Uri(url);
+            Uri uri = new(url);
             _host = uri.Host;
         }
 
         /// <summary>
-        /// Look up flight details given a flight number
+        /// Look up airport details given an airport IATA code
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>

@@ -2,7 +2,7 @@
   "profiles": {
     "FlightRecorder.Manager": {
       "commandName": "Project",
-      "commandLineArgs": "export sightings test_export.csv"
+      "commandLineArgs": "lookup aircraft EI-ENF"
     }
   }
 }
