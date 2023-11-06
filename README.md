@@ -9,15 +9,18 @@
 
 ## About
 
-TO BE COMPLETED
+FlightRecorder.Api is a C# .NET Core WebAPI for accessing a [Flight Recorder Db](https://github.com/davewalker5/FlightRecorderDb) instance. The [Flight Recorder UI](https://github.com/davewalker5/FlightRecorder.Mvc) makes use
+of the service for data access and persistence.
+
+Further details concerning the database are provided in the [Flight Recorder Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki).
 
 ## Getting Started
 
-TO BE COMPLETED
+The [Flight Recorder Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki) contains further details on how to build and run the API.
 
 ## Authors
 
-- **Dave Walker** - *Initial work* - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
+- **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
 ## Credits
 
