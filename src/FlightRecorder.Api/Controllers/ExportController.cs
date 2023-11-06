@@ -1,5 +1,5 @@
 ﻿using FlightRecorder.Api.Entities;
-using FlightRecorder.BusinessLogic.Logic;
+using FlightRecorder.Api.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

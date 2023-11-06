@@ -1,6 +1,7 @@
 ﻿using FlightRecorder.Api.Entities;
+using FlightRecorder.Api.Interfaces;
+using FlightRecorder.BusinessLogic.Config;
 using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.BusinessLogic.Logic;
 using FlightRecorder.DataExchange.Export;
 using FlightRecorder.Entities.Db;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,18 +13,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FlightRecorder.DataExchange
+namespace FlightRecorder.Api.Services
 {
     [ExcludeFromCodeCoverage]
     public class SightingsExportService : BackgroundQueueProcessor<SightingsExportWorkItem>
     {
-        private readonly AppSettings _settings;
+        private readonly FlightRecorderApplicationSettings _settings;
 
         public SightingsExportService(
             ILogger<BackgroundQueueProcessor<SightingsExportWorkItem>> logger,
             IBackgroundQueue<SightingsExportWorkItem> queue,
             IServiceScopeFactory serviceScopeFactory,
-            IOptions<AppSettings> settings)
+            IOptions<FlightRecorderApplicationSettings> settings)
             : base(logger, queue, serviceScopeFactory)
         {
             _settings = settings.Value;
