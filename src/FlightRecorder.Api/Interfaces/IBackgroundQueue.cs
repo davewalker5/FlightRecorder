@@ -1,6 +1,6 @@
 ﻿using FlightRecorder.Api.Entities;
 
-namespace FlightRecorder.BusinessLogic.Logic
+namespace FlightRecorder.Api.Interfaces
 {
     public interface IBackgroundQueue<T> where T : BackgroundWorkItem
     {

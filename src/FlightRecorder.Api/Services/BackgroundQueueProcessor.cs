@@ -1,4 +1,5 @@
 ﻿using FlightRecorder.Api.Entities;
+using FlightRecorder.Api.Interfaces;
 using FlightRecorder.BusinessLogic.Factory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FlightRecorder.BusinessLogic.Logic
+namespace FlightRecorder.Api.Services
 {
     [ExcludeFromCodeCoverage]
     public abstract class BackgroundQueueProcessor<T> : BackgroundService where T : BackgroundWorkItem

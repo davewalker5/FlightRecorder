@@ -1,12 +1,15 @@
-using System.Text;
 using FlightRecorder.Api.Entities;
 using FlightRecorder.Api.Interfaces;
 using FlightRecorder.Api.Services;
+using FlightRecorder.BusinessLogic.Api;
+using FlightRecorder.BusinessLogic.Api.AeroDataBox;
+using FlightRecorder.BusinessLogic.Config;
 using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.BusinessLogic.Logic;
+using FlightRecorder.BusinessLogic.Logging;
 using FlightRecorder.Data;
-using FlightRecorder.DataExchange;
-using FlightRecorder.Entities.DataExchange;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,6 +19,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Text;
 
 namespace FlightRecorder.Api
 {
@@ -41,6 +48,31 @@ namespace FlightRecorder.Api
             });
             services.AddScoped<FlightRecorderFactory>();
 
+            // Read the configuration file
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            // Configure strongly typed application settings
+            IConfigurationSection section = configuration.GetSection("ApplicationSettings");
+            services.Configure<FlightRecorderApplicationSettings>(section);
+            var settings = section.Get<FlightRecorderApplicationSettings>();
+            ApiKeyResolver.ResolveAllApiKeys(settings!);
+
+            // Get the version number and application title
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            FileVersionInfo info = FileVersionInfo.GetVersionInfo(assembly.Location);
+            var title = $"Flight Recorder API v{info.FileVersion}";
+
+            // Create the file logger and log the startup messages
+            var logger = new FileLogger();
+            logger.Initialise(settings.LogFile, settings.MinimumLogLevel);
+            logger.LogMessage(Severity.Info, new string('=', 80));
+            logger.LogMessage(Severity.Info, title);
+
+            // Register the logger with the DI framework
+            services.AddSingleton<IFlightRecorderLogger>(x => logger);
+
             // Add the sightings exporter hosted service
             services.AddSingleton<IBackgroundQueue<SightingsExportWorkItem>, BackgroundQueue<SightingsExportWorkItem>>();
             services.AddHostedService<SightingsExportService>();
@@ -53,12 +85,41 @@ namespace FlightRecorder.Api
             services.AddSingleton<IBackgroundQueue<ReportExportWorkItem>, BackgroundQueue<ReportExportWorkItem>>();
             services.AddHostedService<ReportExportService>();
 
-            // Configure strongly typed application settings
-            IConfigurationSection section = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(section);
+            // Get the API key and the endpoint URLs used by the external APIs
+            var apiKey = settings.ApiServiceKeys.Find(x => x.Service == ApiServiceType.AeroDataBox).Key;
+            var flightEndpoint = settings.ApiEndpoints.Find(x => x.EndpointType == ApiEndpointType.Flight).Url;
+            var airportEndpoint = settings.ApiEndpoints.Find(x => x.EndpointType == ApiEndpointType.Airport).Url;
+            var aircraftEndpoint = settings.ApiEndpoints.Find(x => x.EndpointType == ApiEndpointType.Aircraft).Url;
+
+            // Configure the HTTP client used by the external APIs
+            services.AddSingleton<IFlightRecorderHttpClient>(x => FlightRecorderHttpClient.Instance);
+
+            // Add the external API data lookup services
+            services.AddScoped<IFlightsApi>(x =>
+                new AeroDataBoxFlightsApi(
+                    logger: x.GetRequiredService<IFlightRecorderLogger>(),
+                    client: x.GetRequiredService<IFlightRecorderHttpClient>(),
+                    url: flightEndpoint,
+                    key: apiKey)
+            );
+
+            services.AddScoped<IAirportsApi>(x =>
+                new AeroDataBoxAirportsApi(
+                    logger: x.GetRequiredService<IFlightRecorderLogger>(),
+                    client: x.GetRequiredService<IFlightRecorderHttpClient>(),
+                    url: airportEndpoint,
+                    key: apiKey)
+            );
+
+            services.AddScoped<IAircraftApi>(x =>
+                new AeroDataBoxAircraftApi(
+                    logger: x.GetRequiredService<IFlightRecorderLogger>(),
+                    client: x.GetRequiredService<IFlightRecorderHttpClient>(),
+                    url: aircraftEndpoint,
+                    key: apiKey)
+            );
 
             // Configure JWT
-            AppSettings settings = section.Get<AppSettings>();
             byte[] key = Encoding.ASCII.GetBytes(settings.Secret);
             services.AddAuthentication(x =>
             {
