@@ -27,9 +27,9 @@ namespace FlightRecorder.Mvc.Api
 
             // Ensure the item is evicted on expiry and register an eviction callback
             // that will remove the key from _keys
-            CancellationTokenSource source = new CancellationTokenSource(TimeSpan.FromSeconds(duration + 1));
-            CancellationChangeToken token = new CancellationChangeToken(source.Token);
-            MemoryCacheEntryOptions options = new MemoryCacheEntryOptions()
+            var source = new CancellationTokenSource(TimeSpan.FromSeconds(duration + 1));
+            var token = new CancellationChangeToken(source.Token);
+            var options = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(expires)
                 .AddExpirationToken(token)
                 .RegisterPostEvictionCallback(callback: OnEntryEvicted, state: this);
@@ -44,7 +44,9 @@ namespace FlightRecorder.Mvc.Api
 
         public void Remove(string key)
         {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             _keys.Remove(key, out DateTime expires);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             _cache.Remove(key);
         }
 
@@ -72,7 +74,9 @@ namespace FlightRecorder.Mvc.Api
 
         private void OnEntryEvicted(object key, object value, EvictionReason reason, object state)
         {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             _keys.Remove(key.ToString(), out DateTime expires);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
         }
 
         public void Dispose()

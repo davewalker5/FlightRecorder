@@ -18,7 +18,7 @@ namespace FlightRecorder.Mvc.Api
         private const string CacheKeyPrefix = "Aircraft";
         private const int AllAircraftPageSize = 1000000;
 
-        private ModelClient _models;
+        private readonly ModelClient _models;
 
         public AircraftClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache, ModelClient models)
             : base(client, settings, accessor, cache)

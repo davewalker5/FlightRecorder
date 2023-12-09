@@ -78,7 +78,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="data"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        protected async Task<string> SendDirectAsync(string route, string data, HttpMethod method)
+        protected async Task<string> SendDirectAsync(string route, string? data, HttpMethod method)
         {
             string json = null;
 
@@ -89,12 +89,12 @@ namespace FlightRecorder.Mvc.Api
             }
             else if (method == HttpMethod.Post)
             {
-                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                var content = new StringContent(data, Encoding.UTF8, "application/json");
                 response = await Client.PostAsync(route, content);
             }
             else if (method == HttpMethod.Put)
             {
-                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                var content = new StringContent(data, Encoding.UTF8, "application/json");
                 response = await Client.PutAsync(route, content);
             }
 

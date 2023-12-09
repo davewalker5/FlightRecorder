@@ -17,7 +17,7 @@ namespace FlightRecorder.Tests.Mocks
         /// Queue a response
         /// </summary>
         /// <param name="response"></param>
-        public void AddResponse(string? response)
+        public void AddResponse(string response)
         {
             _responses.Enqueue(response);
         }
@@ -50,14 +50,8 @@ namespace FlightRecorder.Tests.Mocks
 #pragma warning disable CS1998
         public async Task<HttpResponseMessage> GetAsync(string uri)
         {
-            // De-queue the next message
-            var content = _responses.Dequeue();
-
-            // If the content is null, raise an exception to test the exception handling
-            if (content == null)
-            {
-                throw new Exception();
-            }
+            // De-queue the next message and throw an exception if it's null
+            var content = _responses.Dequeue() ?? throw new Exception();
 
             // Construct an HTTP response
             var response = new HttpResponseMessage
