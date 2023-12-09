@@ -35,7 +35,7 @@ Please see the [Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki) for 
 
 ## Authors
 
-- **Dave Walker** - *Initial work* - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
+- **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
 ## Feedback
 
