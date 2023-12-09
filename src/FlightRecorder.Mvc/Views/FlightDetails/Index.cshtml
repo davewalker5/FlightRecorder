@@ -1,0 +1,183 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.FlightDetailsViewModel
+
+@{
+    ViewData["Title"] = "Log Sighting : Flight Details";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.FlightNumber)
+
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Log New Sighting > Flight Details</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @if (Model.IsDuplicate)
+        {
+            <div class="row">
+                <div class="col-md-12 warning">
+                    <span>There is already a record for this flight on the date specified</span>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.FlightNumber, new { @class = "form-control", @disabled="" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.FlightId)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.DropDownListFor(m => m.FlightId, new List<SelectListItem>(Model.Flights), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Embarkation)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.Embarkation, "", new { @class = "text-danger" })</span>
+            </div>
+        </div>
+        <br />
+
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Destination)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Destination, new { @class = "form-control" })
+                </div>
+                <span>@Html.ValidationMessageFor(m => m.Destination, "", new { @class = "text-danger" })</span>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.AirlineId)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.DropDownListFor(m => m.AirlineId, new List<SelectListItem>(Model.Airlines), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.NewAirline)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.NewAirline, new { @class = "form-control" })
+                </div>
+                @if (!string.IsNullOrEmpty(Model.AirlineErrorMessage))
+                {
+                    <span class="text-danger">@Html.Raw(Model.AirlineErrorMessage)</span>
+                }
+            </div>
+        </div>
+        <hr />
+
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary">Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary">Next</button>
+        </p>
+    }
+</div>
+
+<script type="text/javascript">
+    function LoadFlightDetails(flightId) {
+        if (flightId > 0) {
+            var route = "/FlightDetails/FlightDetails?flightId=" + flightId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "json",
+                cache: false,
+                success: function (result) {
+                    $("#Embarkation").val(result.embarkation);
+                    $("#Destination").val(result.destination);
+                    $("#AirlineId").val(result.airlineId);
+                    $("#NewAirline").val("");
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    alert(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        // If we pick a flight in the drop-down, retrieve its details and use
+        // them to populate the other text fields
+        $("#FlightId").change(function () {
+            var flightId = $("#FlightId").val();
+            LoadFlightDetails(flightId);
+        });
+
+        // If we start to manually enter the route, clear the flight selection as
+        // we're potentially adding a new flight with the same number
+        $("#Embarkation").change(function () {
+            $("#FlightId").val("");
+        });
+
+        $("#Destination").change(function () {
+            $("#FlightId").val("");
+        });
+
+        // If we change the airline, we're also potentially adding a new flight
+        // with the current number so clear the flight drop-down. Also, clear
+        // the new airling text box
+        $("#AirlineId").change(function () {
+            $("#FlightId").val("");
+            $("#NewAirline").val("");
+        });
+
+        // If we start to enter a new airline, clear the selected airline drop-down
+        $("#NewAirline").change(function() {
+            $("#AirlineId").val("");
+            $("#FlightId").val("");
+        });
+
+        // Capture the ENTER key and click the primary button instead
+        $(document).keypress(function (e) {
+            var key = e.which;
+            if (key == 13) {
+                $(".btn-primary").click();
+                return false;
+            }
+        });
+    });
+</script>

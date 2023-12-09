@@ -1,0 +1,19 @@
+﻿@model FlightRecorder.Mvc.Entities.Location
+
+@{
+    ViewData["Title"] = "Edit Location";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Edit Location</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @await Html.PartialAsync("Location", Model);
+    }
+</div>

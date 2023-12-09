@@ -1,0 +1,38 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.ExportViewModel
+
+@{
+    ViewData["Title"] = "Sightings Export";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Export Sightings
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Export sightings from the database
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>@Html.Raw(Model.Message)</span>
+                </div>
+            </div>
+            <hr />
+        }
+
+        @await Html.PartialAsync("FileName", Model)
+    }
+</div>

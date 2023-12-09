@@ -1,0 +1,77 @@
+﻿@model FlightRecorder.Mvc.Models.EditAircraftViewModel
+
+@{
+    ViewData["Title"] = "Edit Aircraft";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Edit Aircraft</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @await Html.PartialAsync("Aircraft", Model);
+        <br />
+
+        <div class="row">
+            <div class="col-md">
+                <div class="input-group">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    function LoadModelsForManufacturer(manufacturerId) {
+        if (manufacturerId > 0) {
+            var route = "/Aircraft/Models?manufacturerId=" + manufacturerId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#ModelsList").html(result);
+                    $('html, body').css("cursor", "auto");
+
+                    // If we have a model ID, select it. This happens on page load when editing an existing
+                    // model
+                    var modelId = parseInt("@Model.ModelId");
+                    if (modelId > 0) {
+                        $("#ModelId").val(modelId);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#ModelsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#ModelsList").html("");
+        }
+    }
+
+    $(document).ready(function () {
+        // If the page is loaded with a manufacturer selected, load their models
+        var manufacturerId = $("#ManufacturerId").val();
+        if (manufacturerId > 0) {
+            LoadModelsForManufacturer(manufacturerId);
+        }
+
+        // Respond to change events on the manufacturer list by clearing the current model selection
+        // and loading the models for the new selection
+        $("#ManufacturerId").change(function () {
+            var manufacturerId = $("#ManufacturerId").val();
+            $("#ModelId").val("");
+            LoadModelsForManufacturer(manufacturerId);
+        });
+    });
+</script>

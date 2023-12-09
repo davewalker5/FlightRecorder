@@ -1,0 +1,52 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.LocationListViewModel
+
+@{
+    ViewData["Title"] = "Locations";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Flight Recording Locations
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the locations at which sightings can be recorded
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PageNumber)
+
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th />
+            </tr>
+            @foreach (var location in Model.Locations)
+            {
+                <tr>
+                    <td valign="center">@location.Name</td>
+                    <td valign="center">
+                        <a class="btn btn-lg" asp-area="" asp-controller="Locations" asp-action="Edit" asp-route-id="@location.Id">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </table>
+        <hr />
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
+            <a class="btn btn-primary" href="/Locations/Add" role="button">Add</a>
+        </p>
+    }
+</div>

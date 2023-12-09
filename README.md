@@ -37,10 +37,28 @@ Please see the [Wiki](https://github.com/davewalker5/FlightRecorderDb/wiki) for 
 
 - **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
+<<<<<<< HEAD
+
 ## Feedback
 
 To file issues or suggestions, please use the [Issues](https://github.com/davewalker5/FlightRecorderDb/issues) page for this project on GitHub.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+# This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Credits
+
+The Flight Recorder MVC project uses the Gijgo JavaScript controls library:
+
+- https://gijgo.com
+
+## Feedback
+
+To file issues or suggestions, please use the [Issues](https://github.com/davewalker5/FlightRecorder.Mvc/issues) page for this project on GitHub.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
+> > > > > > > ui/master

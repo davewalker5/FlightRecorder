@@ -1,0 +1,19 @@
+﻿@model FlightRecorder.Mvc.Models.EditModelViewModel
+
+@{
+    ViewData["Title"] = "Edit Model";
+}
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md">
+                <span style="font-size: 1.2rem"><strong>Edit Model</strong></span>
+            </div>
+        </div>
+        <hr />
+
+        @await Html.PartialAsync("Model", Model);
+    }
+</div>
