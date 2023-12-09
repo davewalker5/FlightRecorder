@@ -41,15 +41,15 @@ namespace FlightRecorder.Api.Services
 
                 // Construct the information needed to populate the token descriptor
                 byte[] key = Encoding.ASCII.GetBytes(_settings.Secret);
-                SigningCredentials credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
+                var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
                 DateTime expiry = DateTime.UtcNow.AddMinutes(_settings.TokenLifespanMinutes);
 
                 // Create the descriptor containing the information used to create the JWT token
-                SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
+                var descriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimTypes.Name, user.UserName)
+                        new(ClaimTypes.Name, user.UserName)
                     }),
                     Expires = expiry,
                     SigningCredentials = credentials
@@ -57,7 +57,7 @@ namespace FlightRecorder.Api.Services
 
                 // Use the descriptor to create the JWT token then serialize it to
                 // a string
-                JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                var handler = new JwtSecurityTokenHandler();
                 SecurityToken token = handler.CreateToken(descriptor);
                 serializedToken = handler.WriteToken(token);
             }
