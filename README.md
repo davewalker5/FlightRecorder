@@ -11,8 +11,9 @@
 
 ## About
 
-FlightRecorder implements a SQL-based aircraft sightings logbook. A ASP.NET WenAPI provides access to the business logic and data access layer while an ASP.NET MVC UI provides the user interface.
+FlightRecorder implements a SQL-based aircraft sightings logbook. An ASP.NET WebAPI provides access to the business logic and data access layer while an ASP.NET MVC UI provides the user interface.
 
+### Sightings
 Each sighting consists of the following data:
 
 - Flight details
@@ -31,6 +32,8 @@ Each sighting consists of the following data:
 
 A register of airport codes by country is used to validate airport IATA codes.
 
+### Search
+
 Sightings may be searched by:
 
 - Route, specified as airport IATA codes
@@ -39,6 +42,7 @@ Sightings may be searched by:
 - Aircraft registration number
 - Date
 
+### Reporting
 The following reports can be generated and exported to CSV format files:
 
 - Airline statistics
@@ -47,6 +51,7 @@ The following reports can be generated and exported to CSV format files:
 - Manufacturer statistics
 - Aircraft model statistics
 
+### Data Export
 The following data can be exported in CSV format:
 
 - Sightings
