@@ -12,6 +12,13 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.302
+      - name: Run unit tests and generate code coverage
+        run: dotnet test src/FlightRecorder.sln /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=lcov
+      - name: Generage Coveralls code coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: src/FlightRecorder.Tests/coverage/coverage.info
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
@@ -30,13 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"davewalker5_FlightRecorderDb" /o:"davewalker5" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build --configuration Release src/FlightRecorderDb.sln
+          dotnet-sonarscanner begin /k:"davewalker5_FlightRecorder" /o:"davewalker5" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build --configuration Release src/FlightRecorder.sln
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-      - name: Run unit tests and generate code coverage
-        run: dotnet test src/FlightRecorderDb.sln /p:CollectCoverage=true /p:CoverletOutput=coverage/ /p:CoverletOutputFormat=lcov
-      - name: Generage Coveralls code coverage
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: src/FlightRecorder.Tests/coverage/coverage.info
