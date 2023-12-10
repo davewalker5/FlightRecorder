@@ -65,14 +65,6 @@ Please see the [Wiki](https://github.com/davewalker5/FlightRecorder/wiki) for co
 
 - **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
-## Feedback
-
-To file issues or suggestions, please use the [Issues](https://github.com/davewalker5/FlightRecorder/issues) page for this project on GitHub.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Credits
 
 Implementation of authentication using JWT in the REST API is based on the following tutorial:
