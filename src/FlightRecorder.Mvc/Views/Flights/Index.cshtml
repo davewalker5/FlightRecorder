@@ -1,0 +1,192 @@
+﻿@model FlightRecorder.Mvc.Models.ListFlightsViewModel
+
+@{
+    ViewData["Title"] = "Flights";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Flights
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the flights registered in the log
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.AirlineId)</strong>
+            <div class="input-group">
+                @Html.DropDownListFor(m => m.AirlineId, Model.Airlines, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.FlightNumber, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.Embarkation)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.Destination)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Destination, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div id="FlightsList">
+    </div>
+
+    <hr />
+    <p class="text-right">
+        <a class="btn btn-primary" href="/Flights/Add" role="button">Add</a>
+    </p>
+</div>
+
+<script type="text/javascript">
+    function LoadFlightsForAirline(airlineId) {
+        // Clear the other filters before loading
+        $("#FlightNumber").val("");
+        $("#Embarkation").val("");
+        $("#Destination").val("");
+
+        if (airlineId != "") {
+            var route = "/Flights/ListByAirline?airlineId=" + airlineId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#FlightsList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#FlightsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#FlightsList").html("");
+        }
+    }
+
+    function LoadFlightsByNumber(number) {
+        // Clear the other filters before loading
+        $("#AirlineId").val("");
+        $("#Embarkation").val("");
+        $("#Destination").val("");
+
+        if (number != "") {
+            var route = "/Flights/ListByFlightNumber?number=" + number;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#FlightsList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#FlightsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#FlightsList").html("");
+        }
+    }
+
+    function LoadFlightsByRoute(embarkation, destination) {
+        // Clear the other filters before loading
+        $("#AirlineId").val("");
+        $("#FlightNumber").val("");
+        $("#FlightsList").html("");
+
+        if ((embarkation != "") && (destination != "")) {
+            var route = "/Flights/ListByRoute?embarkation=" + embarkation + "&destination=" + destination;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#FlightsList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#FlightsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#FlightsList").html("");
+        }
+    }
+
+    function RespondToRouteFilterChange() {
+        // Get the new start and end points
+        var embarkation = $("#Embarkation").val();
+        var destination = $("#Destination").val();
+
+        // If we have a fully specified route, list the flights for it
+        if ((embarkation != "") && (destination != "")) {
+            LoadFlightsByRoute(embarkation, destination);
+        }
+    }
+
+    $(document).ready(function () {
+        // If the page is loaded with filters selected, show flights based on those filters
+        var airlineId = $("#AirlineId").val();
+        var number = $("#FlightNumber").val();
+        var embarkation = $("#Embarkation").val();
+        var destination = $("#Destination").val();
+        if ((embarkation != "") && (destination != "")) {
+            LoadFlightsByRoute(embarkation, destination);
+        } else if (number != "") {
+            LoadFlightsByNumber(number);
+        } else if (airlineId != "") {
+            LoadFlightsForAirline(airlineId);
+        }
+
+        // Respond to change events on the airline list by clearing the other filters and loading the flights for
+        // the new selection
+        $("#AirlineId").change(function () {
+            var airlineId = $("#AirlineId").val();
+            LoadFlightsForAirline(airlineId);
+        });
+
+        // Respond to a change in the flight number by clearing the other filters and loading flights with that number
+        $("#FlightNumber").change(function () {
+            var number = $("#FlightNumber").val();
+            LoadFlightsByNumber(number);
+        });
+
+        // Respond to changes in the route filters
+        $("#Embarkation").change(function () {
+            RespondToRouteFilterChange();
+        });
+
+        $("#Destination").change(function () {
+            RespondToRouteFilterChange();
+        });
+    });
+</script>

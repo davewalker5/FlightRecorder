@@ -10,23 +10,31 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType></DebugType>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\FlightRecorder.Data\FlightRecorder.Data.csproj" />
     <ProjectReference Include="..\FlightRecorder.BusinessLogic\FlightRecorder.BusinessLogic.csproj" />
     <ProjectReference Include="..\FlightRecorder.DataExchange\FlightRecorder.DataExchange.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
+
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
       <PrivateAssets>all</PrivateAssets>

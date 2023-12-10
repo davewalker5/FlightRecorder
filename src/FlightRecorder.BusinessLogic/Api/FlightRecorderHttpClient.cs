@@ -10,7 +10,9 @@ namespace FlightRecorder.BusinessLogic.Api
     public class FlightRecorderHttpClient : IFlightRecorderHttpClient
     {
         private readonly static HttpClient _client = new();
+#pragma warning disable CS8632
         private static FlightRecorderHttpClient? _instance = null;
+#pragma warning restore CS8632
         private readonly static object _lock = new();
 
         private FlightRecorderHttpClient() { }
@@ -26,10 +28,7 @@ namespace FlightRecorder.BusinessLogic.Api
                 {
                     lock (_lock)
                     {
-                        if (_instance == null)
-                        {
-                            _instance = new FlightRecorderHttpClient();
-                        }
+                        _instance ??= new FlightRecorderHttpClient();
                     }
                 }
 

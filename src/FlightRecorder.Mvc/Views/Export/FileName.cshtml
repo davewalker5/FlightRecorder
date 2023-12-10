@@ -1,0 +1,23 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.ExportViewModel
+
+<div class="row">
+    <div class="col">
+        <strong>@Html.LabelFor(m => m.FileName)</strong>
+        @Html.TextBoxFor(m => m.FileName, new { @class = "form-control" })
+        <span>@Html.ValidationMessageFor(m => m.FileName, "", new { @class = "text-danger" })</span>
+    </div>
+    <div id="ModelsList" class="col">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <strong><label>&nbsp;</label></strong>
+        <div class="input-group">
+            <button type="submit" name="Action" value="@ControllerActions.ActionSearch" class="btn btn-primary">Export</button>
+        </div>
+    </div>
+</div>
+<br />
+

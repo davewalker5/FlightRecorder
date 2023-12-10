@@ -1,0 +1,51 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.SightingsSearchViewModelBase
+@{
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+@Html.HiddenFor(m => m.PageNumber)
+
+@if (Model.Sightings != null)
+{
+    <table class="table">
+        <tr>
+            <th>Flight</th>
+            <th>Airline</th>
+            <th>Route</th>
+            <th>Aircraft</th>
+            <th>Model</th>
+            <th>Manufacturer</th>
+            <th>Date</th>
+            <th />
+        </tr>
+        @foreach (var sighting in Model.Sightings)
+        {
+            <tr>
+                <td valign="center">@sighting.Flight.Number</td>
+                <td valign="center">@sighting.Flight.Airline.Name</td>
+                <td valign="center">@sighting.Flight.Route</td>
+                <td valign="center">@sighting.Aircraft.Registration</td>
+                <td valign="center">@sighting.Aircraft.Model.Name</td>
+                <td valign="center">@sighting.Aircraft.Model.Manufacturer.Name</td>
+                <td valign="center">@sighting.FormattedDate</td>
+                <td valign="center">
+                    <a class="btn btn-lg" asp-area="" asp-controller="SightingDetails" asp-action="Index" asp-route-id="@sighting.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+    <hr />
+    <p class="text-right">
+        <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+        <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-primary" @nextDisabled>Next</button>
+    </p>
+}
+else if (Model.HasNoMatchingResults)
+{
+    <hr />
+    @Html.Raw("No matching sightings")
+}

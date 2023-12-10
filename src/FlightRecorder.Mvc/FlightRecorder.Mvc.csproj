@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ReleaseVersion>1.6.0.0</ReleaseVersion>
+    <FileVersion>1.6.0.0</FileVersion>
+    <ProductVersion>1.6.0</ProductVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Views\Login\" />
+    <Folder Include="Views\SightingDetails\" />
+    <Folder Include="Views\Locations\" />
+    <Folder Include="Views\Manufacturers\" />
+    <Folder Include="Views\Airlines\" />
+    <Folder Include="Views\Models\" />
+    <Folder Include="Views\Aircraft\" />
+    <Folder Include="Views\Flights\" />
+    <Folder Include="Views\SearchSightingsByRoute\" />
+    <Folder Include="Views\SearchSightingsByFlight\" />
+    <Folder Include="Views\SearchSightingsByAirline\" />
+    <Folder Include="Views\SearchSightingsByAircraft\" />
+    <Folder Include="Views\SearchSightingsByDate\" />
+    <Folder Include="Wizard\" />
+    <Folder Include="Views\FlightDetails\" />
+    <Folder Include="Views\AircraftDetails\" />
+    <Folder Include="Views\ConfirmDetails\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+</Project>

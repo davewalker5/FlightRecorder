@@ -1,0 +1,30 @@
+﻿@using System.Collections.Generic
+@using FlightRecorder.Mvc.Entities
+@model List<Model>
+
+@if (Model != null)
+{
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Manufacturer</th>
+            <th />
+        </tr>
+        @foreach (var aircraftModel in Model)
+        {
+            <tr>
+                <td valign="center">@aircraftModel.Name</td>
+                <td valign="center">@aircraftModel.Manufacturer.Name</td>
+                <td valign="center">
+                    <a class="btn btn-lg" asp-area="" asp-controller="Models" asp-action="Edit" asp-route-id="@aircraftModel.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    @Html.Raw("No matching models")
+}

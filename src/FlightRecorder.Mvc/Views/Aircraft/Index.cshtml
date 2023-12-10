@@ -1,0 +1,153 @@
+﻿@model FlightRecorder.Mvc.Models.ListAircraftViewModel
+
+@{
+    ViewData["Title"] = "Aircraft";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Aircraft
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the aircraft registered in the log
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.Registration)</strong>
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.Registration, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.ManufacturerId)</strong>
+            <div class="input-group">
+                @Html.DropDownListFor(m => m.ManufacturerId, Model.Manufacturers, new { @class = "form-control" })
+            </div>
+        </div>
+        <div id="ModelsList" class="col">
+        </div>
+    </div>
+    <br/>
+
+    <div id="AircraftList">
+    </div>
+
+    <hr />
+    <p class="text-right">
+        <a class="btn btn-primary" href="/Aircraft/Add" role="button">Add</a>
+    </p>
+</div>
+
+<script type="text/javascript">
+    function LoadModelsForManufacturer(manufacturerId) {
+        if (manufacturerId > 0) {
+            var route = "/Aircraft/Models?manufacturerId=" + manufacturerId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#ModelsList").html(result);
+                    $('html, body').css("cursor", "auto");
+
+                    // If we have a model ID, select it. This happens on page load when editing an existing
+                    // model
+                    var modelId = parseInt("@Model.ModelId");
+                    if (modelId > 0) {
+                        $("#ModelId").val(modelId);
+                        LoadAircraftForModel(modelId);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#ModelsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#ModelsList").html("");
+        }
+    }
+
+    function LoadAircraftForModel(modelId) {
+        if (modelId > 0) {
+            var route = "/Aircraft/ListByModel?modelId=" + modelId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#AircraftList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#AircraftList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#AircraftList").html("");
+        }
+    }
+
+    function LoadAircraftForRegistration(registration) {
+        if (registration != "") {
+            var route = "/Aircraft/ListByRegistration?registration=" + registration;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#AircraftList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#AircraftList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#AircraftList").html("");
+        }
+    }
+
+    $(document).ready(function () {
+        // If the page is loaded with a manufacturer selected, load their models
+        var manufacturerId = $("#ManufacturerId").val();
+        if (manufacturerId > 0) {
+            LoadModelsForManufacturer(manufacturerId);
+        }
+
+        // Respond to change events on the manufacturer list by loading the models for
+        // the new selection
+        $("#ManufacturerId").change(function () {
+            var manufacturerId = $("#ManufacturerId").val();
+            $("#Registration").val("");
+            $("#AircraftList").html("");
+            LoadModelsForManufacturer(manufacturerId);
+        });
+
+        // Respond to change events on the registration number text box by loading aircraft
+        // with that registration
+        $("#Registration").change(function () {
+            var registration = $("#Registration").val();
+            $("#ManufacturerId").val("");
+            $("#ModelsList").html("");
+            LoadAircraftForRegistration(registration);
+        });
+    });
+</script>

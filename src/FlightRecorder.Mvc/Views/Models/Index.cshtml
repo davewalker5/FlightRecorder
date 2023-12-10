@@ -1,0 +1,77 @@
+﻿@model FlightRecorder.Mvc.Models.ListModelsViewModel
+
+@{
+    ViewData["Title"] = "Models";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Aircraft Models
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the aircraft models for aircraft registered in the log
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <strong>@Html.LabelFor(m => m.ManufacturerId)</strong>
+            <div class="input-group">
+                @Html.DropDownListFor(m => m.ManufacturerId, Model.Manufacturers, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+    <div id="ModelsList">
+    </div>
+
+    <hr />
+    <p class="text-right">
+        <a class="btn btn-primary" href="/Models/Add" role="button">Add</a>
+    </p>
+</div>
+
+<script type="text/javascript">
+    function LoadModelsForManufacturer(manufacturerId) {
+        if (manufacturerId > 0) {
+            var route = "/Models/List?manufacturerId=" + manufacturerId;
+            $('html, body').css("cursor", "wait");
+            $.ajax({
+                url: route,
+                method: "GET",
+                dataType: "html",
+                cache: false,
+                success: function (result) {
+                    $("#ModelsList").html(result);
+                    $('html, body').css("cursor", "auto");
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    $("#ModelsList").html(errorMessage);
+                    $('html, body').css("cursor", "auto");
+                }
+            });
+        } else {
+            $("#ModelsList").html("");
+        }
+    }
+
+    $(document).ready(function () {
+        // If the page is loaded with a manufacturer selected, load their models
+        var manufacturerId = $("#ManufacturerId").val();
+        if (manufacturerId > 0) {
+            LoadModelsForManufacturer(manufacturerId);
+        }
+
+        // Respond to change events on the manufacturer list by loading the models for
+        // the new selection
+        $("#ManufacturerId").change(function () {
+            var manufacturerId = $("#ManufacturerId").val();
+            LoadModelsForManufacturer(manufacturerId);
+        });
+    });
+</script>

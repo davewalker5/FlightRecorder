@@ -405,3 +405,6 @@ ASALocalRun/
 .localhistory/
 
 data/
+bin
+obj
+.DS_Store

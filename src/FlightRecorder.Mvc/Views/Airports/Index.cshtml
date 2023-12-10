@@ -1,0 +1,55 @@
+﻿@using FlightRecorder.Mvc.Entities
+@model FlightRecorder.Mvc.Models.AirportListViewModel
+
+@{
+    ViewData["Title"] = "Airports";
+    string previousDisabled = (Model.PreviousEnabled) ? "" : "disabled";
+    string nextDisabled = (Model.NextEnabled) ? "" : "disabled";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Countries
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Manage the countries where airports can be sited
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PageNumber)
+
+        <table class="table">
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Country</th>
+            </tr>
+            @foreach (var airport in Model.Airports)
+            {
+                <tr>
+                    <td valign="center">@airport.Code</td>
+                    <td valign="center">@airport.Name</td>
+                    <td valign="center">@airport.Country.Name</td>
+                    <td valign="center">
+                        <a class="btn btn-lg" asp-area="" asp-controller="Airports" asp-action="Edit" asp-route-id="@airport.Id">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </table>
+        <hr />
+        <p class="text-right">
+            <button type="submit" name="Action" value="@ControllerActions.ActionPreviousPage" class="btn btn-secondary" @previousDisabled>Previous</button>
+            <button type="submit" name="Action" value="@ControllerActions.ActionNextPage" class="btn btn-secondary" @nextDisabled>Next</button>
+            <a class="btn btn-primary" href="/Airports/Add" role="button">Add</a>
+        </p>
+    }
+</div>

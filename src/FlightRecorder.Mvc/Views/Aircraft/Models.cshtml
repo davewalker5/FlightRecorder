@@ -1,0 +1,15 @@
+﻿@model FlightRecorder.Mvc.Models.ListAircraftViewModel
+
+<strong>@Html.LabelFor(m => m.ModelId)</strong>
+<div class="input-group">
+    @Html.DropDownListFor(m => m.ModelId, Model.Models, new { @class = "form-control" })
+</div>
+
+<script type="text/javascript">
+    // Respond to change events on the models list by loading the aircraft for
+    // the new selection. The load function is defined on the parent page
+    $("#ModelId").change(function () {
+        var modelId = $("#ModelId").val();
+        LoadAircraftForModel(modelId);
+    });
+</script>
