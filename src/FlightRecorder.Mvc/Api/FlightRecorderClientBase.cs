@@ -78,7 +78,7 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="data"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        protected async Task<string> SendDirectAsync(string route, string? data, HttpMethod method)
+        protected async Task<string> SendDirectAsync(string route, string data, HttpMethod method)
         {
             string json = null;
 

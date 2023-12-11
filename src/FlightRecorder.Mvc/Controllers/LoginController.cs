@@ -26,7 +26,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            LoginViewModel model = new LoginViewModel();
+            var model = new LoginViewModel();
             return View(model);
         }
 
