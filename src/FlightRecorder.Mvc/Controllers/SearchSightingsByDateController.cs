@@ -30,7 +30,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            SightingSearchByDateViewModel model = new SightingSearchByDateViewModel
+            var model = new SightingSearchByDateViewModel
             {
                 PageNumber = 1
             };

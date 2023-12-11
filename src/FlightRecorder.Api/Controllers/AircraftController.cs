@@ -2,9 +2,6 @@
 using FlightRecorder.Entities.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace FlightRecorder.Api.Controllers
@@ -68,8 +65,12 @@ namespace FlightRecorder.Api.Controllers
             }
 
             // TODO : This logic should be in the business logic
-            await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
-            await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+            // Load the model and manufacturer, if specified
+            if (aircraft.ModelId != null)
+            {
+                await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
+                await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+            }
 
             return aircraft;
         }
@@ -86,8 +87,12 @@ namespace FlightRecorder.Api.Controllers
             }
 
             // TODO : This logic should be in the business logic
-            await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
-            await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+            // Load the model and manufacturer, if specified
+            if (aircraft.ModelId != null)
+            {
+                await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
+                await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+            }
 
             return aircraft;
         }
@@ -122,8 +127,13 @@ namespace FlightRecorder.Api.Controllers
             aircraft.Manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             aircraft.ModelId = template.ModelId;
             await _factory.Context.SaveChangesAsync();
-            await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
-            await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+
+            // Load the model and manufacturer, if specified
+            if (aircraft.ModelId != null)
+            {
+                await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
+                await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+            }
 
             return aircraft;
         }
@@ -137,7 +147,7 @@ namespace FlightRecorder.Api.Controllers
             Aircraft aircraft = await _factory.Aircraft
                                               .AddAsync(template.Registration,
                                                         template.SerialNumber,
-                                                        template.Manufactured,
+                                                        manufactured,
                                                         template.Model?.Name,
                                                         template.Model?.Manufacturer?.Name);
             return aircraft;

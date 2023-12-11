@@ -22,13 +22,16 @@
         </tr>
         @foreach (var sighting in Model.Sightings)
         {
+            var modelName = sighting.Aircraft.Model?.Name ?? "";
+            var manufacturerName = sighting.Aircraft.Model?.Manufacturer?.Name ?? "";
+
             <tr>
                 <td valign="center">@sighting.Flight.Number</td>
                 <td valign="center">@sighting.Flight.Airline.Name</td>
                 <td valign="center">@sighting.Flight.Route</td>
                 <td valign="center">@sighting.Aircraft.Registration</td>
-                <td valign="center">@sighting.Aircraft.Model.Name</td>
-                <td valign="center">@sighting.Aircraft.Model.Manufacturer.Name</td>
+                <td valign="center">@modelName</td>
+                <td valign="center">@manufacturerName</td>
                 <td valign="center">@sighting.FormattedDate</td>
                 <td valign="center">
                     <a class="btn btn-lg" asp-area="" asp-controller="SightingDetails" asp-action="Index" asp-route-id="@sighting.Id">

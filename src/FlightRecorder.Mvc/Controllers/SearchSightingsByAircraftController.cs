@@ -16,7 +16,7 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly SightingsSearchClient _client;
         private readonly IOptions<AppSettings> _settings;
 
-        private AircraftClient _aircraft;
+        private readonly AircraftClient _aircraft;
 
         public SearchSightingsByAircraftController(AircraftClient aircraft, SightingsSearchClient client, IOptions<AppSettings> settings)
         {
@@ -32,7 +32,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            SightingSearchByAircraftViewModel model = new SightingSearchByAircraftViewModel
+            var model = new SightingSearchByAircraftViewModel
             {
                 PageNumber = 1
             };

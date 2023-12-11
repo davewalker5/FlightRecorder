@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <ReleaseVersion>1.6.0.0</ReleaseVersion>
-    <FileVersion>1.6.0.0</FileVersion>
-    <ProductVersion>1.6.0</ProductVersion>
-    <Nullable>enable</Nullable>
+    <ReleaseVersion>1.8.0.0</ReleaseVersion>
+    <FileVersion>1.8.0.0</FileVersion>
+    <ProductVersion>1.8.0</ProductVersion>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
