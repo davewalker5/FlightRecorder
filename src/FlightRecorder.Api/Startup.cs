@@ -41,12 +41,16 @@ namespace FlightRecorder.Api
             services.AddControllers();
 
             // Configure the flight log DB context and business logic
+            var connectionString = Configuration.GetConnectionString("FlightRecorderDB");
             services.AddScoped<FlightRecorderDbContext>();
             services.AddDbContextPool<FlightRecorderDbContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("FlightRecorderDB"));
+                options.UseSqlite(connectionString);
             });
             services.AddScoped<FlightRecorderFactory>();
+
+
+            Console.WriteLine(Configuration.GetConnectionString("FlightRecorderDB"));
 
             // Read the configuration file
             IConfigurationRoot configuration = new ConfigurationBuilder()
@@ -69,6 +73,10 @@ namespace FlightRecorder.Api
             logger.Initialise(settings.LogFile, settings.MinimumLogLevel);
             logger.LogMessage(Severity.Info, new string('=', 80));
             logger.LogMessage(Severity.Info, title);
+
+            // Log the connection string
+            var message = $"Database connection string = {connectionString}";
+            logger.LogMessage(Severity.Info, message);
 
             // Register the logger with the DI framework
             services.AddSingleton<IFlightRecorderLogger>(x => logger);

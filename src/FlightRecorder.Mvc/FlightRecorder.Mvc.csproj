@@ -5,7 +5,6 @@
     <ReleaseVersion>1.6.0.0</ReleaseVersion>
     <FileVersion>1.6.0.0</FileVersion>
     <ProductVersion>1.6.0</ProductVersion>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
