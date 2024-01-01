@@ -188,7 +188,6 @@ namespace FlightRecorder.Api.Controllers
                                         .ListAsync(x => (x.Start >= startDate) && ((x.End == null) || (x.End <= endDate)),
                                                    pageNumber,
                                                    pageSize)
-                                        .OrderByDescending(x => x.Start)
                                         .ToListAsync();
 
             if (!results.Any())

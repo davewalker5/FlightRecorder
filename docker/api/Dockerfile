@@ -1,4 +1,4 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:latest
-COPY flightrecorder.api-1.8.0.0 /opt/flightrecorder.api-1.8.0.0
-WORKDIR /opt/flightrecorder.api-1.8.0.0/bin
+COPY flightrecorder.api-1.9.0.0 /opt/flightrecorder.api-1.9.0.0
+WORKDIR /opt/flightrecorder.api-1.9.0.0/bin
 ENTRYPOINT [ "./FlightRecorder.Api" ]
