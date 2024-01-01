@@ -44,13 +44,19 @@ namespace FlightRecorder.BusinessLogic.Database
             if (predicate == null)
             {
                 results = _context.JobStatuses
+                                  .OrderByDescending(x => x.Start)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.JobStatuses.Where(predicate).AsAsyncEnumerable();
+                results = _context.JobStatuses
+                                  .Where(predicate)
+                                  .OrderByDescending(x => x.Start)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .AsAsyncEnumerable();
             }
 
             return results;
