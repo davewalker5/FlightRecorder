@@ -5,15 +5,8 @@ using FlightRecorder.Mvc.Controllers;
 using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Text;
 
 namespace FlightRecorder.Mvc
@@ -122,7 +115,7 @@ namespace FlightRecorder.Mvc
                 string token = context.Session.GetString(LoginController.TokenSessionKey);
                 if (!string.IsNullOrEmpty(token))
                 {
-                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                    context.Request.Headers.Append("Authorization", "Bearer " + token);
                 }
                 await next();
             });
