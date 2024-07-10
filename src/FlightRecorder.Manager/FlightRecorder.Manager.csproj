@@ -7,17 +7,11 @@
     <FileVersion>1.8.0.0</FileVersion>
     <ProductVersion>1.8.0.0</ProductVersion>
     <Configurations>Release;Debug</Configurations>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType></DebugType>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FlightRecorder.Data\FlightRecorder.Data.csproj" />
