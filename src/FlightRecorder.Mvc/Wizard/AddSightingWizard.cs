@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FlightRecorder.Mvc.Api;
 using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace FlightRecorder.Mvc.Wizard
 {
@@ -22,16 +18,17 @@ namespace FlightRecorder.Mvc.Wizard
         private const string DefaultDateKeyPrefix = "Wizard.DefaultDate";
         private const string DefaultLocationKeyPrefix = "Wizard.DefaultLocation";
 
-        private LocationClient _locations;
-        private FlightClient _flights;
-        private AirlineClient _airlines;
-        private ManufacturerClient _manufacturers;
-        private ModelClient _models;
-        private AircraftClient _aircraft;
-        private SightingClient _sightings;
-        private SightingsSearchClient _sightingsSearch;
-        private ICacheWrapper _cache;
-        private IOptions<AppSettings> _settings;
+        private readonly LocationClient _locations;
+        private readonly FlightClient _flights;
+        private readonly AirlineClient _airlines;
+        private readonly ManufacturerClient _manufacturers;
+        private readonly ModelClient _models;
+        private readonly AircraftClient _aircraft;
+        private readonly SightingClient _sightings;
+        private readonly SightingsSearchClient _sightingsSearch;
+        private readonly UserAttributesClient _userAttributes;
+        private readonly ICacheWrapper _cache;
+        private readonly IOptions<AppSettings> _settings;
         private readonly IMapper _mapper;
 
         public AddSightingWizard(LocationClient locations,
@@ -42,6 +39,7 @@ namespace FlightRecorder.Mvc.Wizard
                                  AircraftClient aircraft,
                                  SightingClient sightings,
                                  SightingsSearchClient sightingsSearch,
+                                 UserAttributesClient userAttributes,
                                  IOptions<AppSettings> settings,
                                  ICacheWrapper cache,
                                  IMapper mapper)
@@ -54,6 +52,7 @@ namespace FlightRecorder.Mvc.Wizard
             _aircraft = aircraft;
             _sightings = sightings;
             _sightingsSearch = sightingsSearch;
+            _userAttributes = userAttributes;
             _settings = settings;
             _cache = cache;
             _mapper = mapper;
@@ -141,7 +140,7 @@ namespace FlightRecorder.Mvc.Wizard
                     {
                         LastSightingAddedMessage = lastAdded,
                         Date = GetDefaultDate(userName),
-                        LocationId = GetDefaultLocationId(userName)
+                        LocationId = await GetDefaultLocationId(userName)
                     };
                 }
             }
@@ -414,6 +413,16 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
+        /// Clear the cached location
+        /// </summary>
+        /// <param name="userName"></param>
+        public void ClearCachedLocation(string userName)
+        {
+            string key = GetCacheKey(DefaultLocationKeyPrefix, userName);
+            _cache.Remove(key);
+        }
+
+        /// <summary>
         /// Create a new sighting
         /// </summary>
         /// <param name="userName"></param>
@@ -627,15 +636,25 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
-        /// The sighting location is cached between entries to speed up multiple
-        /// entries at the same location
+        /// The sighting location is cached between entries to speed up multiple entries at the same location.
+        /// There is also an (optional) default location per user that is used if there's no current selected
+        /// location
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        private int GetDefaultLocationId(string userName)
+        private async Task<int> GetDefaultLocationId(string userName)
         {
             string key = GetCacheKey(DefaultLocationKeyPrefix, userName);
             int? locationId = _cache.Get<int?>(key);
+            if (locationId == null)
+            {
+                await _userAttributes.GetUserAttributesAsync(userName, true);
+                var defaultUserLocation = _userAttributes.GetCachedUserAttribute(_settings.Value.DefaultLocationAttribute);
+                if (int.TryParse(defaultUserLocation.Value, out int defaultUserLocationId))
+                {
+                    locationId = defaultUserLocationId;
+                }
+            }
             return locationId ?? 0;
         }
 

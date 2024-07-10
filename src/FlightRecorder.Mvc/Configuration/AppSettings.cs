@@ -12,5 +12,6 @@ namespace FlightRecorder.Mvc.Configuration
         public int PropertiesPerRow { get; set; }
         public int CacheLifetimeSeconds { get; set; }
         public string DateTimeFormat { get; set; }
+        public string DefaultLocationAttribute { get; set; }
     }
 }

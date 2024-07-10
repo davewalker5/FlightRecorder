@@ -53,6 +53,7 @@ namespace FlightRecorder.Mvc
             services.AddHttpClient<SightingsSearchClient>();
             services.AddHttpClient<ReportsClient>();
             services.AddHttpClient<ExportClient>();
+            services.AddHttpClient<UserAttributesClient>();
 
             // Configure session state for token storage
             services.AddSession(options =>

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FlightRecorder.Mvc.Api;
 using FlightRecorder.Mvc.Models;
+using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,12 @@ namespace FlightRecorder.Mvc.Controllers
         public const string LoginPath = "/login";
 
         private readonly AuthenticationClient _client;
+        private readonly AddSightingWizard _wizard;
 
-        public LoginController(AuthenticationClient client)
+        public LoginController(AuthenticationClient client, AddSightingWizard wizard)
         {
             _client = client;
+            _wizard = wizard;
         }
 
         /// <summary>
@@ -46,8 +49,12 @@ namespace FlightRecorder.Mvc.Controllers
                 string token = await _client.AuthenticateAsync(model.UserName, model.Password);
                 if (!string.IsNullOrEmpty(token))
                 {
-                    // Successful, so store the token in session and redirect to the home page
+                    // Successful, so store the token in session, clear any cached user attributes (as the
+                    // logged in user may have changed) and the location cached by the Wizard, then redirect to
+                    // the home page
                     HttpContext.Session.SetString(TokenSessionKey, token);
+                    _client.ClearCachedUserAttributes();
+                    _wizard.ClearCachedLocation(model.UserName);
                     result = RedirectToAction("Index", "Home");
                 }
                 else
