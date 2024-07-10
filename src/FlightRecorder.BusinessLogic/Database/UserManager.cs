@@ -30,7 +30,10 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<User> GetUserAsync(int userId)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            User user = await _context.Users
+                                      .Include(x => x.Attributes)
+                                      .ThenInclude(x => x.UserAttribute)
+                                      .FirstOrDefaultAsync(u => u.Id == userId);
             ThrowIfUserNotFound(user, userId);
             return user;
         }
@@ -42,7 +45,10 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<User> GetUserAsync(string userName)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            User user = await _context.Users
+                                      .Include(x => x.Attributes)
+                                      .ThenInclude(x => x.UserAttribute)
+                                      .FirstOrDefaultAsync(u => u.UserName == userName);
             ThrowIfUserNotFound(user, userName);
             return user;
         }

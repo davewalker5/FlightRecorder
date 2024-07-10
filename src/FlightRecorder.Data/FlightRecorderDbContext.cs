@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Reporting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FlightRecorder.Data
 {
@@ -19,6 +20,8 @@ namespace FlightRecorder.Data
         public virtual DbSet<Sighting> Sightings { get; set; }
         public virtual DbSet<JobStatus> JobStatuses { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserAttribute> UserAttributes { get; set; }
+        public virtual DbSet<UserAttributeValue> UserAttributeValues { get; set; }
         public virtual DbSet<AirlineStatistics> AirlineStatistics { get; set; }
         public virtual DbSet<LocationStatistics> LocationStatistics { get; set; }
         public virtual DbSet<ManufacturerStatistics> ManufacturerStatistics { get; set; }
@@ -217,6 +220,30 @@ namespace FlightRecorder.Data
                 entity.Property(e => e.Start).IsRequired().HasColumnName("start").HasColumnType("DATETIME");
                 entity.Property(e => e.End).HasColumnName("end").HasColumnType("DATETIME");
                 entity.Property(e => e.Error).HasColumnName("error");
+            });
+
+            modelBuilder.Entity<UserAttribute>(entity =>
+            {
+                entity.ToTable("USER_ATTRIBUTE");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name).IsRequired().HasColumnName("name").HasColumnType("VARCHAR(100)");
+            });
+
+            modelBuilder.Entity<UserAttributeValue>(entity =>
+            {
+                entity.ToTable("USER_ATTRIBUTE_VALUE");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.UserId).IsRequired().HasColumnName("user_id");
+                entity.Property(e => e.UserAttributeId).IsRequired().HasColumnName("user_attribute_id");
+                entity.Property(e => e.Value).HasColumnName("value").HasColumnType("VARCHAR(1000)");
             });
 
             modelBuilder.Entity<User>(entity =>

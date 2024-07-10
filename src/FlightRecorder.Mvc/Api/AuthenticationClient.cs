@@ -1,12 +1,8 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace FlightRecorder.Mvc.Api
 {
@@ -45,5 +41,11 @@ namespace FlightRecorder.Mvc.Api
 
             return token;
         }
+
+        /// <summary>
+        /// Clear cached user attributes
+        /// </summary>
+        public void ClearCachedUserAttributes()
+            => Cache.Remove(UserAttributesClient.CacheKey);
     }
 }
