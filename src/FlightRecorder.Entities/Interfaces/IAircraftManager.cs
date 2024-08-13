@@ -11,6 +11,7 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Aircraft> AddAsync(string registration, string serialNumber, long? yearOfManufacture, string modelName, string manufacturerName);
         Task<Aircraft> GetAsync(Expression<Func<Aircraft, bool>> predicate);
         IAsyncEnumerable<Aircraft> ListAsync(Expression<Func<Aircraft, bool>> predicate, int pageNumber, int pageSize);
+        Task<int> CountAsync();
         Task<IAsyncEnumerable<Aircraft>> ListByModelAsync(string modelName, int pageNumber, int pageSize);
         Task<IAsyncEnumerable<Aircraft>> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize);
     }

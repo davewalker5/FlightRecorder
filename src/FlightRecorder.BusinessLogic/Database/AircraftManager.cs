@@ -68,6 +68,13 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Return the number of aircraft in the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> CountAsync()
+            => await _factory.Context.Aircraft.CountAsync();
+
+        /// <summary>
         /// Get the aircraft of a specified model
         /// </summary>
         /// <param name="modelName"></param>

@@ -1,0 +1,50 @@
+﻿@model FlightRecorder.Mvc.Entities.SightingStatistics
+
+@{
+    ViewData["Title"] = "Sighting Statistics Report";
+}
+
+<p class="text-center font-weight-bold">
+    <span style="font-size: 1.2rem">
+        Sighting Statistics
+    </span>
+    <br />
+    <small class="text-muted">
+        <em>
+            Produce summary statistics for all sightings
+        </em>
+    </small>
+</p>
+
+<div class="container-fluid">
+    <table class="table">
+        <tr>
+            <th>Aircraft</th>
+            <td>@Model.Aircraft</td>
+        </tr>
+        <tr>
+            <th>Models</th>
+            <td>@Model.Models</td>
+        </tr>
+        <tr>
+            <th>Manufacturers</th>
+            <td>@Model.Manufacturers</td>
+        </tr>
+        <tr>
+            <th>Airlines</th>
+            <td>@Model.Airlines</td>
+        </tr>
+        <tr>
+            <th>Flights</th>
+            <td>@Model.Flights</td>
+        </tr>
+        <tr>
+            <th>Sightings</th>
+            <td>@Model.Sightings</td>
+        </tr>
+        <tr>
+            <th>Locations</th>
+            <td>@Model.Locations</td>
+        </tr>
+    </table>
+</div>

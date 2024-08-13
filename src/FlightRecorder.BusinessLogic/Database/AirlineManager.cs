@@ -57,6 +57,13 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Return the number of airlines in the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> CountAsync()
+            => await _context.Airlines.CountAsync();
+
+        /// <summary>
         /// Add a named airline, if it doesn't already exist
         /// </summary>
         /// <param name="name"></param>

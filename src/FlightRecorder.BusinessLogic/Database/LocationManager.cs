@@ -61,6 +61,13 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Return the number of locations in the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> CountAsync()
+            => await _context.Locations.CountAsync();
+
+        /// <summary>
         /// Add a named location, if it doesn't already exist
         /// </summary>
         /// <param name="name"></param>

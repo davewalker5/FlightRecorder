@@ -1,13 +1,9 @@
-﻿using FlightRecorder.BusinessLogic.Factory;
+﻿using FlightRecorder.Api.Entities;
+using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Reporting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace FlightRecorder.Api.Controllers
@@ -25,6 +21,34 @@ namespace FlightRecorder.Api.Controllers
         public ReportsController(FlightRecorderFactory factory)
         {
             _factory = factory;
+        }
+
+        /// <summary>
+        /// Generate the sighting statistics report
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("sightings")]
+        public async Task<ActionResult<SightingStatisticsReport>> GetSightingStatistics()
+        {
+            var aircraft = await _factory.Aircraft.CountAsync();
+            var manufacturers = await _factory.Manufacturers.CountAsync();
+            var models = await _factory.Models.CountAsync();
+            var airlines = await _factory.Airlines.CountAsync();
+            var flights = await _factory.Flights.CountAsync();
+            var sightings = await _factory.Sightings.CountAsync();
+            var locations = await _factory.Locations.CountAsync();
+
+            return new SightingStatisticsReport
+            (
+                aircraft,
+                manufacturers,
+                models,
+                airlines,
+                flights,
+                sightings,
+                locations
+            );
         }
 
         /// <summary>

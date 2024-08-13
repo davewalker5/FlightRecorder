@@ -1,14 +1,8 @@
 ﻿using FlightRecorder.Mvc.Configuration;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Api
 {
@@ -17,6 +11,22 @@ namespace FlightRecorder.Mvc.Api
         public ReportsClient(HttpClient client, IOptions<AppSettings> settings, IHttpContextAccessor accessor, ICacheWrapper cache)
             : base(client, settings, accessor, cache)
         {
+        }
+
+        /// <summary>
+        /// Return the sighting statistics report
+        /// </summary>
+        /// <returns></returns>
+        public async Task<SightingStatistics> SightingStatisticsAsync()
+        {
+            // Construct the route
+            string route = Settings.Value.ApiRoutes.First(r => r.Name == "SightingStatistics").Route;
+
+            // Call the endpoint and decode the response
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            var records = JsonConvert.DeserializeObject<SightingStatistics>(json, JsonSettings);
+
+            return records;
         }
 
         /// <summary>

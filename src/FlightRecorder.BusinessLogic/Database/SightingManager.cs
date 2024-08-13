@@ -77,6 +77,13 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Return the number of sightings in the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> CountAsync()
+            => await _factory.Context.Sightings.CountAsync();
+
+        /// <summary>
         /// Add a new sighting
         /// </summary>
         /// <param name="altitude"></param>
