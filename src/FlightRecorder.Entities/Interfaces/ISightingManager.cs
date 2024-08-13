@@ -13,6 +13,7 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Sighting> AddAsync(FlattenedSighting flattened);
         Task<Sighting> GetAsync(Expression<Func<Sighting, bool>> predicate);
         IAsyncEnumerable<Sighting> ListAsync(Expression<Func<Sighting, bool>> predicate, int pageNumber, int pageSize);
+        Task<int> CountAsync();
         Task<IAsyncEnumerable<Sighting>> ListByAircraftAsync(string registration, int pageNumber, int pageSize);
         Task<IAsyncEnumerable<Sighting>> ListByRouteAsync(string embarkation, string destination, int pageNumber, int pageSize);
         Task<IAsyncEnumerable<Sighting>> ListByAirlineAsync(string airlineName, int pageNumber, int pageSize);

@@ -61,6 +61,13 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Return the number of manufacturers in the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> CountAsync()
+            => await _context.Manufacturers.CountAsync();
+
+        /// <summary>
         /// Add a named manufacturer, if it doesn't already exist
         /// </summary>
         /// <param name="name"></param>

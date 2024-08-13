@@ -11,5 +11,6 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Manufacturer> AddAsync(string name);
         Task<Manufacturer> GetAsync(Expression<Func<Manufacturer, bool>> predicate);
         IAsyncEnumerable<Manufacturer> ListAsync(Expression<Func<Manufacturer, bool>> predicate, int pageNumber, int pageSize);
+        Task<int> CountAsync();
     }
 }
