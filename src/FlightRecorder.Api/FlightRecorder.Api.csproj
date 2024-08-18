@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <ReleaseVersion>1.11.0.0</ReleaseVersion>
-    <FileVersion>1.11.0.0</FileVersion>
-    <ProductVersion>1.11.0</ProductVersion>
+    <ReleaseVersion>1.12.0.0</ReleaseVersion>
+    <FileVersion>1.12.0.0</FileVersion>
+    <ProductVersion>1.12.0</ProductVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

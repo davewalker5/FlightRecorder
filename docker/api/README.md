@@ -25,20 +25,21 @@ In order to run this image you'll need docker installed.
 
 The following "docker run" parameters are recommended when running the flightrecorderapisqlite image:
 
-| Parameter | Value                                      | Purpose                                                 |
-| --------- | ------------------------------------------ | ------------------------------------------------------- |
-| -d        | -                                          | Run as a background process                             |
-| -v        | /local:/var/opt/flightrecorder.api-1.0.0.0 | Mount the host folder containing the SQLite database    |
-| -p        | 5001:80                                    | Expose the container's port 80 as port 5001 on the host |
-| --rm      | -                                          | Remove the container automatically when it stops        |
+| Parameter | Value                              | Purpose                                                 |
+| --------- | ---------------------------------- | ------------------------------------------------------- |
+| -d        | -                                  | Run as a background process                             |
+| -v        | /local:/var/opt/flightrecorder.api | Mount the host folder containing the SQLite database    |
+| -p        | 5001:80                            | Expose the container's port 80 as port 5001 on the host |
+| --rm      | -                                  | Remove the container automatically when it stops        |
 
 For example:
 
 ```shell
-docker run -d -v  /local:/var/opt/flightrecorder.api-1.0.0.0 -p 5001:80 --rm  davewalker5/flightrecorderapisqlite:latest
+docker run -d -v  /local:/var/opt/flightrecorder.api -p 5001:80 --rm  davewalker5/flightrecorderapisqlite:latest
 ```
 
-The "/local" path given to the -v argument is described, below, and should be replaced with a value appropriate for the host running the container. Similarly, the port number "5001" can be replaced with any available port on the host.
+The "/local" path given to the -v argument is described, below, and should be replaced with a value appropriate for the host running the container.
+Similarly, the port number "5001" can be replaced with any available port on the host.
 
 #### Volumes
 
@@ -55,10 +56,10 @@ The folder containing the "flightrecorder.db" file can then be passed to the "do
 
 #### Running the Image
 
-To run the image, enter the following command, substituting "/local" for the host folder containing the SQLite database, as described:
+To run the image, enter the following command, substituting "/local" for the host folder containing the SQLite database:
 
 ```shell
-docker run -d -v  /local:/var/opt/flightrecorder.api-1.0.0.0/ -p 5001:80 --rm  davewalker5/flightrecorderapisqlite:latest
+docker run -d -v  /local:/var/opt/flightrecorder.api/ -p 5001:80 --rm  davewalker5/flightrecorderapisqlite:latest
 ```
 
 Once the container is running, browse to the following URL on the host:
@@ -66,16 +67,6 @@ Once the container is running, browse to the following URL on the host:
 http://localhost:5001
 
 You should see the Swagger API documentation for the API.
-
-## Built With
-
-The flightrecorderapisqlite image was been built with the following:
-
-| Aspect         | Version                |
-| -------------- | ---------------------- |
-| .NET Core CLI  | 3.1.101                |
-| Target Runtime | linux-x64              |
-| Docker Desktop | 19.03.5, build 633a0ea |
 
 ## Find Us
 
