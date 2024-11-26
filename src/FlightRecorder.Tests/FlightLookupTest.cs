@@ -18,7 +18,7 @@ namespace FlightRecorder.Tests
     {
         private const string EndpointBaseUrl = "https://aerodatabox.p.rapidapi.com/flights/number/";
         private const string FlightNumber = "LS803";
-        private const string MalformedResponse = "{\"departure\": {\"airport\": {\"iata\": \"MAN\"}}}";
+        private const string MalformedResponse = "{}";
         private const string Response = "[{\"departure\": {\"airport\": {\"iata\": \"MAN\"}},\"arrival\": {\"airport\": {\"iata\": \"BCN\"}},\"airline\": {\"name\": \"Jet2\"}}]";
 
         private MockHttpClient _client;

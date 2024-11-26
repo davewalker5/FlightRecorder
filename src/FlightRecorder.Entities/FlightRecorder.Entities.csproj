@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <PackageId>FlightRecorder.Entities</PackageId>
     <PackageVersion>1.8.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
@@ -23,7 +23,7 @@
     <Folder Include="Exceptions\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Interfaces\IFlightRecorderDbContext.cs" />

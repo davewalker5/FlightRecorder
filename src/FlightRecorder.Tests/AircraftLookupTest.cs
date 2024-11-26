@@ -29,7 +29,7 @@ namespace FlightRecorder.Tests
         private const string TypeName = "Airbus A320";
         private const string ProductionLine = "Airbus A320";
         private const string Manufacturer = "Airbus";
-        private const string Age = "20";
+        private const string Age = "21";
         private const string MalformedResponse = "[{}]";
         private const string MalformedAgeResponse = "{ \"reg\": \"EI-DEA\", \"serial\": \"2191\", \"hexIcao\": \"4CA213\", \"model\": \"A320\", \"modelCode\": \"320-214\", \"registrationDate\": \"This is not a date\", \"typeName\": \"Airbus A320\", \"productionLine\": \"Airbus A320\" }";
         private const string Response = "{ \"reg\": \"EI-DEA\", \"serial\": \"2191\", \"hexIcao\": \"4CA213\", \"model\": \"A320\", \"modelCode\": \"320-214\", \"registrationDate\": \"2004-05-04\", \"typeName\": \"Airbus A320\", \"productionLine\": \"Airbus A320\" }";
