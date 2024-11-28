@@ -63,7 +63,7 @@ Please see the [Wiki](https://github.com/davewalker5/FlightRecorder/wiki) for co
 
 ## Authors
 
-- **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
+- **Dave Walker** - _Initial work_
 
 ## Credits
 
