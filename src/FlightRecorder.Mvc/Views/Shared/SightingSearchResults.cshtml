@@ -11,6 +11,7 @@
 {
     <table class="table">
         <tr>
+            <th>Location</th>
             <th>Flight</th>
             <th>Airline</th>
             <th>Route</th>
@@ -26,6 +27,7 @@
             var manufacturerName = sighting.Aircraft.Model?.Manufacturer?.Name ?? "";
 
             <tr>
+                <td valign="center">@sighting.Location.Name</td>
                 <td valign="center">@sighting.Flight.Number</td>
                 <td valign="center">@sighting.Flight.Airline.Name</td>
                 <td valign="center">@sighting.Flight.Route</td>
