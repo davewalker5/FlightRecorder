@@ -26,6 +26,14 @@
                 </div>
             </div>
         }
+        else if (Model.MostRecentSighting != null)
+        {
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>This flight was last seen from @Model.MostRecentSighting.Location.Name on @Model.MostRecentSighting.Date.ToShortDateString()</span>
+                </div>
+            </div>
+        }
 
         <div class="row">
             <div class="col">

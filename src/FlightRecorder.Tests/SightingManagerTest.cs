@@ -202,5 +202,30 @@ namespace FlightRecorder.Tests
                                                                  .ListByLocationAsync("Missing", 1, 100);
             Assert.IsNull(sightings);
         }
+
+        [TestMethod]
+        public async Task GetMostRecentFlightSighting()
+        {
+            var sighting = await _factory.Sightings.GetMostRecent(x => x.Flight.Number == FlightNumber);
+            Assert.IsNotNull(sighting);
+            Assert.AreEqual(FlightNumber, sighting.Flight.Number);
+            Assert.AreEqual(SightingDate, sighting.Date);
+        }
+
+        [TestMethod]
+        public async Task GetMostRecentAircraftSighting()
+        {
+            var sighting = await _factory.Sightings.GetMostRecent(x => x.Aircraft.Registration == Registration);
+            Assert.IsNotNull(sighting);
+            Assert.AreEqual(Registration, sighting.Aircraft.Registration);
+            Assert.AreEqual(SightingDate, sighting.Date);
+        }
+
+        [TestMethod]
+        public async Task GetMissingRecentSighting()
+        {
+            var sighting = await _factory.Sightings.GetMostRecent(x => x.Flight.Embarkation == "Missing");
+            Assert.IsNull(sighting);
+        }
     }
 }

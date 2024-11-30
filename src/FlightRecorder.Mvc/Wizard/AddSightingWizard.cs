@@ -203,12 +203,12 @@ namespace FlightRecorder.Mvc.Wizard
                 model.Embarkation = flight.Embarkation;
                 model.Destination = flight.Destination;
                 model.AirlineId = flight.AirlineId;
-            }
 
-            // See if this is a potential duplicate - only need to return the first page with 1 result to do the
-            // duplicate check
-            var duplicates = await _sightingsSearch.GetSightingsByFlightAndDate((DateTime)sighting.Date, sighting.FlightNumber, 1, 1);
-            model.IsDuplicate = duplicates?.Count > 0;
+                // Retrive the most recent sighting of this flight and see if this is a duplicate. Note that duplicates
+                // are not reported when editing an existing sighting
+                model.MostRecentSighting = await _sightingsSearch.GetMostRecentFlightSighting(sighting.FlightNumber);
+                model.IsDuplicate = sighting.SightingId > 0 ? false : model.MostRecentSighting?.Date == sighting.Date;
+            }
 
             return model;
         }
@@ -250,6 +250,9 @@ namespace FlightRecorder.Mvc.Wizard
                 // Load the models for the aircraft's manufacturer
                 List<Model> models = await GetModelsAsync(model.ManufacturerId ?? 0);
                 model.SetModels(models);
+
+                // Retrive the most recent sighting of this aircraft
+                model.MostRecentSighting = await _sightingsSearch.GetMostRecentAircraftSighting(aircraft.Registration);
             }
 
             return model;
