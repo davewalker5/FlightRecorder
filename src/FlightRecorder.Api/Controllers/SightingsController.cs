@@ -57,27 +57,6 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
-        [Route("flight/{date}/{number}/{pageNumber}/{pageSize}")]
-        public async Task<ActionResult<List<Sighting>>> GetSightingsByFlightAndDateAsync(string date, string number, int pageNumber, int pageSize)
-        {
-            DateTime decodedDate = DateTime.ParseExact(HttpUtility.UrlDecode(date), DateTimeFormat, null);
-            string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
-            List<Sighting> sightings = await _factory.Sightings
-                                                     .ListAsync(s => (s.Flight.Number == decodedNumber) &&
-                                                                     (s.Date == decodedDate),
-                                                                pageNumber,
-                                                                pageSize)
-                                                     .ToListAsync();
-
-            if (!sightings.Any())
-            {
-                return NoContent();
-            }
-
-            return sightings;
-        }
-
-        [HttpGet]
         [Route("airline/{airlineId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Sighting>>> GetSightingsByAirlineAsync(int airlineId, int pageNumber, int pageSize)
         {
@@ -150,6 +129,37 @@ namespace FlightRecorder.Api.Controllers
 
             return sighting;
         }
+ 
+        [HttpGet]
+        [Route("recent/flight/{number}")]
+        public async Task<ActionResult<Sighting>> GetMostRecentFlightSightingAsync(string number)
+        {
+            string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
+            Sighting sighting = await _factory.Sightings.GetMostRecent(x => x.Flight.Number == decodedNumber);
+
+            if (sighting == null)
+            {
+                return NoContent();
+            }
+
+            return sighting;
+        }
+
+        [HttpGet]
+        [Route("recent/aircraft/{registration}")]
+        public async Task<ActionResult<Sighting>> GetMostRecentAircraftSightingAsync(string registration)
+        {
+            string decodedRegistration = HttpUtility.UrlDecode(registration);
+            Sighting sighting = await _factory.Sightings.GetMostRecent(x => x.Aircraft.Registration == decodedRegistration);
+
+            if (sighting == null)
+            {
+                return NoContent();
+            }
+
+            return sighting;
+        }
+
 
         [HttpPut]
         [Route("")]

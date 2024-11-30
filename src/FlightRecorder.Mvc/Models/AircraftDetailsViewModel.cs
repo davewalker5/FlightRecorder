@@ -34,6 +34,7 @@ namespace FlightRecorder.Mvc.Models
 
         [DisplayName("New Model")]
         public string NewModel { get; set; }
+        public Sighting MostRecentSighting { get; set; }
 
         public string Action { get; set; }
 

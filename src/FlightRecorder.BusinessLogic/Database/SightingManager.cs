@@ -84,6 +84,28 @@ namespace FlightRecorder.BusinessLogic.Database
             => await _factory.Context.Sightings.CountAsync();
 
         /// <summary>
+        /// Return the most recent sighting matching the predicate
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<Sighting> GetMostRecent(Expression<Func<Sighting, bool>> predicate)
+        {
+            List<Sighting> sightings = await _factory.Context.Sightings
+                                                             .Include(s => s.Location)
+                                                             .Include(s => s.Flight)
+                                                             .ThenInclude(f => f.Airline)
+                                                             .Include(s => s.Aircraft)
+                                                             .ThenInclude(a => a.Model)
+                                                             .ThenInclude(m => m.Manufacturer)
+                                                             .Where(predicate)
+                                                             .OrderByDescending(x => x.Date)
+                                                             .Take(1)
+                                                             .AsAsyncEnumerable()
+                                                             .ToListAsync();
+            return sightings.FirstOrDefault();
+        }
+
+        /// <summary>
         /// Add a new sighting
         /// </summary>
         /// <param name="altitude"></param>

@@ -55,21 +55,31 @@ namespace FlightRecorder.Mvc.Api
         }
 
         /// <summary>
-        /// Retrieve sightings for the specified flight on the specified date
+        /// Get the most recent sighting of a flight
         /// </summary>
-        /// <param name="date"></param>
         /// <param name="flightNumber"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<List<Sighting>> GetSightingsByFlightAndDate(DateTime date, string flightNumber, int page, int pageSize)
+        public async Task<Sighting> GetMostRecentFlightSighting(string flightNumber)
         {
-            string dateRouteSegment = date.ToString(Settings.Value.DateTimeFormat);
             string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
-            string route = $"{baseRoute}/flight/{dateRouteSegment}/{flightNumber}/{page}/{pageSize}";
+            string route = $"{baseRoute}/recent/flight/{flightNumber}";
             string json = await SendDirectAsync(route, null, HttpMethod.Get);
-            List<Sighting> sightings = JsonConvert.DeserializeObject<List<Sighting>>(json, JsonSettings);
-            return sightings;
+            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json, JsonSettings);
+            return sighting;
+        }
+
+        /// <summary>
+        /// Get the most recent sighting of an aircraft
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <returns></returns>
+        public async Task<Sighting> GetMostRecentAircraftSighting(string registration)
+        {
+            string baseRoute = Settings.Value.ApiRoutes.First(r => r.Name == RouteKey).Route;
+            string route = $"{baseRoute}/recent/aircraft/{registration}";
+            string json = await SendDirectAsync(route, null, HttpMethod.Get);
+            Sighting sighting = JsonConvert.DeserializeObject<Sighting>(json, JsonSettings);
+            return sighting;
         }
 
         /// <summary>

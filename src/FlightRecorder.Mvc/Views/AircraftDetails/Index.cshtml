@@ -20,6 +20,15 @@
         </div>
         <hr />
 
+        @if (Model.MostRecentSighting != null)
+        {
+            <div class="row">
+                <div class="col-md-12 message">
+                    <span>This aircraft was last seen from @Model.MostRecentSighting.Location.Name on @Model.MostRecentSighting.Date.ToShortDateString(), flight @Model.MostRecentSighting.Flight.Number</span>
+                </div>
+            </div>
+        }
+
         <div class="row">
             <div class="col">
                 <strong>@Html.LabelFor(m => m.Registration)</strong>
