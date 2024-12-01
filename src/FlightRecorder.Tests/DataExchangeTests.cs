@@ -32,6 +32,7 @@ namespace FlightRecorder.Tests
 
         private const long Altitude = 930;
         private readonly DateTime SightingDate = new DateTime(2019, 9, 22);
+        private const bool IsMyFlight = true;
 
         private FlightRecorderFactory _factory;
         private long _sightingId;
@@ -54,7 +55,8 @@ namespace FlightRecorder.Tests
                 Destination = Destination,
                 Altitude = Altitude,
                 Date = SightingDate,
-                Location = LocationName
+                Location = LocationName,
+                IsMyFlight = IsMyFlight
             })).Result.Id;
         }
 
@@ -108,6 +110,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(Altitude, flattened.First().Altitude);
             Assert.AreEqual(SightingDate, flattened.First().Date);
             Assert.AreEqual(LocationName, flattened.First().Location);
+            Assert.IsTrue(flattened.First().IsMyFlight);
         }
 
         [TestMethod]
@@ -121,7 +124,6 @@ namespace FlightRecorder.Tests
             var info = new FileInfo(filePath);
             Assert.AreEqual(info.FullName, filePath);
             Assert.IsTrue(info.Length > 0);
-
             File.Delete(filePath);
         }
 

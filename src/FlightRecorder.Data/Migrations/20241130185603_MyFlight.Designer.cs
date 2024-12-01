@@ -3,6 +3,7 @@ using System;
 using FlightRecorder.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlightRecorder.Data.Migrations
 {
     [DbContext(typeof(FlightRecorderDbContext))]
-    partial class FlightRecorderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241130185603_MyFlight")]
+    partial class MyFlight
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");

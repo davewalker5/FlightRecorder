@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FlightRecorder.Data.Migrations
 {
+    [ExcludeFromCodeCoverage]
     /// <inheritdoc />
     public partial class DefaultLocation : Migration
     {

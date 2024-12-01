@@ -14,6 +14,12 @@ namespace FlightRecorder.Mvc.Models
         [DisplayName("Location")]
         public string Location { get; set; }
 
+        [DisplayName("My Flight")]
+        public bool IsMyFlight { get; set; }
+
+        [DisplayName("My Flight")]
+        public string MyFlightText { get { return IsMyFlight ? "Yes" : "No"; }}
+
         [DisplayName("Flight Number")]
         public string FlightNumber { get; set; }
 

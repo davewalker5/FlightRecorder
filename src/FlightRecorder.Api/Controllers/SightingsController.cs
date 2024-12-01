@@ -177,6 +177,7 @@ namespace FlightRecorder.Api.Controllers
             sighting.Altitude = template.Altitude;
             sighting.FlightId = template.FlightId;
             sighting.LocationId = template.LocationId;
+            sighting.IsMyFlight = template.IsMyFlight;
             await _factory.Context.SaveChangesAsync();
             await _factory.Context.Entry(sighting).Reference(s => s.Aircraft).LoadAsync();
             await _factory.Context.Entry(sighting.Aircraft).Reference(m => m.Model).LoadAsync();
@@ -197,7 +198,8 @@ namespace FlightRecorder.Api.Controllers
                                                         template.Date,
                                                         template.LocationId,
                                                         template.FlightId,
-                                                        template.AircraftId);
+                                                        template.AircraftId,
+                                                        template.IsMyFlight);
             return location;
         }
     }

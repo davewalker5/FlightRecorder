@@ -41,8 +41,9 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="aircraftId"></param>
         /// <param name="flightId"></param>
         /// <param name="locationId"></param>
+        /// <param name="isMyFlight"></param>
         /// <returns></returns>
-        public async Task<Sighting> AddSightingAsync(DateTime date, int altitude, int aircraftId, int flightId, int locationId)
+        public async Task<Sighting> AddSightingAsync(DateTime date, int altitude, int aircraftId, int flightId, int locationId, bool isMyFlight)
         {
             dynamic template = new
             {
@@ -50,7 +51,8 @@ namespace FlightRecorder.Mvc.Api
                 AircraftId = aircraftId,
                 Altitude = altitude,
                 FlightId = flightId,
-                LocationId = locationId
+                LocationId = locationId,
+                IsMyFlight = isMyFlight
             };
 
             string data = JsonConvert.SerializeObject(template);
@@ -68,8 +70,9 @@ namespace FlightRecorder.Mvc.Api
         /// <param name="aircraftId"></param>
         /// <param name="flightId"></param>
         /// <param name="locationId"></param>
+        /// <param name="isMyFlight"></param>
         /// <returns></returns>
-        public async Task<Sighting> UpdateSightingAsync(int id, DateTime date, int altitude, int aircraftId, int flightId, int locationId)
+        public async Task<Sighting> UpdateSightingAsync(int id, DateTime date, int altitude, int aircraftId, int flightId, int locationId, bool isMyFlight)
         {
             dynamic template = new
             {
@@ -78,7 +81,8 @@ namespace FlightRecorder.Mvc.Api
                 AircraftId = aircraftId,
                 Altitude = altitude,
                 FlightId = flightId,
-                LocationId = locationId
+                LocationId = locationId,
+                IsMyFlight = isMyFlight
             };
 
             string data = JsonConvert.SerializeObject(template);

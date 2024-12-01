@@ -205,6 +205,8 @@ namespace FlightRecorder.Data
                 entity.Property(e => e.FlightId).HasColumnName("flight_id");
 
                 entity.Property(e => e.LocationId).HasColumnName("location_id");
+
+                entity.Property(e => e.IsMyFlight).HasColumnName("is_my_flight");
             });
 
             modelBuilder.Entity<JobStatus>(entity =>

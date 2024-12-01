@@ -113,8 +113,9 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <param name="locationId"></param>
         /// <param name="flightId"></param>
         /// <param name="aircraftId"></param>
+        /// <param name="isMyFlight"></param>
         /// <returns></returns>
-        public async Task<Sighting> AddAsync(long altitude, DateTime date, long locationId, long flightId, long aircraftId)
+        public async Task<Sighting> AddAsync(long altitude, DateTime date, long locationId, long flightId, long aircraftId, bool isMyFlight)
         {
             Sighting sighting = new Sighting
             {
@@ -122,7 +123,8 @@ namespace FlightRecorder.BusinessLogic.Database
                 Date = date,
                 LocationId = locationId,
                 FlightId = flightId,
-                AircraftId = aircraftId
+                AircraftId = aircraftId,
+                IsMyFlight = isMyFlight
             };
 
             await _factory.Context.Sightings.AddAsync(sighting);
@@ -150,7 +152,7 @@ namespace FlightRecorder.BusinessLogic.Database
             long aircraftId = (await _factory.Aircraft.AddAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, flattened.Model, flattened.Manufacturer)).Id;
             long flightId = (await _factory.Flights.AddAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, flattened.Airline)).Id;
             long locationId = (await _factory.Locations.AddAsync(flattened.Location)).Id;
-            return await AddAsync(flattened.Altitude, flattened.Date, locationId, flightId, aircraftId);
+            return await AddAsync(flattened.Altitude, flattened.Date, locationId, flightId, aircraftId, flattened.IsMyFlight);
         }
 
         /// <summary>

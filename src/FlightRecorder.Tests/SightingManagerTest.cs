@@ -27,6 +27,7 @@ namespace FlightRecorder.Tests
 
         private const long Altitude = 930;
         private readonly DateTime SightingDate = new DateTime(2019, 9, 22);
+        private const bool IsMyFlight = true;
 
         private FlightRecorderFactory _factory;
         private long _locationId;
@@ -43,7 +44,7 @@ namespace FlightRecorder.Tests
             _locationId = Task.Run(() => _factory.Locations.AddAsync(LocationName)).Result.Id;
             _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, AirlineName)).Result.Id;
             _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, ModelName, ManufacturerName)).Result.Id;
-            _sightingId = Task.Run(() => _factory.Sightings.AddAsync(Altitude, SightingDate, _locationId, _flightId, _aircraftId)).Result.Id;
+            _sightingId = Task.Run(() => _factory.Sightings.AddAsync(Altitude, SightingDate, _locationId, _flightId, _aircraftId, IsMyFlight)).Result.Id;
         }
 
         [TestMethod]
@@ -55,6 +56,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(_sightingId, sighting.Id);
             Assert.AreEqual(Altitude, sighting.Altitude);
             Assert.AreEqual(SightingDate, sighting.Date);
+            Assert.IsTrue(sighting.IsMyFlight);
 
             Assert.IsNotNull(sighting.Location);
             Assert.AreEqual(_locationId, sighting.Location.Id);

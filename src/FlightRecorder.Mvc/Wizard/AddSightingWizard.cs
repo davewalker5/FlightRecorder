@@ -457,12 +457,24 @@ namespace FlightRecorder.Mvc.Wizard
                 string message;
                 if (details.SightingId != null)
                 {
-                    sighting = await _sightings.UpdateSightingAsync(details.SightingId ?? 0, details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                    sighting = await _sightings.UpdateSightingAsync(
+                        details.SightingId ?? 0,
+                        details.Date ?? DateTime.Now,
+                        details.Altitude ?? 0,
+                        aircraft.Id, flight.Id,
+                        details.LocationId,
+                        details.IsMyFlight);
                     message = BuildSightingMessage(sighting, true);
                 }
                 else
                 {
-                    sighting = await _sightings.AddSightingAsync(details.Date ?? DateTime.Now, details.Altitude ?? 0, aircraft.Id, flight.Id, details.LocationId);
+                    sighting = await _sightings.AddSightingAsync(
+                        details.Date ?? DateTime.Now,
+                        details.Altitude ?? 0,
+                        aircraft.Id,
+                        flight.Id,
+                        details.LocationId,
+                        details.IsMyFlight);
                     message = BuildSightingMessage(sighting, false);
                 }
 
