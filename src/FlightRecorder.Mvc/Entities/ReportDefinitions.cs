@@ -11,7 +11,8 @@ namespace FlightRecorder.Mvc.Entities
             new ReportDefinition(ReportType.ManufacturerStatistics, typeof(ManufacturerStatistics), "Manufacturer Statistics"),
             new ReportDefinition(ReportType.ModelStatistics, typeof(ModelStatistics), "Model Statistics"),
             new ReportDefinition(ReportType.FlightsByMonth, typeof(FlightsByMonth), "Flights By Month"),
-            new ReportDefinition(ReportType.JobStatus, typeof(JobStatus), "Job Status")
+            new ReportDefinition(ReportType.JobStatus, typeof(JobStatus), "Job Status"),
+            new ReportDefinition(ReportType.MyFlights, typeof(MyFlights), "My Flights")
         };
     }
 }

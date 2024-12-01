@@ -58,6 +58,9 @@ namespace FlightRecorder.Api.Services
                 case ReportType.JobStatus:
                     await ExportJobStatusAsync(factory, item);
                     break;
+                case ReportType.MyFlights:
+                    await ExportMyFlightsAsync(factory, item);
+                    break;
                 default:
                     break;
             }
@@ -163,6 +166,22 @@ namespace FlightRecorder.Api.Services
                                        .ToListAsync();
             var filePath = Path.Combine(_settings.ReportsExportPath, item.FileName);
             var exporter = new CsvExporter<JobStatus>();
+            exporter.Export(records, filePath, ',');
+        }
+
+        /// <summary>
+        /// Export the "My Flights" report
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private async Task ExportMyFlightsAsync(FlightRecorderFactory factory, ReportExportWorkItem item)
+        {
+            // The third argument to the report generation method is an arbitrarily large value intended
+            // to return all records
+            var records = await factory.MyFlights.GenerateReportAsync(item.Start, item.End, 1, int.MaxValue);
+            var filePath = Path.Combine(_settings.ReportsExportPath, item.FileName);
+            var exporter = new CsvExporter<MyFlights>();
             exporter.Export(records, filePath, ',');
         }
     }
