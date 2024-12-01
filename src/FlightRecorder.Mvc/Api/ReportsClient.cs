@@ -96,6 +96,17 @@ namespace FlightRecorder.Mvc.Api
             => await DateBasedReportAsync<JobStatus>("JobStatus", from, to, pageNumber, pageSize);
 
         /// <summary>
+        /// Return the "My Flights" report
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<List<MyFlights>> MyFlightsAsync(DateTime? from, DateTime? to, int pageNumber, int pageSize)
+            => await DateBasedReportAsync<MyFlights>("MyFlights", from, to, pageNumber, pageSize);
+
+        /// <summary>
         /// Return a date-based statistics report
         /// </summary>
         /// <typeparam name="T"></typeparam>
