@@ -58,6 +58,18 @@
                 </div>
             </div>
         </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.IsMyFlight)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.MyFlightText, new { @class = "form-control", @disabled = "" })
+                </div>
+            </div>
+        </div>
         <hr />
 
         <div class="row">

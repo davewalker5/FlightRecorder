@@ -9,7 +9,7 @@ namespace FlightRecorder.Entities.Interfaces
 {
     public interface ISightingManager
     {
-        Task<Sighting> AddAsync(long altitude, DateTime date, long locationId, long flightId, long aircraftId);
+        Task<Sighting> AddAsync(long altitude, DateTime date, long locationId, long flightId, long aircraftId, bool isMyFlight);
         Task<Sighting> AddAsync(FlattenedSighting flattened);
         Task<Sighting> GetAsync(Expression<Func<Sighting, bool>> predicate);
         Task<Sighting> GetMostRecent(Expression<Func<Sighting, bool>> predicate);

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using FlightRecorder.Mvc.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -33,6 +30,9 @@ namespace FlightRecorder.Mvc.Models
         [DisplayName("Aircraft Registration")]
         [Required(ErrorMessage = "You must provide an aircraft registration")]
         public string Registration { get; set; }
+
+        [DisplayName("My Flight")]
+        public bool IsMyFlight { get; set; }
 
         public string LastSightingAddedMessage { get; set; }
         public string LocationErrorMessage { get; set; }

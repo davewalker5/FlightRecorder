@@ -6,7 +6,8 @@ namespace FlightRecorder.Entities.DataExchange
 {
     public class FlattenedSighting
     {
-        public const string CsvRecordPattern = @"^(""[a-zA-Z0-9-() \/']+"",){6}""[0-9]+"",(""[a-zA-Z0-9-() \/']+"",){3}""[0-9]+\/[0-9]+\/[0-9]+"",""[a-zA-Z0-9-() \/']+""$";
+        // TODO : Add IsMyFlight to the Regex pattern
+        public const string CsvRecordPattern = @"^(""[a-zA-Z0-9-() \/']+"",){6}""[0-9]+"",(""[a-zA-Z0-9-() \/']+"",){3}""[0-9]+\/[0-9]+\/[0-9]+"",""[a-zA-Z0-9-() \/']+"",""True|False""$";
         private const string DateTimeFormat = "dd/MM/yyyy";
 
         [Export("Flight", 1)]
@@ -45,9 +46,12 @@ namespace FlightRecorder.Entities.DataExchange
         [Export("Location", 12)]
         public string Location  { get; set; }
 
+        [Export("My Flight", 13)]
+        public bool IsMyFlight  { get; set; }
+
         public static FlattenedSighting FromCsv(string record)
         {
-            string[] words = record.Split(new string[] { "\",\"" }, StringSplitOptions.None);
+            string[] words = record.Split(["\",\""], StringSplitOptions.None);
             return new FlattenedSighting
             {
                 FlightNumber = words[0].Substring(1),
@@ -61,7 +65,8 @@ namespace FlightRecorder.Entities.DataExchange
                 Destination = words[8],
                 Altitude = long.Parse(words[9]),
                 Date = DateTime.ParseExact(words[10], DateTimeFormat, CultureInfo.CurrentCulture),
-                Location = words[11].Substring(0, words[11].Length - 1)
+                Location = words[11][..^1],
+                IsMyFlight = words[12].Equals("True", StringComparison.OrdinalIgnoreCase)
             };
         }
     }
