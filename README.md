@@ -14,6 +14,7 @@
 FlightRecorder implements a SQL-based aircraft sightings logbook. An ASP.NET WebAPI provides access to the business logic and data access layer while an ASP.NET MVC UI provides the user interface.
 
 ### Sightings
+
 Each sighting consists of the following data:
 
 - Flight details
@@ -43,6 +44,7 @@ Sightings may be searched by:
 - Date
 
 ### Reporting
+
 The following reports can be generated and exported to CSV format files:
 
 - Airline statistics
@@ -51,7 +53,10 @@ The following reports can be generated and exported to CSV format files:
 - Manufacturer statistics
 - Aircraft model statistics
 
+More flexible out-of-app reporting is also available using Jupyter Notebooks and the reports in the "reports" folder.
+
 ### Data Export
+
 The following data can be exported in CSV format:
 
 - Sightings
@@ -63,7 +68,7 @@ Please see the [Wiki](https://github.com/davewalker5/FlightRecorder/wiki) for co
 
 ## Authors
 
-- **Dave Walker** - _Initial work_
+- **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
 ## Credits
 
