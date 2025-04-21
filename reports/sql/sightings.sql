@@ -1,4 +1,4 @@
-SELECT DATE( s.Date ) AS 'Date', l.Name AS 'Location', a.Name AS 'Airline', f.Number AS 'Number',
+SELECT s.Id AS 'Id', DATE( s.Date ) AS 'Date', l.Name AS 'Location', a.Name AS 'Airline', f.Number AS 'Number',
     f.Embarkation AS 'Embarkation', f.Destination AS 'Destination',ac.Registration AS 'Registration',
     ac.Serial_Number AS 'Serial_Number', mo.Name AS 'Model', m.Name AS 'Manufacturer' 
 FROM SIGHTING s
