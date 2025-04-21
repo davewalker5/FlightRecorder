@@ -7,4 +7,5 @@ INNER JOIN FLIGHT f ON f.Id = s.Flight_Id
 INNER JOIN AIRLINE a ON a.Id = f.Airline_Id
 INNER JOIN AIRCRAFT ac ON ac.Id = s.Aircraft_Id
 INNER JOIN MODEL mo ON mo.Id = ac.Model_Id
-INNER JOIN MANUFACTURER m ON m.Id = mo.Manufacturer_Id;
+INNER JOIN MANUFACTURER m ON m.Id = mo.Manufacturer_Id
+WHERE m.Name = '$MANUFACTURER';
