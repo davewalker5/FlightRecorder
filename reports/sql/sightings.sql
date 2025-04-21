@@ -1,5 +1,6 @@
-SELECT DATE( s.Date ) AS 'Date', l.Name AS 'Location', a.Name AS 'Airline', f.Number, f.Embarkation, f.Destination,
-    ac.Registration, ac.Serial_Number, mo.Name AS 'Model', m.Name AS 'Manufacturer' 
+SELECT DATE( s.Date ) AS 'Date', l.Name AS 'Location', a.Name AS 'Airline', f.Number AS 'Number',
+    f.Embarkation AS 'Embarkation', f.Destination AS 'Destination',ac.Registration AS 'Registration',
+    ac.Serial_Number AS 'Serial_Number', mo.Name AS 'Model', m.Name AS 'Manufacturer' 
 FROM SIGHTING s
 INNER JOIN LOCATION l ON l.Id = s.Location_Id
 INNER JOIN FLIGHT f ON f.Id = s.Flight_Id

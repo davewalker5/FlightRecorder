@@ -9,6 +9,7 @@ The following reports are currently available:
 | sightings_over_time.ipynb | Daily, monthly and yearly sightings and trends over time |
 | top_airlines_over_time.ipynb | Top 'N' airlines by month and year |
 | top_manufacturers_and_models.ipynb | Top 'N' manufacturers and aircraft types |
+| top_routes.ipynb | Top routes (unidirectional and bidirectional) |
 
 ## Setting Up the Reporting Environment
 
