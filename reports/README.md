@@ -6,6 +6,7 @@ The following reports are currently available:
 
 | Notebook | Report Type |
 | --- | --- |
+| aircraft_type_trends.ipynb | Monthly and yearly sightings by aircraft type |
 | sightings_over_time.ipynb | Daily, monthly and yearly sightings and trends over time |
 | manufacturer_aircraft_heatmap.ipynb | Heatmap of models by manufacturer for all manufacturers |
 | manufacturer_aircraft_pie_chart.ipynb | Pie chart of model by sightings for a manufacturer |
