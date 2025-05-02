@@ -1,20 +1,13 @@
 # flightrecordermvc
 
-The Flight Recorder is a personal aircraft spotting logbook application implemented using .NET Core. It has the following components:
+The [FlightRecorder](https://github.com/davewalker5/FlightRecorder) GitHub project implements a REST service and associated web-based UI for a SQL-based aircraft sightings logbook, providing facilities for recording and querying the following data:
 
-| Name               | GitHub                                                                  | Comments                                                  |
-| ------------------ | ----------------------------------------------------------------------- | --------------------------------------------------------- |
-| FlightRecorderDb   | [FlightRecorderDb](https://github.com/davewalker5/FlightRecorderDb)     | Business logic, entities and database implementation      |
-| FlightRecorder.Api | [FlightRecorder.Api](https://github.com/davewalker5/FlightRecorder.Api) | REST API for reading and writing to the database          |
-| FlightRecorder.Mvc | [FlightRecorder.Mvc](https://github.com/davewalker5/FlightRecorder.Mvc) | ASP.NET MVC UI for accessing the database via the service |
+- Manufacturer, model and aircraft registration details
+- Airline and flight details
+- Sighting locations
+- Aircraft sightings
 
-The application provides facilities for recording and querying the following data:
-
-- Sighting details (date, location, aircraft altitude)
-- Flight details (route, airline)
-- Aircraft details (registration details, manufacturer, model)
-
-The flightrecordermvc image contains a build of the web-based MVC user interface.
+The flightrecordermvc image contains a build of the UI and is intended to be run as a pair with the associated web service.
 
 ## Getting Started
 
@@ -72,8 +65,7 @@ That folder should contain a SQLite database that has been created using the ins
 
 Specifically, the following should be done:
 
-- [Create the SQLite database](https://github.com/davewalker5/FlightRecorderDb/wiki/Using-a-SQLite-Database)
-- [Add a user to the database](https://github.com/davewalker5/FlightRecorderDb/wiki/REST-API)
+- [SQLite Database Configuration](https://github.com/davewalker5/FlightRecorder/wiki/Database#sqlite-database)
 
 The folder containing the "flightrecorder.db" file can then be passed to the "docker run" command using the "-v" parameter.
 
@@ -94,21 +86,19 @@ You should see the login page for the UI.
 
 ## Find Us
 
-- [FlightRecorderDb on GitHub](https://github.com/davewalker5/DroneFlightLogDb)
-- [FlightRecorder.Api on GitHub](https://github.com/davewalker5/DroneFlightLog.Api)
-- [FlightRecorder.Mvc on GitHub](https://github.com/davewalker5/DroneFlightLog.Mvc)
+- [FlightRecorder on GitHub](https://github.com/davewalker5/FlightRecorder)
 
 ## Versioning
 
-For the versions available, see the [tags on this repository](https://github.com/davewalker5/FlightRecorder.Mvc/tags).
+For the versions available, see the [tags on this repository](https://github.com/davewalker5/FlightRecorder/tags).
 
 ## Authors
 
 - **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
-See also the list of [contributors](https://github.com/davewalker5/FlightRecorder.Mvc/contributors) who
+See also the list of [contributors](https://github.com/davewalker5/FlightRecorder/contributors) who
 participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/davewalker5/FlightRecorder.Mvc/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/davewalker5/FlightRecorder/blob/master/LICENSE) file for details.

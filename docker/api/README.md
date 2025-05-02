@@ -1,6 +1,6 @@
 # flightrecorderapisqlite
 
-The [FlightRecorderDb](https://github.com/davewalker5/FlightRecorderDb) and [FlightRecorder.Api](https://github.com/davewalker5/FlightRecorder.Api) GitHub projects implement the entities, business logic and a REST service for a SQL-based aircraft sightings logbook, providing facilities for recording and querying the following data:
+The [FlightRecorder](https://github.com/davewalker5/FlightRecorder) GitHub project implements a REST service and associated web-based UI for a SQL-based aircraft sightings logbook, providing facilities for recording and querying the following data:
 
 - Manufacturer, model and aircraft registration details
 - Airline and flight details
@@ -45,12 +45,11 @@ Similarly, the port number "5001" can be replaced with any available port on the
 
 The description of the container parameters, above, specifies that a folder containing the SQLite database file for the Flight Recorder database is mounted in the running container, using the "-v" parameter.
 
-That folder should contain a SQLite database that has been created using the instructions in the [Flight Recorder wiki](https://github.com/davewalker5/FlightRecorderDb/wiki).
+That folder should contain a SQLite database that has been created using the instructions in the [Flight Recorder wiki](https://github.com/davewalker5/FlightRecorder/wiki).
 
 Specifically, the following should be done:
 
-- [Create the SQLite database](https://github.com/davewalker5/FlightRecorderDb/wiki/Using-a-SQLite-Database)
-- [Add a user to the database](https://github.com/davewalker5/FlightRecorderDb/wiki/REST-API)
+- [SQLite Database Configuration](https://github.com/davewalker5/FlightRecorder/wiki/Database#sqlite-database)
 
 The folder containing the "flightrecorder.db" file can then be passed to the "docker run" command using the "-v" parameter.
 
@@ -62,28 +61,29 @@ To run the image, enter the following command, substituting "/local" for the hos
 docker run -d -v  /local:/var/opt/flightrecorder.api/ -p 5001:80 --rm  davewalker5/flightrecorderapisqlite:latest
 ```
 
-Once the container is running, browse to the following URL on the host:
+#### Documentation
 
-http://localhost:5001
+The API implements Swagger in the development environment. To see the documentation, checkout the code from GitHub, run the API from that working copy and browse to the following URL:
 
-You should see the Swagger API documentation for the API.
+https://localhost:5001/
+
+Replace "5001" with whatever port number the API is listening on.
 
 ## Find Us
 
-- [FlightRecorderDb on GitHub](https://github.com/davewalker5/FlightRecorderDb)
-- [FlightRecorder.Api on GitHub](https://github.com/davewalker5/FlightRecorder.Api)
+- [FlightRecorder on GitHub](https://github.com/davewalker5/FlightRecorder)
 
 ## Versioning
 
-For the versions available, see the [tags on this repository](https://github.com/davewalker5/FlightRecorder.Api/tags).
+For the versions available, see the [tags on this repository](https://github.com/davewalker5/FlightRecorder/tags).
 
 ## Authors
 
 - **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
 
-See also the list of [contributors](https://github.com/davewalker5/FlightRecorder.Api/contributors) who
+See also the list of [contributors](https://github.com/davewalker5/FlightRecorder/contributors) who
 participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/davewalker5/FlightRecorder.Api/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/davewalker5/FlightRecorder/blob/master/LICENSE) file for details.
