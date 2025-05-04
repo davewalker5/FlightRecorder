@@ -46,7 +46,7 @@ The following "docker run" parameters are recommended when running the flightrec
 | --------- | --------------------- | ------------------------------------------------------- |
 | -d        | -                     | Run as a background process                             |
 | -p        | 5001:80               | Expose the container's port 80 as port 5001 on the host |
-| --link    | flightrecorderservice | Link to the drone flight log service container          |
+| --link    | flightrecorderservice | Link to the flight recorder service container           |
 | --rm      | -                     | Remove the container automatically when it stops        |
 
 For example:
@@ -59,7 +59,7 @@ The port number "5001" can be replaced with any available port on the host.
 
 #### Volumes
 
-The description of the container parameters, above, specifies that a folder containing the SQLite database file for the Drone Flight Log is mounted in the running container, using the "-v" parameter.
+The description of the container parameters, above, specifies that a folder containing the SQLite database file for the Flight Recorder is mounted in the running container, using the "-v" parameter.
 
 That folder should contain a SQLite database that has been created using the instructions in the [Flight Recorder wiki](https://github.com/davewalker5/FlightRecorderDb/wiki).
 
@@ -94,7 +94,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ## Authors
 
-- **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
+- **Dave Walker** - _Initial work_
 
 See also the list of [contributors](https://github.com/davewalker5/FlightRecorder/contributors) who
 participated in this project.

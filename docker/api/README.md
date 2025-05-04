@@ -79,7 +79,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ## Authors
 
-- **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
+- **Dave Walker** - _Initial work_
 
 See also the list of [contributors](https://github.com/davewalker5/FlightRecorder/contributors) who
 participated in this project.
