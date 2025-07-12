@@ -151,7 +151,7 @@ namespace FlightRecorder.Client.ApiClient
         }
 
         /// <summary>
-        /// Delete an existing airline
+        /// Delete an existing airport
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>

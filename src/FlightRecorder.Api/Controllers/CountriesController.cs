@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FlightRecorder.BusinessLogic.Factory;
-using FlightRecorder.Data.Migrations;
+﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace FlightRecorder.Api.Controllers
 {
@@ -14,22 +12,23 @@ namespace FlightRecorder.Api.Controllers
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route("[controller]")]
-    public class CountriesController : Controller
+    public class CountriesController : FlightRecorderApiController
     {
-        private readonly FlightRecorderFactory _factory;
-
-        public CountriesController(FlightRecorderFactory factory)
+        public CountriesController(FlightRecorderFactory factory, IFlightRecorderLogger logger) : base(factory, logger)
         {
-            _factory = factory;
         }
 
         [HttpGet]
         [Route("{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Country>>> GetCountriesAsync(int pageNumber, int pageSize)
         {
-            List<Country> countries = await _factory.Countries
+            LogMessage(Severity.Debug, $"Retrieving list of countries (page {pageNumber}, page size {pageSize})");
+
+            List<Country> countries = await Factory.Countries
                                                    .ListAsync(null, pageNumber, pageSize)
                                                    .ToListAsync();
+
+            LogMessage(Severity.Debug, $"Retrieved {countries.Count} countries");
 
             if (!countries.Any())
             {
@@ -43,11 +42,14 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Country>> GetCountryAsync(int id)
         {
-            Country country = await _factory.Countries
+            LogMessage(Severity.Debug, $"Retrieving country with ID {id}");
+
+            Country country = await Factory.Countries
                                             .GetAsync(m => m.Id == id);
 
             if (country == null)
             {
+                LogMessage(Severity.Debug, $"Country with ID {id} not found");
                 return NotFound();
             }
 
@@ -58,23 +60,26 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Country>> UpdateCountryAsync(int id, [FromBody] string name)
         {
-            // TODO : Move this functionality to the Business Logic assembly
-            Country country = await _factory.Countries
-                                            .GetAsync(m => m.Name == name);
-            if (country != null)
+            Country country = null;
+
+            LogMessage(Severity.Debug, $"Updating country: ID = {id}, Name = {name}");
+
+            try
             {
+                country = await Factory.Countries.UpdateAsync(id, name);
+            }
+            catch (CountryNotFoundException ex)
+            {
+                Logger.LogException(ex);
+                return NotFound();
+            }
+            catch (CountryExistsException ex)
+            {
+                Logger.LogException(ex);
                 return BadRequest();
             }
 
-            country = await _factory.Countries
-                                    .GetAsync(m => m.Id == id);
-            if (country == null)
-            {
-                return NotFound();
-            }
-
-            country.Name = name;
-            await _factory.Context.SaveChangesAsync();
+            LogMessage(Severity.Debug, $"Country updated: {country}");
 
             return country;
         }
@@ -83,8 +88,18 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Country>> CreateCountryAsync([FromBody] string name)
         {
-            Country country = await _factory.Countries.AddAsync(name);
+            LogMessage(Severity.Debug, $"Creating country: Name = {name}");
+            Country country = await Factory.Countries.AddAsync(name);
             return country;
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteCountryAsync(int id)
+        {
+            LogMessage(Severity.Debug, $"Deleting country: ID = {id}");
+            await Factory.Countries.DeleteAsync(id);
+            return Ok();
         }
     }
 }

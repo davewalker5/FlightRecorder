@@ -29,6 +29,8 @@ namespace FlightRecorder.Api.Controllers
                                                  .ListAsync(null, pageNumber, pageSize)
                                                  .ToListAsync();
 
+            LogMessage(Severity.Debug, $"Retrieved {airports.Count} airport(s)");
+
             if (!airports.Any())
             {
                 return NoContent();

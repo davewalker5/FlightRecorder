@@ -228,6 +228,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="AircraftNotFoundException"></exception>
+        /// <exception cref="AircraftInUseException"></exception>
         public async Task DeleteAsync(long id)
         {
             _factory.Logger.LogMessage(Severity.Debug, $"Deleting aircraft: ID = {id}");

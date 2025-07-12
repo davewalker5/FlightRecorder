@@ -129,6 +129,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="AirlineNotFoundException"></exception>
+        /// <exception cref="AirlineInUseException"></exception>
         public async Task DeleteAsync(long id)
         {
             _factory.Logger.LogMessage(Severity.Debug, $"Deleting airline: ID = {id}");
@@ -141,9 +142,9 @@ namespace FlightRecorder.BusinessLogic.Database
                 throw new AirlineNotFoundException(message);
             }
 
-            // Check there are no sightings for this airline
-            var sightings = await _factory.Sightings.ListAsync(x => x.Flight.AirlineId == id, 1, 1).ToListAsync();
-            if (sightings.Any())
+            // Check there are no flights for this airline
+            var flights = await _factory.Flights.ListAsync(x => x.AirlineId == id, 1, 1).ToListAsync();
+            if (flights.Any())
             {
                 var message = $"Airline with Id {id} has flights associated with it and cannot be deleted";
                 throw new AirlineInUseException(message);

@@ -123,7 +123,7 @@ namespace FlightRecorder.BusinessLogic.Database
 
             // Check the airport doesn't already exist
             code = code.CleanString().ToUpper();            
-            await CheckAirportIsNotADuplicate(code, 0);
+            await CheckAirportIsNotADuplicate(code, id);
 
             // Update the airport properties and save changes
             airport.Name = name;
@@ -142,6 +142,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="AirportNotFoundException"></exception>
+        /// <exception cref="AirportInUseException"></exception>
         public async Task DeleteAsync(long id)
         {
             _factory.Logger.LogMessage(Severity.Debug, $"Deleting airport: ID = {id}");
@@ -154,11 +155,11 @@ namespace FlightRecorder.BusinessLogic.Database
                 throw new AirportNotFoundException(message);
             }
 
-            // Check there are no sightings for this airport
-            var sightings = await _factory.Sightings.ListAsync(
-                x => (x.Flight.Embarkation == airport.Code) || (x.Flight.Destination == airport.Code),
+            // Check there are no flights for this airport
+            var flights = await _factory.Flights.ListAsync(
+                x => (x.Embarkation == airport.Code) || (x.Destination == airport.Code),
                 1, 1).ToListAsync();
-            if (sightings.Any())
+            if (flights.Any())
             {
                 var message = $"Airport with Id {id} has flights associated with it and cannot be deleted";
                 throw new AirportInUseException(message);

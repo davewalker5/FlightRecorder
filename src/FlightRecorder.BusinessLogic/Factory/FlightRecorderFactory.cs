@@ -76,7 +76,7 @@ namespace FlightRecorder.BusinessLogic.Factory
             _flights = new Lazy<IFlightManager>(() => new FlightManager(this));
             _sightings = new Lazy<ISightingManager>(() => new SightingManager(this));
             _users = new Lazy<IUserManager>(() => new UserManager(context));
-            _countries = new Lazy<ICountryManager>(() => new CountryManager(context));
+            _countries = new Lazy<ICountryManager>(() => new CountryManager(this));
             _airports = new Lazy<IAirportManager>(() => new AirportManager(this));
             _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(context));
 

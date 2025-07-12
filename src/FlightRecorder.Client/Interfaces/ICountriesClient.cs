@@ -10,5 +10,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Country> GetCountryAsync(long id);
         Task<Country> AddCountryAsync(string name);
         Task<Country> UpdateCountryAsync(long id, string name);
+        Task DeleteCountryAsync(long id);
     }
 }
