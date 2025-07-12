@@ -78,7 +78,7 @@ namespace FlightRecorder.BusinessLogic.Factory
             _users = new Lazy<IUserManager>(() => new UserManager(context));
             _countries = new Lazy<ICountryManager>(() => new CountryManager(this));
             _airports = new Lazy<IAirportManager>(() => new AirportManager(this));
-            _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(context));
+            _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(this));
 
             // Lazily instantiate the reporting managers : Once again, they'll only actually be created if called by
             // the application
