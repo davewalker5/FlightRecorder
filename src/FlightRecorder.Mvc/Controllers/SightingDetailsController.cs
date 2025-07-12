@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Entities;
+﻿using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;

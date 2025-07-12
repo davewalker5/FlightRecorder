@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class LocationsController : Controller
     {
-        private readonly LocationClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly ILocationClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        public LocationsController(LocationClient client, IOptions<AppSettings> settings)
+        public LocationsController(ILocationClient client, FlightRecorderApplicationSettings settings)
         {
             _client = client;
             _settings = settings;
@@ -29,9 +27,9 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Location> locations = await _client.GetLocationsAsync(1, _settings.Value.SearchPageSize);
+            List<Location> locations = await _client.GetLocationsAsync(1, _settings.SearchPageSize);
             var model = new LocationListViewModel();
-            model.SetLocations(locations, 1, _settings.Value.SearchPageSize);
+            model.SetLocations(locations, 1, _settings.SearchPageSize);
             return View(model);
         }
 
@@ -65,8 +63,8 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Retrieve the matching airport records
-                var locations = await _client.GetLocationsAsync(page, _settings.Value.SearchPageSize);
-                model.SetLocations(locations, page, _settings.Value.SearchPageSize);
+                var locations = await _client.GetLocationsAsync(page, _settings.SearchPageSize);
+                model.SetLocations(locations, page, _settings.SearchPageSize);
             }
 
             return View(model);

@@ -1,29 +1,26 @@
-﻿using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class JobStatusController : Controller
     {
-        private readonly ReportsClient _reportsClient;
-        private readonly ExportClient _exportClient;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly IReportsClient _reportsClient;
+        private readonly IExportClient _exportClient;
+        private readonly FlightRecorderApplicationSettings _settings;
 
         public JobStatusController(
-            ReportsClient reportsClient,
-            ExportClient exportsClient,
-            IOptions<AppSettings> settings)
+            IReportsClient iReportsClient,
+            IExportClient exportsClient,
+            FlightRecorderApplicationSettings settings)
         {
-            _reportsClient = reportsClient;
+            _reportsClient = iReportsClient;
             _exportClient = exportsClient;
             _settings = settings;
         }
@@ -79,8 +76,8 @@ namespace FlightRecorder.Mvc.Controllers
                 DateTime end = !string.IsNullOrEmpty(model.To) ? DateTime.Parse(model.To) : DateTime.MaxValue;
 
                 // Retrieve the matching report records
-                List<JobStatus> records = await _reportsClient.JobStatusAsync(start, end, page, _settings.Value.SearchPageSize);
-                model.SetRecords(records, page, _settings.Value.SearchPageSize);
+                List<JobStatus> records = await _reportsClient.JobStatusAsync(start, end, page, _settings.SearchPageSize);
+                model.SetRecords(records, page, _settings.SearchPageSize);
             }
 
             return View(model);
@@ -94,7 +91,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> Export([FromBody] JobStatusViewModel model)
         {
-            await _exportClient.ExportReport<JobStatus>(model);
+            await _exportClient.ExportReport<JobStatus>(model.From, model.To);
             return Ok();
         }
     }

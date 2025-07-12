@@ -1,4 +1,5 @@
-﻿using FlightRecorder.Entities.Interfaces;
+﻿using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Interfaces;
 
 namespace FlightRecorder.BusinessLogic.Config
 {

@@ -32,7 +32,7 @@ namespace FlightRecorder.Manager
                 factory = new FlightRecorderFactory(context);
 
                 // Read the application settings
-                var settings = new FlightRecorderConfigReader().Read("appsettings.json", "ApplicationSettings");
+                var settings = new FlightRecorderConfigReader().Read("FlightRecorderApplicationSettings.json", "ApplicationSettings");
 
                 // Create a file logger
                 var logger = new FileLogger();

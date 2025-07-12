@@ -1,19 +1,17 @@
-﻿using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Entities;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Reporting;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class ExportController : Controller
     {
-        private readonly ExportClient _client;
+        private readonly IExportClient _client;
 
-        public ExportController(ExportClient client)
+        public ExportController(IExportClient client)
         {
             _client = client;
         }

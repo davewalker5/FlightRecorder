@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class ManufacturersController : Controller
     {
-        private readonly ManufacturerClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly IManufacturerClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        public ManufacturersController(ManufacturerClient client, IOptions<AppSettings> settings)
+        public ManufacturersController(IManufacturerClient client, FlightRecorderApplicationSettings settings)
         {
             _client = client;
             _settings = settings;
@@ -29,9 +27,9 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Manufacturer> manufacturers = await _client.GetManufacturersAsync(1, _settings.Value.SearchPageSize);
+            List<Manufacturer> manufacturers = await _client.GetManufacturersAsync(1, _settings.SearchPageSize);
             var model = new ManufacturerListViewModel();
-            model.SetManufacturers(manufacturers, 1, _settings.Value.SearchPageSize);
+            model.SetManufacturers(manufacturers, 1, _settings.SearchPageSize);
             return View(model);
         }
 
@@ -65,8 +63,8 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Retrieve the matching country records
-                var manufacturers = await _client.GetManufacturersAsync(page, _settings.Value.SearchPageSize);
-                model.SetManufacturers(manufacturers, page, _settings.Value.SearchPageSize);
+                var manufacturers = await _client.GetManufacturersAsync(page, _settings.SearchPageSize);
+                model.SetManufacturers(manufacturers, page, _settings.SearchPageSize);
             }
 
             return View(model);

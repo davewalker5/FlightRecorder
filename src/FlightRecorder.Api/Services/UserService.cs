@@ -1,8 +1,7 @@
 ﻿using FlightRecorder.Api.Interfaces;
-using FlightRecorder.BusinessLogic.Config;
 using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,10 +14,10 @@ namespace FlightRecorder.Api.Services
         private readonly FlightRecorderFactory _factory;
         private readonly FlightRecorderApplicationSettings _settings;
 
-        public UserService(FlightRecorderFactory factory, IOptions<FlightRecorderApplicationSettings> settings)
+        public UserService(FlightRecorderFactory factory, FlightRecorderApplicationSettings settings)
         {
             _factory = factory;
-            _settings = settings.Value;
+            _settings = settings;
         }
 
         /// <summary>

@@ -21,6 +21,8 @@ namespace FlightRecorder.Entities.Db
         public virtual Flight Flight { get; set; }
         public virtual Location Location { get; set; }
 
+        public string FormattedDate { get { return Date.ToString("dd-MMM-yyyy"); } }
+
         public FlattenedSighting Flatten()
         {
             return new FlattenedSighting

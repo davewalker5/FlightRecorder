@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Entities.Db;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
     public class AircraftDetailsViewModel
     {
-        public int? AircraftId { get; set; }
+        public long? AircraftId { get; set; }
 
         [DisplayName("Aircraft Registration")]
         [Required(ErrorMessage = "You must provide an aircraft registration")]
@@ -20,17 +18,17 @@ namespace FlightRecorder.Mvc.Models
 
         [DisplayName("Age")]
         [Range(0, int.MaxValue, ErrorMessage = "Aircraft age is not valid")]
-        public int? Age { get; set; }
+        public long? Age { get; set; }
 
         [DisplayName("Manufacturer")]
-        public int? ManufacturerId { get; set; }
+        public long? ManufacturerId { get; set; }
 
         [DisplayName("New Manufacturer")]
         public string NewManufacturer { get; set; }
 
         [DisplayName("Model")]
-        public int? ModelId { get; set; }
-        public int? DropDownModelId { get; set; }
+        public long? ModelId { get; set; }
+        public long? DropDownModelId { get; set; }
 
         [DisplayName("New Model")]
         public string NewModel { get; set; }

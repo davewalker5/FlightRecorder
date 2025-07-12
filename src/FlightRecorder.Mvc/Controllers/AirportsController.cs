@@ -1,29 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using AutoMapper;
+using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class AirportsController : Controller
     {
-        private readonly CountriesClient _countries;
-        private readonly AirportsClient _airports;
+        private readonly ICountriesClient _countries;
+        private readonly IAirportsClient _airports;
         private readonly IMapper _mapper;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly FlightRecorderApplicationSettings _settings;
 
         public AirportsController(
-            CountriesClient countries,
-            AirportsClient airports,
+            ICountriesClient countries,
+            IAirportsClient airports,
             IMapper mapper,
-            IOptions<AppSettings> settings)
+            FlightRecorderApplicationSettings settings)
         {
             _countries = countries;
             _airports = airports;
@@ -38,9 +36,9 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var airports = await _airports.GetAirportsAsync(1, _settings.Value.SearchPageSize);
+            var airports = await _airports.GetAirportsAsync(1, _settings.SearchPageSize);
             var model = new AirportListViewModel();
-            model.SetAirports(airports, 1, _settings.Value.SearchPageSize);
+            model.SetAirports(airports, 1, _settings.SearchPageSize);
             return View(model);
         }
 
@@ -74,8 +72,8 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Retrieve the matching airport records
-                var airports = await _airports.GetAirportsAsync(page, _settings.Value.SearchPageSize);
-                model.SetAirports(airports, page, _settings.Value.SearchPageSize);
+                var airports = await _airports.GetAirportsAsync(page, _settings.SearchPageSize);
+                model.SetAirports(airports, page, _settings.SearchPageSize);
             }
 
             return View(model);

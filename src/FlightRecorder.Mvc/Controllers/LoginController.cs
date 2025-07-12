@@ -1,25 +1,24 @@
-﻿using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
+﻿using System.Security.Authentication;
+using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Mvc.Models;
-using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     public class LoginController : Controller
     {
-        public const string TokenSessionKey = "FlightRecorder.Token";
         public const string LoginPath = "/login";
 
-        private readonly AuthenticationClient _client;
-        private readonly AddSightingWizard _wizard;
+        private readonly IAuthenticationClient _client;
+        private readonly IAuthenticationTokenProvider _tokenProvider;
+        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(AuthenticationClient client, AddSightingWizard wizard)
+        public LoginController(IAuthenticationClient client, IAuthenticationTokenProvider provider, ILogger<LoginController> logger)
         {
             _client = client;
-            _wizard = wizard;
+            _tokenProvider = provider;
+            _logger = logger;
         }
 
         /// <summary>
@@ -46,19 +45,28 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 // Authenticate with the sevice
-                string token = await _client.AuthenticateAsync(model.UserName, model.Password);
+                string token = "";
+                try
+                {
+                    token = await _client.AuthenticateAsync(model.UserName, model.Password);
+                }
+                catch (AuthenticationException)
+                {
+                    // Authentication failures raise an AuthenticationException from the client
+                }
+
+                // Validate the token
                 if (!string.IsNullOrEmpty(token))
                 {
-                    // Successful, so store the token in session, clear any cached user attributes (as the
-                    // logged in user may have changed) and the location cached by the Wizard, then redirect to
-                    // the home page
-                    HttpContext.Session.SetString(TokenSessionKey, token);
-                    _client.ClearCachedUserAttributes();
-                    _wizard.ClearCachedLocation(model.UserName);
+                    _logger.LogDebug($"Successfully authenticated as user {model.UserName}");
+
+                    // Successful, so store the token in session, and redirect to the home page
+                    _tokenProvider.SetToken(token);
                     result = RedirectToAction("Index", "Home");
                 }
                 else
                 {
+                    _logger.LogDebug($"Failed to authenticate as user {model.UserName}");
                     model.Message = "Incorrect username or password";
                     result = View(model);
                 }
@@ -79,7 +87,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public IActionResult LogOut()
         {
-            HttpContext.Session.Clear();
+            _tokenProvider.ClearToken();
             return RedirectToAction("Index", "Home");
         }
     }

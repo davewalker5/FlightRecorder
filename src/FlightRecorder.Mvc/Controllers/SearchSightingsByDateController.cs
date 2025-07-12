@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class SearchSightingsByDateController : Controller
     {
-        private readonly SightingsSearchClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly ISightingsSearchClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        public SearchSightingsByDateController(SightingsSearchClient client, IOptions<AppSettings> settings)
+        public SearchSightingsByDateController(ISightingsSearchClient client, FlightRecorderApplicationSettings settings)
         {
             _client = client;
             _settings = settings;
@@ -72,8 +69,8 @@ namespace FlightRecorder.Mvc.Controllers
                 DateTime start = DateTime.Parse(model.From);
                 DateTime end = DateTime.Parse(model.To);
 
-                List<Sighting> sightings = await _client.GetSightingsByDate(start, end, page, _settings.Value.SearchPageSize);
-                model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
+                List<Sighting> sightings = await _client.GetSightingsByDate(start, end, page, _settings.SearchPageSize);
+                model.SetSightings(sightings, page, _settings.SearchPageSize);
             }
 
             return View(model);

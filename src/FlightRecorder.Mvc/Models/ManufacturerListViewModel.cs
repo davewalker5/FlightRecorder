@@ -1,4 +1,4 @@
-﻿using FlightRecorder.Mvc.Entities;
+﻿using FlightRecorder.Entities.Db;
 using System.Collections.Generic;
 using System.Linq;
 

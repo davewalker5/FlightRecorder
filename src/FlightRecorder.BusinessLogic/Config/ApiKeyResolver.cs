@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using FlightRecorder.Entities.Config;
 
 namespace FlightRecorder.BusinessLogic.Config
 {

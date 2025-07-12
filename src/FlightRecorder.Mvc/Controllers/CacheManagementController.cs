@@ -1,9 +1,7 @@
-﻿using FlightRecorder.Mvc.Interfaces;
+﻿using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace FlightRecorder.Mvc.Controllers
 {

@@ -10,7 +10,7 @@ namespace FlightRecorder.Tests
     public class ConfigReaderTest
     {
         [TestMethod]
-        public void ReadAppSettingsTest()
+        public void ReadFlightRecorderApplicationSettingsTest()
         {
             var settings = new FlightRecorderConfigReader().Read("appsettings.json", "ApplicationSettings");
 

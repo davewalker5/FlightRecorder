@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
-using FlightRecorder.Mvc.Entities;
-using FlightRecorder.Mvc.Interfaces;
+using FlightRecorder.Entities.Db;
+using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Mvc.Models;
-using Microsoft.Extensions.Options;
 using System.Text;
+using FlightRecorder.Entities.Config;
 
 namespace FlightRecorder.Mvc.Wizard
 {
@@ -18,29 +16,29 @@ namespace FlightRecorder.Mvc.Wizard
         private const string DefaultDateKeyPrefix = "Wizard.DefaultDate";
         private const string DefaultLocationKeyPrefix = "Wizard.DefaultLocation";
 
-        private readonly LocationClient _locations;
-        private readonly FlightClient _flights;
-        private readonly AirlineClient _airlines;
-        private readonly ManufacturerClient _manufacturers;
-        private readonly ModelClient _models;
-        private readonly AircraftClient _aircraft;
-        private readonly SightingClient _sightings;
-        private readonly SightingsSearchClient _sightingsSearch;
-        private readonly UserAttributesClient _userAttributes;
+        private readonly ILocationClient _locations;
+        private readonly IFlightClient _flights;
+        private readonly IAirlineClient _airlines;
+        private readonly IManufacturerClient _manufacturers;
+        private readonly IModelClient _models;
+        private readonly IAircraftClient _aircraft;
+        private readonly ISightingClient _sightings;
+        private readonly ISightingsSearchClient _sightingsSearch;
+        private readonly IUserAttributesClient _userAttributes;
         private readonly ICacheWrapper _cache;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly FlightRecorderApplicationSettings _settings;
         private readonly IMapper _mapper;
 
-        public AddSightingWizard(LocationClient locations,
-                                 FlightClient flights,
-                                 AirlineClient airlines,
-                                 ManufacturerClient manufacturers,
-                                 ModelClient models,
-                                 AircraftClient aircraft,
-                                 SightingClient sightings,
-                                 SightingsSearchClient sightingsSearch,
-                                 UserAttributesClient userAttributes,
-                                 IOptions<AppSettings> settings,
+        public AddSightingWizard(ILocationClient locations,
+                                 IFlightClient flights,
+                                 IAirlineClient airlines,
+                                 IManufacturerClient manufacturers,
+                                 IModelClient models,
+                                 IAircraftClient aircraft,
+                                 ISightingClient sightings,
+                                 ISightingsSearchClient sightingsSearch,
+                                 IUserAttributesClient userAttributes,
+                                 FlightRecorderApplicationSettings settings,
                                  ICacheWrapper cache,
                                  IMapper mapper)
         {
@@ -91,7 +89,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// Return the available models for a specified manufacturer
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Model>> GetModelsAsync(int manufacturerId)
+        public async Task<List<Model>> GetModelsAsync(long manufacturerId)
             => await _models.GetModelsAsync(manufacturerId);
 
         /// <summary>
@@ -99,7 +97,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <param name="flightId"></param>
         /// <returns></returns>
-        public async Task<Flight> GetFlightAsync(int flightId)
+        public async Task<Flight> GetFlightAsync(long flightId)
             => await _flights.GetFlightByIdAsync(flightId);
 
         /// <summary>
@@ -107,7 +105,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName, int? sightingId)
+        public async Task<SightingDetailsViewModel> GetSightingDetailsModelAsync(string userName, long? sightingId)
         {
             // Retrieve the model from the cache
             string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
@@ -158,7 +156,7 @@ namespace FlightRecorder.Mvc.Wizard
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public int? GetCurrentSightingId(string userName)
+        public long? GetCurrentSightingId(string userName)
         {
             string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
             SightingDetailsViewModel model = _cache.Get<SightingDetailsViewModel>(key);
@@ -311,7 +309,7 @@ namespace FlightRecorder.Mvc.Wizard
             }
             else
             {
-                int manufacturerId = aircraft.ManufacturerId ?? 0;
+                long manufacturerId = aircraft.ManufacturerId ?? 0;
                 Manufacturer manufacturer = await _manufacturers.GetManufacturerAsync(manufacturerId);
                 model.Manufacturer = manufacturer.Name;
             }
@@ -323,7 +321,7 @@ namespace FlightRecorder.Mvc.Wizard
             }
             else
             {
-                int modelId = aircraft.ModelId ?? 0;
+                long modelId = aircraft.ModelId ?? 0;
                 Model aircraftModel = await _models.GetModelAsync(modelId);
                 model.Model = aircraftModel.Name;
             }
@@ -350,7 +348,7 @@ namespace FlightRecorder.Mvc.Wizard
         public void CacheSightingDetailsModel(SightingDetailsViewModel model, string userName)
         {
             string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
-            _cache.Set<SightingDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
+            _cache.Set<SightingDetailsViewModel>(key, model, _settings.CacheLifetimeSeconds);
         }
 
         /// <summary>
@@ -361,7 +359,7 @@ namespace FlightRecorder.Mvc.Wizard
         public void CacheFlightDetailsModel(FlightDetailsViewModel model, string userName)
         {
             string key = GetCacheKey(FlightDetailsKeyPrefix, userName);
-            _cache.Set<FlightDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
+            _cache.Set<FlightDetailsViewModel>(key, model, _settings.CacheLifetimeSeconds);
         }
 
         /// <summary>
@@ -372,7 +370,7 @@ namespace FlightRecorder.Mvc.Wizard
         public void CacheAircraftDetailsModel(AircraftDetailsViewModel model, string userName)
         {
             string key = GetCacheKey(AircraftDetailsKeyPrefix, userName);
-            _cache.Set<AircraftDetailsViewModel>(key, model, _settings.Value.CacheLifetimeSeconds);
+            _cache.Set<AircraftDetailsViewModel>(key, model, _settings.CacheLifetimeSeconds);
         }
 
         /// <summary>
@@ -481,13 +479,13 @@ namespace FlightRecorder.Mvc.Wizard
                 // Cache the message giving its details and other properties that are
                 // cached to improve data entry speed
                 key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
-                _cache.Set<string>(key, message, _settings.Value.CacheLifetimeSeconds);
+                _cache.Set<string>(key, message, _settings.CacheLifetimeSeconds);
 
                 key = GetCacheKey(DefaultDateKeyPrefix, userName);
-                _cache.Set<DateTime>(key, sighting.Date, _settings.Value.CacheLifetimeSeconds);
+                _cache.Set<DateTime>(key, sighting.Date, _settings.CacheLifetimeSeconds);
 
                 key = GetCacheKey(DefaultLocationKeyPrefix, userName);
-                _cache.Set<int>(key, sighting.LocationId, _settings.Value.CacheLifetimeSeconds);
+                _cache.Set<long>(key, sighting.LocationId, _settings.CacheLifetimeSeconds);
             }
 
             // Clear the cached data
@@ -591,7 +589,7 @@ namespace FlightRecorder.Mvc.Wizard
                     }
 
                     // Create the aircraft
-                    int? manufactured = (details.Age != null) ? DateTime.Now.Year - details.Age : null;
+                    long? manufactured = (details.Age != null) ? DateTime.Now.Year - details.Age : null;
                     aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId ?? 0);
                 }
             }
@@ -664,8 +662,8 @@ namespace FlightRecorder.Mvc.Wizard
             if (locationId == null)
             {
                 await _userAttributes.GetUserAttributesAsync(userName, true);
-                var defaultUserLocation = _userAttributes.GetCachedUserAttribute(_settings.Value.DefaultLocationAttribute);
-                if (int.TryParse(defaultUserLocation.Value, out int defaultUserLocationId))
+                var defaultUserLocation = _userAttributes.GetCachedUserAttribute(_settings.DefaultLocationAttribute);
+                if (int.TryParse(defaultUserLocation?.Value, out int defaultUserLocationId))
                 {
                     locationId = defaultUserLocationId;
                 }

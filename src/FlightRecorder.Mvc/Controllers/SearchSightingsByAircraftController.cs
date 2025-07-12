@@ -1,24 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class SearchSightingsByAircraftController : Controller
     {
-        private readonly SightingsSearchClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly ISightingsSearchClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        private readonly AircraftClient _aircraft;
+        private readonly IAircraftClient _aircraft;
 
-        public SearchSightingsByAircraftController(AircraftClient aircraft, SightingsSearchClient client, IOptions<AppSettings> settings)
+        public SearchSightingsByAircraftController(IAircraftClient aircraft, ISightingsSearchClient client, FlightRecorderApplicationSettings settings)
         {
             _aircraft = aircraft;
             _client = client;
@@ -80,7 +78,7 @@ namespace FlightRecorder.Mvc.Controllers
                     Aircraft aircraft = await _aircraft.GetAircraftByRegistrationAsync(model.Registration);
                     if (aircraft != null)
                     {
-                        sightings = await _client.GetSightingsByAircraft(aircraft.Id, page, _settings.Value.SearchPageSize);
+                        sightings = await _client.GetSightingsByAircraft(aircraft.Id, page, _settings.SearchPageSize);
                     }
                 }
                 catch
@@ -88,7 +86,7 @@ namespace FlightRecorder.Mvc.Controllers
                 }
 
                 // Expose the sightings to the View
-                model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
+                model.SetSightings(sightings, page, _settings.SearchPageSize);
             }
 
             return View(model);

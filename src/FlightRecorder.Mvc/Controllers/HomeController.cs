@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;

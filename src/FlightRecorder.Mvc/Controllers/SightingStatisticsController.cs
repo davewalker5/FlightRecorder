@@ -1,24 +1,16 @@
-﻿using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
     public class SightingStatisticsController : Controller
     {
-        private readonly ReportsClient _reportsClient;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly IReportsClient _reportsClient;
 
-        public SightingStatisticsController(
-            ReportsClient reportsClient,
-            IOptions<AppSettings> settings)
-        {
-            _reportsClient = reportsClient;
-            _settings = settings;
-        }
+        public SightingStatisticsController(IReportsClient iReportsClient)
+            => _reportsClient = iReportsClient;
 
         /// <summary>
         /// Retrieve and serve the report
