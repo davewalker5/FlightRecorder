@@ -89,5 +89,18 @@ namespace FlightRecorder.Client.ApiClient
             Airline airline = Deserialize<Airline>(json);
             return airline;
         }
+
+        /// <summary>
+        /// Delete an existing airline
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteAirlineAsync(long id)
+        {
+            Cache.Remove(CacheKey);
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
+        }
     }
 }

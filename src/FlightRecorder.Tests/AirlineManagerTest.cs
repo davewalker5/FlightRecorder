@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,12 +26,9 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public async Task AddDuplicateAsyncTest()
-        {
-            await _factory.Airlines.AddAsync(EntityName);
-            var airlines = await _factory.Airlines.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, airlines.Count);
-        }
+        [ExpectedException(typeof(AirlineExistsException))]
+        public async Task CannotAddDuplicateAsyncTest()
+            => await _factory.Airlines.AddAsync(EntityName);
 
         [TestMethod]
         public async Task AddAndGetAsyncTest()

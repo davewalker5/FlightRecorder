@@ -186,7 +186,30 @@ namespace FlightRecorder.Client.ApiClient
             {
                 aircraft.Manufactured = null;
             }
+
             return aircraft;
+        }
+
+        /// <summary>
+        /// Delete an existing aircraft
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteAircraftAsync(long id)
+        {
+            // If the aircraft's been cached, clear it from the cache
+            string key;
+            Aircraft aircraft = FindCachedAircraft(async => async.Id == id);
+            if (aircraft != null)
+            {
+                key = $"{CacheKeyPrefix}.{aircraft.ModelId}";
+                Cache.Remove(key);
+            }
+
+            // Delete the aircraft
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
         }
 
         /// <summary>

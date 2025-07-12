@@ -150,6 +150,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<IActionResult> DeleteAircraftAsync(int id)
         {
+            LogMessage(Severity.Debug, $"Deleting aircraft: ID = {id}");
             await Factory.Aircraft.DeleteAsync(id);
             return Ok();
         }

@@ -15,8 +15,6 @@ namespace FlightRecorder.BusinessLogic.Database
 {
     internal class AircraftManager : IAircraftManager
     {
-        private const int AllModelsPageSize = 1000000;
-
         private readonly FlightRecorderFactory _factory;
 
         internal AircraftManager(FlightRecorderFactory factory)
@@ -117,7 +115,7 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 // Model retrieval uses an arbitrarily large page size to retrieve all models
                 List<long> modelIds = await _factory.Models
-                                                    .ListAsync(m => m.ManufacturerId == manufacturer.Id, 1, AllModelsPageSize)
+                                                    .ListAsync(m => m.ManufacturerId == manufacturer.Id, 1, int.MaxValue)
                                                     .Select(m => m.Id)
                                                     .ToListAsync();
                 if (modelIds.Any())
@@ -232,6 +230,8 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <exception cref="AircraftNotFoundException"></exception>
         public async Task DeleteAsync(long id)
         {
+            _factory.Logger.LogMessage(Severity.Debug, $"Deleting aircraft: ID = {id}");
+
             // Check the aircraft exists
             var aircraft = await _factory.Context.Aircraft.FirstOrDefaultAsync(x => x.Id == id);
             if (aircraft == null)
@@ -259,7 +259,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// </summary>
         /// <param name="registration"></param>
         /// <param name="id"></param>
-        /// <exception cref="BeverageExistsException"></exception>
+        /// <exception cref="AircraftExistsException"></exception>
         private async Task CheckAircraftIsNotADuplicate(string registration, long id)
         {
             var aircraft = await _factory.Context.Aircraft.FirstOrDefaultAsync(x => x.Registration == registration);

@@ -19,4 +19,3 @@ namespace FlightRecorder.Entities.Exceptions
         }
     }
 }
-

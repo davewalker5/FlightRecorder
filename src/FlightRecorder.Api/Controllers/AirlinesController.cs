@@ -1,5 +1,6 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -59,26 +60,26 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Airline>> UpdateAirlineAsync(int id, [FromBody] string name)
         {
+            Airline airline = null;
+
             LogMessage(Severity.Debug, $"Updating airline: ID = {id}, Name = {name}");
 
-            // TODO : Move this functionality to the Business Logic assembly
-            Airline airline = await Factory.Airlines
-                                            .GetAsync(m => m.Name == name);
-            if (airline != null)
+            try
             {
+                airline = await Factory.Airlines.UpdateAsync(id, name);
+            }
+            catch (AirlineNotFoundException ex)
+            {
+                Logger.LogException(ex);
+                return NotFound();
+            }
+            catch (AirlineExistsException ex)
+            {
+                Logger.LogException(ex);
                 return BadRequest();
             }
 
-            airline = await Factory.Airlines
-                                    .GetAsync(m => m.Id == id);
-            if (airline == null)
-            {
-                return NotFound();
-            }
-
-            airline.Name = name;
-            await Factory.Context.SaveChangesAsync();
-
+            LogMessage(Severity.Debug, $"Airline updated: {airline}");
             return airline;
         }
 
@@ -89,6 +90,15 @@ namespace FlightRecorder.Api.Controllers
             LogMessage(Severity.Debug, $"Creating airline: Name = {name}");
             Airline airline = await Factory.Airlines.AddAsync(name);
             return airline;
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteAirlineAsync(int id)
+        {
+            LogMessage(Severity.Debug, $"Deleting airline: ID = {id}");
+            await Factory.Airlines.DeleteAsync(id);
+            return Ok();
         }
     }
 }
