@@ -154,7 +154,7 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 int? manufactured = (viewModel.Age != null) ? DateTime.Now.Year - viewModel.Age : null;
-                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ManufacturerId, viewModel.ModelId);
+                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ModelId);
                 result = RedirectToAction("Index", new { manufacturerId = viewModel.ManufacturerId, modelId = viewModel.ModelId });
             }
             else

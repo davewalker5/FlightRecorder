@@ -28,6 +28,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IDateBasedReport<MyFlights>> _myFlights = null;
 
         public FlightRecorderDbContext Context { get; private set; }
+        public IFlightRecorderLogger Logger { get; private set; }
 
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -59,16 +60,17 @@ namespace FlightRecorder.BusinessLogic.Factory
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<MyFlights> MyFlights { get { return _myFlights.Value; } }
 
-        public FlightRecorderFactory(FlightRecorderDbContext context)
+        public FlightRecorderFactory(FlightRecorderDbContext context, IFlightRecorderLogger logger)
         {
-            // Store the database context
+            // Store the database context and logger
             Context = context;
+            Logger = logger;
 
             // Lazily instantiate the database managers : They'll only actually be created if called by
             // the application
             _airlines = new Lazy<IAirlineManager>(() => new AirlineManager(context));
             _locations = new Lazy<ILocationManager>(() => new LocationManager(context));
-            _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(context));
+            _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(this));
             _models = new Lazy<IModelManager>(() => new ModelManager(this));
             _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(this));
             _flights = new Lazy<IFlightManager>(() => new FlightManager(this));

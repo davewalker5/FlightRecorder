@@ -54,6 +54,7 @@ namespace FlightRecorder.BusinessLogic.Database
                                             .Include(s => s.Aircraft)
                                             .ThenInclude(a => a.Model)
                                             .ThenInclude(m => m.Manufacturer)
+                                            .OrderBy(s => s.Date)
                                             .Skip((pageNumber - 1) * pageSize)
                                             .Take(pageSize)
                                             .AsAsyncEnumerable();
@@ -68,6 +69,7 @@ namespace FlightRecorder.BusinessLogic.Database
                                             .ThenInclude(a => a.Model)
                                             .ThenInclude(m => m.Manufacturer)
                                             .Where(predicate)
+                                            .OrderBy(s => s.Date)
                                             .Skip((pageNumber - 1) * pageSize)
                                             .Take(pageSize)
                                             .AsAsyncEnumerable();
@@ -149,7 +151,8 @@ namespace FlightRecorder.BusinessLogic.Database
         public async Task<Sighting> AddAsync(FlattenedSighting flattened)
         {
             long? yearOfManufacture = !string.IsNullOrEmpty(flattened.Age) ? DateTime.Now.Year - long.Parse(flattened.Age) : null;
-            long aircraftId = (await _factory.Aircraft.AddAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, flattened.Model, flattened.Manufacturer)).Id;
+            long? modelId = (await _factory.Models.AddAsync(flattened.Model, flattened.Manufacturer)).Id;
+            long aircraftId = (await _factory.Aircraft.AddAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, modelId)).Id;
             long flightId = (await _factory.Flights.AddAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, flattened.Airline)).Id;
             long locationId = (await _factory.Locations.AddAsync(flattened.Location)).Id;
             return await AddAsync(flattened.Altitude, flattened.Date, locationId, flightId, aircraftId, flattened.IsMyFlight);

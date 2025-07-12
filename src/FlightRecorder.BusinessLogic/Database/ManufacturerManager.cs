@@ -4,21 +4,20 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Extensions;
-using FlightRecorder.Data;
+using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Database
 {
     internal class ManufacturerManager : IManufacturerManager
     {
-        private readonly FlightRecorderDbContext _context;
+        private readonly FlightRecorderFactory _factory;
 
-        internal ManufacturerManager(FlightRecorderDbContext context)
-        {
-            _context = context;
-        }
+        internal ManufacturerManager(FlightRecorderFactory factory)
+            => _factory = factory;
 
         /// <summary>
         /// Return the first entity matching the specified criteria
@@ -43,15 +42,17 @@ namespace FlightRecorder.BusinessLogic.Database
             IAsyncEnumerable<Manufacturer> results;
             if (predicate == null)
             {
-                results = _context.Manufacturers
+                results = _factory.Context.Manufacturers
+                                  .OrderBy(m => m.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.Manufacturers
+                results = _factory.Context.Manufacturers
                                   .Where(predicate)
+                                  .OrderBy(m => m.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
@@ -65,7 +66,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// </summary>
         /// <returns></returns>
         public async Task<int> CountAsync()
-            => await _context.Manufacturers.CountAsync();
+            => await _factory.Context.Manufacturers.CountAsync();
 
         /// <summary>
         /// Add a named manufacturer, if it doesn't already exist
@@ -80,8 +81,9 @@ namespace FlightRecorder.BusinessLogic.Database
             if (manufacturer == null)
             {
                 manufacturer = new Manufacturer { Name = name };
-                await _context.Manufacturers.AddAsync(manufacturer);
-                await _context.SaveChangesAsync();
+                await _factory.Context.Manufacturers.AddAsync(manufacturer);
+                await _factory.Context.SaveChangesAsync();
+                _factory.Logger?.LogMessage(Severity.Debug, $"Added Manufacturer: ID = {manufacturer.Id}, Name = {name}");
             }
 
             return manufacturer;

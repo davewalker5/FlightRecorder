@@ -44,13 +44,17 @@ namespace FlightRecorder.BusinessLogic.Database
             if (predicate == null)
             {
                 results = _context.Airlines
+                                  .OrderBy(a => a.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.Airlines.Where(predicate).AsAsyncEnumerable();
+                results = _context.Airlines
+                                  .Where(predicate)
+                                  .OrderBy(a => a.Name)
+                                  .AsAsyncEnumerable();
             }
 
             return results;

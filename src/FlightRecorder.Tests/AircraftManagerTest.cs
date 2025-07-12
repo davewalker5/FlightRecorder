@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FlightRecorder.Tests
@@ -24,8 +25,9 @@ namespace FlightRecorder.Tests
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
-            Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, ModelName, ManufacturerName)).Wait();
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
+            long modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, ManufacturerName)).Result.Id;
+            Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, modelId)).Wait();
         }
 
         [TestMethod]
@@ -51,7 +53,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task AddWithMissingDetailsAsyncTest()
         {
-            var aircraft = await _factory.Aircraft.AddAsync(MissingDetailsRegistration, null, null, null, null);
+            var aircraft = await _factory.Aircraft.AddAsync(MissingDetailsRegistration, null, null, null);
 
             Assert.IsNotNull(aircraft);
             Assert.AreEqual(MissingDetailsRegistration, aircraft.Registration);
@@ -63,7 +65,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task GetWithMissingDetailsAsyncTest()
         {
-            await _factory.Aircraft.AddAsync(MissingDetailsRegistration, null, null, null, null);
+            await _factory.Aircraft.AddAsync(MissingDetailsRegistration, null, null, null);
             var aircraft = await _factory.Aircraft.GetAsync(x => x.Registration == MissingDetailsRegistration);
 
             Assert.IsNotNull(aircraft);

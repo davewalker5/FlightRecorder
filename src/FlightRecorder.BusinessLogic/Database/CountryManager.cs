@@ -45,13 +45,17 @@ namespace FlightRecorder.BusinessLogic.Database
             if (predicate == null)
             {
                 results = _context.Countries
+                                  .OrderBy(c => c.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.Countries.Where(predicate).AsAsyncEnumerable();
+                results = _context.Countries
+                                  .Where(predicate)
+                                  .OrderBy(c => c.Name)
+                                  .AsAsyncEnumerable();
             }
 
             return results;

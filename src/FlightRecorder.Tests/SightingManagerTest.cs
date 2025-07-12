@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FlightRecorder.Tests
@@ -32,6 +33,7 @@ namespace FlightRecorder.Tests
         private FlightRecorderFactory _factory;
         private long _locationId;
         private long _flightId;
+        private long _modelId;
         private long _aircraftId;
         private long _sightingId;
 
@@ -39,11 +41,12 @@ namespace FlightRecorder.Tests
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
 
             _locationId = Task.Run(() => _factory.Locations.AddAsync(LocationName)).Result.Id;
             _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, AirlineName)).Result.Id;
-            _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, ModelName, ManufacturerName)).Result.Id;
+            _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, ManufacturerName)).Result.Id;
+            _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, _modelId)).Result.Id;
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(Altitude, SightingDate, _locationId, _flightId, _aircraftId, IsMyFlight)).Result.Id;
         }
 
@@ -114,7 +117,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListByAircraftWithNoSightingsAsyncTest()
         {
-            await _factory.Aircraft.AddAsync("G-EZEH", "2184", 2004, ModelName, ManufacturerName);
+            await _factory.Aircraft.AddAsync("G-EZEH", "2184", 2004, _modelId);
             List<Sighting> sightings = await _factory.Sightings.ListByAircraftAsync("G-EZEH", 1, 100).Result.ToListAsync();
             Assert.AreEqual(0, sightings.Count);
         }

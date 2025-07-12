@@ -6,7 +6,7 @@ using FlightRecorder.Entities.Attributes;
 namespace FlightRecorder.Entities.Db
 {
     [ExcludeFromCodeCoverage]
-    public partial class Flight
+    public partial class Flight : FlightRecorderEntityBase
     {
         [Key]
         public long Id { get; set; }

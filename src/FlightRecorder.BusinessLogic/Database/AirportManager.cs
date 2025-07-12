@@ -46,6 +46,7 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 airports = _factory.Context.Airports
                                          .Include(m => m.Country)
+                                         .OrderBy(a => a.Name)
                                          .Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)
                                          .AsAsyncEnumerable();
@@ -55,6 +56,7 @@ namespace FlightRecorder.BusinessLogic.Database
                 airports = _factory.Context.Airports
                                          .Include(m => m.Country)
                                          .Where(predicate)
+                                         .OrderBy(a => a.Name)
                                          .Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)
                                          .AsAsyncEnumerable();

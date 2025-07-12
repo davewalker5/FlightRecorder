@@ -7,6 +7,7 @@ using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Database
@@ -16,9 +17,7 @@ namespace FlightRecorder.BusinessLogic.Database
         private readonly FlightRecorderFactory _factory;
 
         internal ModelManager(FlightRecorderFactory factory)
-        {
-            _factory = factory;
-        }
+            => _factory = factory;
 
         /// <summary>
         /// Get the first model matching the specified criteria along with the associated manufacturer
@@ -46,6 +45,7 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 models = _factory.Context.Models
                                          .Include(m => m.Manufacturer)
+                                         .OrderBy(m => m.Name)
                                          .Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)
                                          .AsAsyncEnumerable();
@@ -55,6 +55,7 @@ namespace FlightRecorder.BusinessLogic.Database
                 models = _factory.Context.Models
                                          .Include(m => m.Manufacturer)
                                          .Where(predicate)
+                                         .OrderBy(m => m.Name)
                                          .Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)
                                          .AsAsyncEnumerable();
@@ -107,6 +108,7 @@ namespace FlightRecorder.BusinessLogic.Database
                 await _factory.Context.Models.AddAsync(model);
                 await _factory.Context.SaveChangesAsync();
                 await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+                _factory.Logger?.LogMessage(Severity.Debug, $"Added model: ID = {model.Id}, Name = {name}, Manufacturer = {manufacturerName}");
             }
 
             return model;

@@ -124,17 +124,12 @@ namespace FlightRecorder.Client.ApiClient
             string key = $"{CacheKeyPrefix}.{modelId}";
             Cache.Remove(key);
 
-            // TODO : When the service "TODO" list is completed, it will no longer
-            // be necessary to retrieve the model here as it will be possible
-            // to pass the model ID in the template
-            Model model = (modelId > 0) ? await _models.GetModelAsync(modelId ?? 0) : null;
-
             dynamic template = new
             {
                 Registration = registration,
                 SerialNumber = serialNumber ?? "",
                 Manufactured = (yearOfManufacture != null) ? yearOfManufacture : 0,
-                Model = model
+                ModelId = modelId
             };
 
             string data = Serialize(template);
@@ -145,6 +140,7 @@ namespace FlightRecorder.Client.ApiClient
             {
                 aircraft.Manufactured = null;
             }
+
             return aircraft;
         }
 
@@ -155,10 +151,9 @@ namespace FlightRecorder.Client.ApiClient
         /// <param name="registration"></param>
         /// <param name="serialNumber"></param>
         /// <param name="yearOfManufacture"></param>
-        /// <param name="manufacturerId"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> UpdateAircraftAsync(long id, string registration, string serialNumber, int? yearOfManufacture, long manufacturerId, long modelId)
+        public async Task<Aircraft> UpdateAircraftAsync(long id, string registration, string serialNumber, int? yearOfManufacture, long modelId)
         {
             // We might've changed the model, so not only do we need to clear the
             // current model's cached model list but we also need to identify the
@@ -180,11 +175,7 @@ namespace FlightRecorder.Client.ApiClient
                 ModelId = modelId,
                 Registration = registration,
                 SerialNumber = serialNumber ?? "",
-                Manufactured = (yearOfManufacture != null) ? yearOfManufacture : 0,
-                Model = new Model
-                {
-                    ManufacturerId = manufacturerId
-                }
+                Manufactured = (yearOfManufacture != null) ? yearOfManufacture : 0
             };
 
             string data = Serialize(template);

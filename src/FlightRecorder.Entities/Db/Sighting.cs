@@ -6,7 +6,7 @@ using FlightRecorder.Entities.DataExchange;
 namespace FlightRecorder.Entities.Db
 {
     [ExcludeFromCodeCoverage]
-    public partial class Sighting
+    public partial class Sighting : FlightRecorderEntityBase
     {
         [Key]
         public long Id { get; set; }

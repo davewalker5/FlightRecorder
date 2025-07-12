@@ -44,6 +44,7 @@ namespace FlightRecorder.BusinessLogic.Database
             if (predicate == null)
             {
                 results = _context.Locations
+                                  .OrderBy(l => l.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
@@ -52,6 +53,7 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 results = _context.Locations
                                   .Where(predicate)
+                                  .OrderBy(l => l.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();

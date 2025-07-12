@@ -4,6 +4,7 @@ using FlightRecorder.DataExchange.Export;
 using FlightRecorder.DataExchange.Import;
 using FlightRecorder.Entities.DataExchange;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Tests.Mocks;
 using FlightRecorder.Tests.RandomGenerators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -41,7 +42,7 @@ namespace FlightRecorder.Tests
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(new FlattenedSighting
             {
                 FlightNumber = FlightNumber,
@@ -141,7 +142,7 @@ namespace FlightRecorder.Tests
             new SightingsExporter().Export(sightings, filePath);
 
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            FlightRecorderFactory factory = new FlightRecorderFactory(context);
+            FlightRecorderFactory factory = new FlightRecorderFactory(context, new MockFileLogger());
             await new SightingsImporter().Import(filePath, factory);
 
             File.Delete(filePath);
@@ -186,7 +187,7 @@ namespace FlightRecorder.Tests
             new AirportExporter().Export(airports, filePath);
 
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            FlightRecorderFactory factory = new FlightRecorderFactory(context);
+            FlightRecorderFactory factory = new FlightRecorderFactory(context, new MockFileLogger());
             await new AirportImporter().Import(filePath, factory);
 
             File.Delete(filePath);

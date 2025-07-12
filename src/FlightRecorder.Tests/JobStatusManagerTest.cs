@@ -1,5 +1,6 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace FlightRecorder.Tests
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
             _statusId = Task.Run(() => _factory.JobStatuses.AddAsync(Name, Parameters)).Result.Id;
         }
 

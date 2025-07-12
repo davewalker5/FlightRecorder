@@ -46,6 +46,7 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 flights = _factory.Context.Flights
                                          .Include(m => m.Airline)
+                                         .OrderBy(f => f.Number)
                                          .Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)
                                          .AsAsyncEnumerable();
@@ -54,6 +55,7 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 flights = _factory.Context.Flights
                                          .Include(m => m.Airline)
+                                         .OrderBy(f => f.Number)
                                          .Where(predicate)
                                          .Skip((pageNumber - 1) * pageSize)
                                          .Take(pageSize)

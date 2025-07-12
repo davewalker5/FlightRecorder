@@ -10,6 +10,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Aircraft> GetAircraftByRegistrationAsync(string registration);
         Task<Aircraft> GetAircraftByIdAsync(long id);
         Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId);
-        Task<Aircraft> UpdateAircraftAsync(long id, string registration, string serialNumber, int? yearOfManufacture, long manufacturerId, long modelId);
+        Task<Aircraft> UpdateAircraftAsync(long id, string registration, string serialNumber, int? yearOfManufacture, long modelId);
     }
 }
