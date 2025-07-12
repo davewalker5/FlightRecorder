@@ -98,7 +98,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <param name="id"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async Task<Airline> UpdateAsync(int id, string name)
+        public async Task<Airline> UpdateAsync(long id, string name)
         {
             _factory.Logger.LogMessage(Severity.Debug, $"Updating airline: ID = {id}, Name = {name}");
 
@@ -145,7 +145,7 @@ namespace FlightRecorder.BusinessLogic.Database
             var sightings = await _factory.Sightings.ListAsync(x => x.Flight.AirlineId == id, 1, 1).ToListAsync();
             if (sightings.Any())
             {
-                var message = $"Airline with Id {id} has sightings associated with it and cannot be deleted";
+                var message = $"Airline with Id {id} has flights associated with it and cannot be deleted";
                 throw new AirlineInUseException(message);
             }
 
@@ -160,7 +160,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// </summary>
         /// <param name="name"></param>
         /// <param name="id"></param>
-        /// <exception cref="BeverageExistsException"></exception>
+        /// <exception cref="AirlineExistsException"></exception>
         private async Task CheckAirlineIsNotADuplicate(string name, long id)
         {
             var airline = await _factory.Context.Airlines.FirstOrDefaultAsync(x => x.Name == name);

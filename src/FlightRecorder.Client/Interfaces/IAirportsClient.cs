@@ -11,5 +11,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Airport> GetAirportByIdAsync(long id);
         Task<Airport> AddAirportAsync(string code, string name, long countryId);
         Task<Airport> UpdateAirportAsync(long airportId, string code, string name, long countryId);
+        Task DeleteAirportAsync(long id);
     }
 }

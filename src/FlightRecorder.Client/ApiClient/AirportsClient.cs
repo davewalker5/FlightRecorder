@@ -108,16 +108,11 @@ namespace FlightRecorder.Client.ApiClient
             // Adding an airport changes cached lists of airports, so clear them
             ClearCache();
 
-            // TODO : When the service "TODO" list is completed, it will no longer
-            // be necessary to retrieve the country here as it will be possible
-            // to pass the country ID in the template
-            Country country = await _countries.GetCountryAsync(countryId);
-
             dynamic template = new
             {
                 Code = code,
                 Name = name,
-                Country = country
+                CountryId = countryId
             };
 
             string data = Serialize(template);
@@ -153,6 +148,19 @@ namespace FlightRecorder.Client.ApiClient
 
             Airport airport = Deserialize<Airport>(json);
             return airport;
+        }
+
+        /// <summary>
+        /// Delete an existing airline
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteAirportAsync(long id)
+        {
+            ClearCache();
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
         }
 
         /// <summary>

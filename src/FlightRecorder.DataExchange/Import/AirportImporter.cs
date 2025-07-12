@@ -44,8 +44,8 @@ namespace FlightRecorder.DataExchange.Import
 
                         // Inflate the CSV record to an airport and store it in the database
                         FlattenedAirport airport = FlattenedAirport.FromCsv(line);
-                        await factory.Countries.AddAsync(airport.Country);
-                        await factory.Airports.AddAsync(airport.Code, airport.Name, airport.Country);
+                        var country = await factory.Countries.AddAsync(airport.Country);
+                        await factory.Airports.AddAsync(airport.Code, airport.Name, country.Id);
 
                         RecordImport?.Invoke(this, new AirportDataExchangeEventArgs { RecordCount = count - 1, Airport = airport });
                     }
