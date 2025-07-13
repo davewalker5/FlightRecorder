@@ -2,6 +2,8 @@
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,11 +15,13 @@ namespace FlightRecorder.Api.Services
     {
         private readonly FlightRecorderFactory _factory;
         private readonly FlightRecorderApplicationSettings _settings;
+        private readonly IFlightRecorderLogger _logger;
 
-        public UserService(FlightRecorderFactory factory, FlightRecorderApplicationSettings settings)
+        public UserService(FlightRecorderFactory factory, FlightRecorderApplicationSettings settings, IFlightRecorderLogger logger)
         {
             _factory = factory;
             _settings = settings;
+            _logger = logger;
         }
 
         /// <summary>
@@ -30,6 +34,7 @@ namespace FlightRecorder.Api.Services
         {
             string serializedToken = null;
 
+            _logger.LogMessage(Severity.Debug, $"Authenticating as {userName}");
             bool authenticated = await _factory.Users.AuthenticateAsync(userName, password);
             if (authenticated)
             {
@@ -57,6 +62,8 @@ namespace FlightRecorder.Api.Services
                 var handler = new JwtSecurityTokenHandler();
                 SecurityToken token = handler.CreateToken(descriptor);
                 serializedToken = handler.WriteToken(token);
+
+                _logger.LogMessage(Severity.Debug, $"API token generated: {serializedToken?[..50]}...");
             }
 
             return serializedToken;
@@ -70,6 +77,7 @@ namespace FlightRecorder.Api.Services
         /// <returns></returns>
         public async Task<User> AddUserAsync(string userName, string password)
         {
+            _logger.LogMessage(Severity.Debug, $"Adding user {userName}");
             return await _factory.Users.AddUserAsync(userName, password);
         }
 
@@ -81,6 +89,7 @@ namespace FlightRecorder.Api.Services
         /// <returns></returns>
         public async Task SetUserPasswordAsync(string userName, string password)
         {
+            _logger.LogMessage(Severity.Debug, $"Sertting password for user {userName}");
             await _factory.Users.SetPasswordAsync(userName, password);
         }
     }

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using FlightRecorder.Entities.Db;
+﻿using FlightRecorder.Entities.Db;
 
 namespace FlightRecorder.Api.Interfaces
 {
