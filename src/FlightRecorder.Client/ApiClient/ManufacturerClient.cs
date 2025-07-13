@@ -95,5 +95,18 @@ namespace FlightRecorder.Client.ApiClient
             Manufacturer manufacturer = Deserialize<Manufacturer>(json);
             return manufacturer;
         }
+
+        /// <summary>
+        /// Delete an existing manufacturer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteManufacturerAsync(long id)
+        {
+            Cache.Remove(CacheKey);
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
+        }
     }
 }
