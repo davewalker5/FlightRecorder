@@ -131,6 +131,9 @@ namespace FlightRecorder.BusinessLogic.Database
             airport.CountryId = countryId;
             await _factory.Context.SaveChangesAsync();
 
+            // Load the associated country
+            await _factory.Context.Entry(airport).Reference(m => m.Country).LoadAsync();
+
             _factory.Logger.LogMessage(Severity.Debug, $"Updated airport {airport}");
 
             return airport;
