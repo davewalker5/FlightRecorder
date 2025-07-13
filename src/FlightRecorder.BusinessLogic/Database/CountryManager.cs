@@ -104,11 +104,11 @@ namespace FlightRecorder.BusinessLogic.Database
             }
 
             // Check the country doesn't already exist
-            name = name.CleanString().ToUpper();            
+            name = name.CleanString();            
             await CheckCountryIsNotADuplicate(name, id);
 
             // Update the country properties and save changes
-            country.Name = name.CleanString();
+            country.Name = name;
             await _factory.Context.SaveChangesAsync();
 
             _factory.Logger.LogMessage(Severity.Debug, $"Updated country {country}");
