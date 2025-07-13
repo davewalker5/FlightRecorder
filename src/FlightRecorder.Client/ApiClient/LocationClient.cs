@@ -7,6 +7,7 @@ using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using Microsoft.Extensions.Logging;
 
+
 namespace FlightRecorder.Client.ApiClient
 {
     public class LocationClient : FlightRecorderClientBase, ILocationClient
@@ -94,6 +95,19 @@ namespace FlightRecorder.Client.ApiClient
             string json = await SendDirectAsync(route, data, HttpMethod.Put);
             Location location = Deserialize<Location>(json);
             return location;
+        }
+
+        /// <summary>
+        /// Delete an existing location
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteLocationAsync(long id)
+        {
+            Cache.Remove(CacheKey);
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
         }
     }
 }

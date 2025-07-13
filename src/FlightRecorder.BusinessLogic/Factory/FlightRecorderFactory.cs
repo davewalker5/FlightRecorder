@@ -69,7 +69,7 @@ namespace FlightRecorder.BusinessLogic.Factory
             // Lazily instantiate the database managers : They'll only actually be created if called by
             // the application
             _airlines = new Lazy<IAirlineManager>(() => new AirlineManager(this));
-            _locations = new Lazy<ILocationManager>(() => new LocationManager(context));
+            _locations = new Lazy<ILocationManager>(() => new LocationManager(this));
             _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(this));
             _models = new Lazy<IModelManager>(() => new ModelManager(this));
             _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(this));

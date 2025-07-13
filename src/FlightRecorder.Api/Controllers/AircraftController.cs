@@ -101,7 +101,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Aircraft>> UpdateAircraftAsync([FromBody] Aircraft template)
         {
-            Aircraft aircraft = null;
+            Aircraft aircraft;
 
             LogMessage(Severity.Debug, $"Updating aircraft: {template}");
 

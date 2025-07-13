@@ -60,7 +60,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Country>> UpdateCountryAsync(int id, [FromBody] string name)
         {
-            Country country = null;
+            Country country;
 
             LogMessage(Severity.Debug, $"Updating country: ID = {id}, Name = {name}");
 

@@ -99,7 +99,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Airport>> UpdateAirportAsync([FromBody] Airport template)
         {
-            Airport airport = null;
+            Airport airport;
 
             LogMessage(Severity.Debug, $"Updating airport: {template}");
 

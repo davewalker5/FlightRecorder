@@ -60,7 +60,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Airline>> UpdateAirlineAsync(int id, [FromBody] string name)
         {
-            Airline airline = null;
+            Airline airline;
 
             LogMessage(Severity.Debug, $"Updating airline: ID = {id}, Name = {name}");
 

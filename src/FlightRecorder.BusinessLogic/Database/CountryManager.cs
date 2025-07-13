@@ -86,14 +86,14 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
-        /// Update an country
+        /// Update a country
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>
         /// <returns></returns>
         public async Task<Country> UpdateAsync(long id, string name)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Udating country: ID = {id}, Name = {name}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating country: ID = {id}, Name = {name}");
 
             // Retrieve the country
             var country = await _factory.Context.Countries.FirstOrDefaultAsync(x => x.Id == id);

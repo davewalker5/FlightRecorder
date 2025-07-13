@@ -10,5 +10,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Location> GetLocationAsync(long id);
         Task<Location> AddLocationAsync(string name);
         Task<Location> UpdateLocationAsync(long id, string name);
+        Task DeleteLocationAsync(long id);
     }
 }
