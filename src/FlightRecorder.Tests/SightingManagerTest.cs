@@ -34,6 +34,7 @@ namespace FlightRecorder.Tests
         private long _locationId;
         private long _airlineId;
         private long _flightId;
+        private long _manufacturerId;
         private long _modelId;
         private long _aircraftId;
         private long _sightingId;
@@ -47,7 +48,8 @@ namespace FlightRecorder.Tests
             _locationId = Task.Run(() => _factory.Locations.AddAsync(LocationName)).Result.Id;
             _airlineId = Task.Run(() => _factory.Airlines.AddAsync(AirlineName)).Result.Id;
             _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId)).Result.Id;
-            _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, ManufacturerName)).Result.Id;
+            _manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
+            _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, _manufacturerId)).Result.Id;
             _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, _modelId)).Result.Id;
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(Altitude, SightingDate, _locationId, _flightId, _aircraftId, IsMyFlight)).Result.Id;
         }

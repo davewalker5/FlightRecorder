@@ -26,7 +26,8 @@ namespace FlightRecorder.Tests
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context, new MockFileLogger());
-            long modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, ManufacturerName)).Result.Id;
+            long manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
+            long modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, manufacturerId)).Result.Id;
             Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, modelId)).Wait();
         }
 

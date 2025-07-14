@@ -80,18 +80,12 @@ namespace FlightRecorder.Client.ApiClient
         /// <returns></returns>
         public async Task<Model> AddModelAsync(string name, long manufacturerId)
         {
-            string key = $"{CacheKeyPrefix}.{manufacturerId}";
-            Cache.Remove(key);
-
-            // TODO : When the service "TODO" list is completed, it will no longer
-            // be necessary to retrieve the manufacturer here as it will be
-            // possible to pass the manufacturer ID in the template
-            Manufacturer manufacturer = await _manufacturers.GetManufacturerAsync(manufacturerId);
+            ClearCachedModelsByManufacturer(manufacturerId);
 
             dynamic template = new
             {
                 Name = name,
-                Manufacturer = manufacturer
+                ManufacturerId = manufacturerId
             };
 
             string data = Serialize(template);
@@ -110,19 +104,8 @@ namespace FlightRecorder.Client.ApiClient
         /// <returns></returns>
         public async Task<Model> UpdateModelAsync(long id, long manufacturerId, string name)
         {
-            // We might've changed the manufacturer, so not only do we need to clear the
-            // current manufacturer's cached model list but we also need to identify the
-            // original manufacturer and clear the cached list of models for that, too
-            string key;
-            Model original = FindCachedModelById(id);
-            if (original != null)
-            {
-                key = $"{CacheKeyPrefix}.{original.ManufacturerId}";
-                Cache.Remove(key);
-            }
-
-            key = $"{CacheKeyPrefix}.{manufacturerId}";
-            Cache.Remove(key);
+            ClearCachedModelById(id);
+            ClearCachedModelsByManufacturer(manufacturerId);
 
             dynamic template = new
             {
@@ -135,6 +118,19 @@ namespace FlightRecorder.Client.ApiClient
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
             Model model = Deserialize<Model>(json);
             return model;
+        }
+
+        /// <summary>
+        /// Delete an existing manufacturer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteManufacturerAsync(long id)
+        {
+            ClearCachedModelById(id);
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
         }
 
         /// <summary>
@@ -153,6 +149,31 @@ namespace FlightRecorder.Client.ApiClient
             }
 
             return model;
+        }
+
+        /// <summary>
+        /// Clear cached model by model ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private void ClearCachedModelById(long id)
+        {
+            Model model = FindCachedModelById(id);
+            if (model != null)
+            {
+                ClearCachedModelsByManufacturer(model.ManufacturerId);
+            }
+        }
+
+        /// <summary>
+        /// Clear cached models by manufacturer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private void ClearCachedModelsByManufacturer(long manufacturerId)
+        {
+            string key = $"{CacheKeyPrefix}.{manufacturerId}";
+            Cache.Remove(key);
         }
     }
 }

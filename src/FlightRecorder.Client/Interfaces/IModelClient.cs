@@ -10,5 +10,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Model> GetModelAsync(long id);
         Task<Model> AddModelAsync(string name, long manufacturerId);
         Task<Model> UpdateModelAsync(long id, long manufacturerId, string name);
+        Task DeleteManufacturerAsync(long id);
     }
 }

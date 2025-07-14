@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
@@ -94,24 +95,138 @@ namespace FlightRecorder.BusinessLogic.Database
         /// Add a named model associated with the specified manufacturer, if it doesn't already exist
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="manufacturerName"></param>
+        /// <param name="manufacturerId"></param>
         /// <returns></returns>
-        public async Task<Model> AddAsync(string name, string manufacturerName)
+        public async Task<Model> AddAsync(string name, long manufacturerId)
         {
-            name = name.CleanString();
-            Model model = await GetAsync(a => a.Name == name);
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding model: Name = {name}, Manufacturer ID = {manufacturerId}");
 
-            if (model == null)
+            // Check the model doesn't already exist
+            name = name.CleanString().ToUpper();
+            await CheckModelIsNotADuplicate(name, manufacturerId, 0);
+
+            // Check the manufacturer exists
+            await CheckManufacturerExists(manufacturerId);
+
+            // Add the model and save changes
+            var model = new Model
             {
-                Manufacturer manufacturer = await _factory.Manufacturers.AddAsync(manufacturerName);
-                model = new Model { Name = name, ManufacturerId = manufacturer.Id };
-                await _factory.Context.Models.AddAsync(model);
-                await _factory.Context.SaveChangesAsync();
-                await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
-                _factory.Logger?.LogMessage(Severity.Debug, $"Added model: ID = {model.Id}, Name = {name}, Manufacturer = {manufacturerName}");
-            }
+                Name = name,
+                ManufacturerId = manufacturerId
+            };
+
+            await _factory.Context.Models.AddAsync(model);
+            await _factory.Context.SaveChangesAsync();
+
+            // Load the associated manufacturer
+            await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Added model {model}");
 
             return model;
+        }
+
+        /// <summary>
+        /// Update a model
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="manufacturerId"></param>
+        /// <returns></returns>
+        public async Task<Model> UpdateAsync(long id, string name, long manufacturerId)
+        {
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating model: ID = {id}, Name = {name}, Manufacturer ID = {manufacturerId}");
+
+            // Retrieve the model
+            var model = await _factory.Context.Models.FirstOrDefaultAsync(x => x.Id == id);
+            if (model == null)
+            {
+                var message = $"Model with ID {id} not found";
+                throw new ModelNotFoundException(message);
+            }
+
+            // Check the model doesn't already exist
+            name = name.CleanString().ToUpper();
+            await CheckModelIsNotADuplicate(name, manufacturerId, id);
+
+            // Check the airline exists
+            await CheckManufacturerExists(manufacturerId);
+
+            // Update the model properties and save changes
+            model.Name = name;
+            model.ManufacturerId = manufacturerId;
+            await _factory.Context.SaveChangesAsync();
+
+            // Load the associated manufacturer
+            await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Updated model {model}");
+
+            return model;
+        }
+
+        /// <summary>
+        /// Delete the model with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ModelNotFoundException"></exception>
+        /// <exception cref="ModelInUseException"></exception>
+        public async Task DeleteAsync(long id)
+        {
+            _factory.Logger.LogMessage(Severity.Debug, $"Deleting model: ID = {id}");
+
+            // Check the model exists
+            var model = await _factory.Context.Models.FirstOrDefaultAsync(x => x.Id == id);
+            if (model == null)
+            {
+                var message = $"Model with ID {id} not found";
+                throw new ModelNotFoundException(message);
+            }
+
+            // Check there are no aircraft for this model
+            var aircraft = await _factory.Aircraft.ListAsync(x => x.ModelId == id, 1, 1).ToListAsync();
+            if (aircraft.Any())
+            {
+                var message = $"Model with Id {id} has aircraft associated with it and cannot be deleted";
+                throw new ModelInUseException(message);
+            }
+
+            // Remove the model
+            _factory.Context.Remove(model);
+            await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if an attempt is made to add/update a duplicate model
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="manufacturerId"></param>
+        /// <param name="id"></param>
+        /// <exception cref="ModelExistsException"></exception>
+        private async Task CheckModelIsNotADuplicate(string name, long manufacturerId, long id)
+        {
+            var model = await GetAsync(a => (a.Name == name) && (a.ManufacturerId == manufacturerId));
+            if ((model != null) && (model.Id != id))
+            {
+                var message = $"Model {name} for manufacturer with ID {manufacturerId} already exists";
+                throw new ModelExistsException(message);
+            }
+        }
+
+        /// <summary>
+        /// Raise an exception if an attempt is made to add/update a model with a non-existant manufacturer
+        /// </summary>
+        /// <param name="manufacturerId"></param>
+        /// <exception cref="AirlineNotFoundException"></exception>
+        private async Task CheckManufacturerExists(long manufacturerId)
+        {
+            var airline = await _factory.Manufacturers.GetAsync(x => x.Id == manufacturerId);
+            if (airline == null)
+            {
+                var message = $"Manufacturer with ID {manufacturerId} not found";
+                throw new ManufacturerNotFoundException(message);
+            }
         }
     }
 }

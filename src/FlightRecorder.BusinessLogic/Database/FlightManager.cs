@@ -221,6 +221,7 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <param name="airlineId"></param>
+        /// <param name="id"></param>
         /// <exception cref="FlightExistsException"></exception>
         private async Task CheckFlightIsNotADuplicate(string number, string embarkation, string destination, long airlineId, long id)
         {

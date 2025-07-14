@@ -151,8 +151,14 @@ namespace FlightRecorder.BusinessLogic.Database
         public async Task<Sighting> AddAsync(FlattenedSighting flattened)
         {
             // TODO : Need to check if entities exist before attempting to add them
+            long? modelId = null;
+            if (!string.IsNullOrEmpty(flattened.Model) && !string.IsNullOrEmpty(flattened.Manufacturer))
+            {
+                long manufacturerId = (await _factory.Manufacturers.AddAsync(flattened.Manufacturer)).Id;
+                modelId = (await _factory.Models.AddAsync(flattened.Model, manufacturerId)).Id;
+            }
+
             long? yearOfManufacture = !string.IsNullOrEmpty(flattened.Age) ? DateTime.Now.Year - long.Parse(flattened.Age) : null;
-            long? modelId = (await _factory.Models.AddAsync(flattened.Model, flattened.Manufacturer)).Id;
             long aircraftId = (await _factory.Aircraft.AddAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, modelId)).Id;
             long airlineId = (await _factory.Airlines.AddAsync(flattened.Airline)).Id;
             long flightId = (await _factory.Flights.AddAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, airlineId)).Id;
