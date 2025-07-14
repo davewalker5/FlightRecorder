@@ -23,7 +23,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Airline> airlines = await _client.GetAirlinesAsync();
+            List<Airline> airlines = await _client.GetAirlinesAsync() ?? [];
             return View(airlines);
         }
 

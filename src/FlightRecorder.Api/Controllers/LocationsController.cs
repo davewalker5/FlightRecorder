@@ -61,6 +61,7 @@ namespace FlightRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Adding location: Name = {name}");
             Location location = await Factory.Locations.AddAsync(name);
+            LogMessage(Severity.Debug, $"Location added: {location}");
             return location;
         }
 
@@ -70,6 +71,7 @@ namespace FlightRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Updating location: ID = {id}, Name = {name}");
             var location = await Factory.Locations.UpdateAsync(id, name);
+            LogMessage(Severity.Debug, $"Location updated: {location}");
             return location;
         }
 

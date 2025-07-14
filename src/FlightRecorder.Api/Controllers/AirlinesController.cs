@@ -56,39 +56,23 @@ namespace FlightRecorder.Api.Controllers
             return airline;
         }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Airline>> AddAirlineAsync([FromBody] string name)
+        {
+            LogMessage(Severity.Debug, $"Creating airline: Name = {name}");
+            var airline = await Factory.Airlines.AddAsync(name);
+            LogMessage(Severity.Debug, $"Location added: {airline}");
+            return airline;
+        }
+
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<Airline>> UpdateAirlineAsync(int id, [FromBody] string name)
         {
-            Airline airline;
-
             LogMessage(Severity.Debug, $"Updating airline: ID = {id}, Name = {name}");
-
-            try
-            {
-                airline = await Factory.Airlines.UpdateAsync(id, name);
-            }
-            catch (AirlineNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
+            var airline = await Factory.Airlines.UpdateAsync(id, name);
             LogMessage(Severity.Debug, $"Airline updated: {airline}");
-            return airline;
-        }
-
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Airline>> CreateAirlineAsync([FromBody] string name)
-        {
-            LogMessage(Severity.Debug, $"Creating airline: Name = {name}");
-            Airline airline = await Factory.Airlines.AddAsync(name);
             return airline;
         }
 
