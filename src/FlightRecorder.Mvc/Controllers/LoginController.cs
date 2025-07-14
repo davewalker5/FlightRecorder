@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightRecorder.Mvc.Controllers
 {
-    public class LoginController : Controller
+    public class LoginController : FlightRecorderControllerBase
     {
         public const string LoginPath = "/login";
 

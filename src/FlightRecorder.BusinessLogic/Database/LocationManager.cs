@@ -81,7 +81,7 @@ namespace FlightRecorder.BusinessLogic.Database
             _factory.Logger.LogMessage(Severity.Debug, $"Adding location: Name = {name}");
 
             // Check the location doesn't already exist
-            name = name.CleanString();            
+            name = name.CleanString();
             await CheckLocationIsNotADuplicate(name, 0);
 
             // Add the location and save changes

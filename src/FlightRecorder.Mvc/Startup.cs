@@ -106,7 +106,9 @@ namespace FlightRecorder.Mvc
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
             else
             {
@@ -121,7 +123,7 @@ namespace FlightRecorder.Mvc
             // Set up a class that provides classes that are not managed by the DI container (Attributes)
             // with access to the instances of the cache and HTTP clients that are registered in the
             // ConfigureServices() method
-            new ServiceAccessor().SetProvider(app.ApplicationServices);
+            ServiceAccessor.SetProvider(app.ApplicationServices);
 
             // JWT authentication with the service is used to authenticate in the UI, so the user data
             // is held in one place (the service database). The login page authenticates with the service

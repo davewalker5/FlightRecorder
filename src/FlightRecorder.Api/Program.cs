@@ -10,15 +10,13 @@ using FlightRecorder.BusinessLogic.Config;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.BusinessLogic.Logging;
 using FlightRecorder.Data;
+using FlightRecorder.Entities.Attributes;
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FlightRecorder.Api
@@ -74,6 +72,7 @@ namespace FlightRecorder.Api
             // Configure the business logic
             builder.Services.AddSingleton<FlightRecorderApplicationSettings>(settings);
             builder.Services.AddScoped<FlightRecorderFactory>();
+            builder.Services.AddScoped<IAirportsRetriever, AirportsRetrieverService>();
             builder.Services.AddScoped<IUserService, UserService>();
 
             // Add the sightings exporter hosted service
@@ -145,6 +144,11 @@ namespace FlightRecorder.Api
 
             var app = builder.Build();
 
+            // Set up a class that provides classes that are not managed by the DI container (Attributes)
+            // with access to the instances of the cache and HTTP clients that are registered in the
+            // ConfigureServices() method
+            ServiceAccessor.SetProvider(app.Services);
+
             // Configure the exception handling middleware to write to the log file
             app.UseExceptionHandler(errorApp =>
             {
@@ -175,7 +179,6 @@ namespace FlightRecorder.Api
                 });
             });
 
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -184,9 +187,7 @@ namespace FlightRecorder.Api
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();

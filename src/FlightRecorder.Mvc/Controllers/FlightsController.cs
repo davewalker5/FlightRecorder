@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class FlightsController : Controller
+    public class FlightsController : FlightRecorderControllerBase 
     {
         private readonly IAirlineClient _airlines;
         private readonly IFlightClient _flights;

@@ -5,10 +5,10 @@ using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DroneFlightLog.Mvc.Controllers
+namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class ModelsController : Controller
+    public class ModelsController : FlightRecorderControllerBase
     {
         private readonly IManufacturerClient _manufacturers;
         private readonly IModelClient _models;

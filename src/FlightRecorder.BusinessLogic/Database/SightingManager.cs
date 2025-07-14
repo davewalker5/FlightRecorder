@@ -223,8 +223,6 @@ namespace FlightRecorder.BusinessLogic.Database
             sighting.FlightId = flightId;
             sighting.LocationId = locationId;
             sighting.IsMyFlight = isMyFlight;
-
-            await _factory.Context.Sightings.AddAsync(sighting);
             await _factory.Context.SaveChangesAsync();
 
             // Loading the related entities using the following syntax is problematic if the model and/or

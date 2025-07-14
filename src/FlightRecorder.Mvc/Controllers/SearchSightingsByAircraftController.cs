@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class SearchSightingsByAircraftController : Controller
+    public class SearchSightingsByAircraftController : FlightRecorderControllerBase
     {
         private readonly ISightingsSearchClient _client;
         private readonly FlightRecorderApplicationSettings _settings;

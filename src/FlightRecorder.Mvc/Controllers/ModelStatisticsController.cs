@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class ModelStatisticsController : Controller
+    public class ModelStatisticsController : FlightRecorderControllerBase
     {
         private readonly IReportsClient _reportsClient;
         private readonly IExportClient _exportClient;

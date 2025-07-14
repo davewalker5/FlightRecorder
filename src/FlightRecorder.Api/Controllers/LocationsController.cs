@@ -55,40 +55,21 @@ namespace FlightRecorder.Api.Controllers
             return location;
         }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Location>> AddLocationAsync([FromBody] string name)
+        {
+            LogMessage(Severity.Debug, $"Adding location: Name = {name}");
+            Location location = await Factory.Locations.AddAsync(name);
+            return location;
+        }
+
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<Location>> UpdateLocationAsync(int id, [FromBody] string name)
         {
-            Location location;
-
             LogMessage(Severity.Debug, $"Updating location: ID = {id}, Name = {name}");
-
-            try
-            {
-                location = await Factory.Locations.UpdateAsync(id, name);
-            }
-            catch (LocationNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
-            LogMessage(Severity.Debug, $"Location updated: {location}");
-
-            return location;
-        }
-
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Location>> CreateLocationAsync([FromBody] string name)
-        {
-            LogMessage(Severity.Debug, $"Creating location: Name = {name}");
-            Location location = await Factory.Locations.AddAsync(name);
+            var location = await Factory.Locations.UpdateAsync(id, name);
             return location;
         }
 

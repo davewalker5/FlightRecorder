@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class SightingStatisticsController : Controller
+    public class SightingStatisticsController : FlightRecorderControllerBase
     {
         private readonly IReportsClient _reportsClient;
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class CacheManagementController : Controller
+    public class CacheManagementController : FlightRecorderControllerBase
     {
         private readonly ICacheWrapper _cacheWrapper;
 

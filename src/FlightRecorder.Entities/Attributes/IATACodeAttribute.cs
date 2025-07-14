@@ -8,12 +8,11 @@ namespace FlightRecorder.Entities.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class IATACodeAttribute : ValidationAttribute
     {
-        private readonly IAirportsRetriever _client = new ServiceAccessor().GetService<IAirportsRetriever>();
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             // Get a list of airport IATA codes to validate against
-            var codes = _client.GetAirportsAsync(1, int.MaxValue).Result.Select(x => x.Code).ToList();
+            var retriever = validationContext.GetService(typeof(IAirportsRetriever)) as IAirportsRetriever;
+            var codes = retriever.GetAirportsAsync(1, int.MaxValue).Result.Select(x => x.Code).ToList();
 
             // Get the properties of the object instance being validated
             var properties = validationContext.ObjectInstance.GetType().GetProperties();

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class FlightDetailsController : Controller
+    public class FlightDetailsController : FlightRecorderControllerBase
     {
         private AddSightingWizard _wizard;
 

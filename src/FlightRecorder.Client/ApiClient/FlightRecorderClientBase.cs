@@ -6,6 +6,7 @@ using FlightRecorder.Entities.Config;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Linq;
+using FlightRecorder.Entities.Exceptions;
 
 namespace FlightRecorder.Client.ApiClient
 {
@@ -99,6 +100,22 @@ namespace FlightRecorder.Client.ApiClient
                 json = await response.Content.ReadAsStringAsync();
                 var content = json ?? "No Content";
                 Logger.LogDebug($"Response content = '{content}'");
+
+                // If the request didn't succeed, try to extract an error message from the response content and, if
+                // successful, log it and raise an exception
+                if (!response.IsSuccessStatusCode)
+                {
+                    using (var document = JsonDocument.Parse(json))
+                    {
+                        var root = document.RootElement;
+                        if (root.TryGetProperty("message", out JsonElement element))
+                        {
+                            var message = element.GetString();
+                            Logger.LogError($"API Error: {message}");
+                            throw new FlightRecorderApiRequestException(message);
+                        }
+                    }
+                }
             }
 
             return json;

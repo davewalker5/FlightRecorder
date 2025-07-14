@@ -20,7 +20,7 @@ namespace FlightRecorder.Data
             // at the root of the main applicatoin
             IConfigurationRoot configuration = new ConfigurationBuilder()
                                                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                                    .AddJsonFile("FlightRecorderApplicationSettings.json")
+                                                    .AddJsonFile("appsettings.json")
                                                     .Build();
 
             // Use the configuration object to read the connection string

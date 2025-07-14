@@ -34,7 +34,7 @@ namespace FlightRecorder.Client.ApiClient
             dynamic credentials = new { UserName = username, Password = password };
             var jsonCredentials = JsonSerializer.Serialize(credentials);
 
-            // Send the request. The route is configured in FlightRecorderApplicationSettings.json
+            // Send the request. The route is configured in appsettings.json
             var route = Settings.ApiRoutes.First(r => r.Name == "Authenticate").Route;
             var content = new StringContent(jsonCredentials, Encoding.UTF8, "application/json");
             var response = await Client.PostAsync($"{Settings.ApiUrl}{route}", content, null, Logger);

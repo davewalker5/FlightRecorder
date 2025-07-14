@@ -2,12 +2,13 @@
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class HomeController : Controller
+    public class HomeController : FlightRecorderControllerBase
     {
         private AddSightingWizard _wizard;
 
@@ -32,7 +33,15 @@ namespace FlightRecorder.Mvc.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            // Construct the error view model
+            var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            var model = new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                ErrorMessage = exceptionFeature != null ? exceptionFeature.Error.Message : ""
+            };
+
+            return View(model);
         }
     }
 }

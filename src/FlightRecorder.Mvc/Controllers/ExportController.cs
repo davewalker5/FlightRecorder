@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class ExportController : Controller
+    public class ExportController : FlightRecorderControllerBase
     {
         private readonly IExportClient _client;
 
