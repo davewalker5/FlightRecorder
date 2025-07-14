@@ -143,8 +143,8 @@ namespace FlightRecorder.BusinessLogic.Database
             }
 
             // Check there are no models for this manufacturer
-            var airports = await _factory.Models.ListAsync(x => x.ManufacturerId == id, 1, 1).ToListAsync();
-            if (airports.Any())
+            var models = await _factory.Models.ListAsync(x => x.ManufacturerId == id, 1, 1).ToListAsync();
+            if (models.Any())
             {
                 var message = $"Manufacturer with Id {id} has models associated with it and cannot be deleted";
                 throw new ManufacturerInUseException(message);

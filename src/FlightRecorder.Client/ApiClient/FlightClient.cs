@@ -145,17 +145,12 @@ namespace FlightRecorder.Client.ApiClient
             // airline - just clear the lot!
             ClearCache();
 
-            // TODO : When the service "TODO" list is completed, it will no longer
-            // be necessary to retrieve the airline here as it will be possible
-            // to pass the airline ID in the template
-            Airline airline = await _airlines.GetAirlineAsync(airlineId);
-
             dynamic template = new
             {
                 Number = number,
                 Embarkation = embarkation,
                 Destination = destination,
-                Airline = airline
+                AirlineId = airlineId
             };
 
             string data = Serialize(template);
@@ -194,6 +189,19 @@ namespace FlightRecorder.Client.ApiClient
 
             Flight flight = Deserialize<Flight>(json);
             return flight;
+        }
+
+        /// <summary>
+        /// Delete an existing flight
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteFlightAsync(long id)
+        {
+            ClearCache();
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
         }
 
         /// <summary>

@@ -145,8 +145,8 @@ namespace FlightRecorder.BusinessLogic.Database
             }
 
             // Check there are no sightings for this location
-            var airports = await _factory.Sightings.ListAsync(x => x.LocationId == id, 1, 1).ToListAsync();
-            if (airports.Any())
+            var sightings = await _factory.Sightings.ListAsync(x => x.LocationId == id, 1, 1).ToListAsync();
+            if (sightings.Any())
             {
                 var message = $"Location with Id {id} has sightings associated with it and cannot be deleted";
                 throw new LocationInUseException(message);

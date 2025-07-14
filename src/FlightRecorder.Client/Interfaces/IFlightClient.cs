@@ -12,5 +12,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Flight> GetFlightByIdAsync(long id);
         Task<Flight> AddFlightAsync(string number, string embarkation, string destination, long airlineId);
         Task<Flight> UpdateFlightAsync(long flightId, string number, string embarkation, string destination, long airlineId);
+        Task DeleteFlightAsync(long id);
     }
 }
