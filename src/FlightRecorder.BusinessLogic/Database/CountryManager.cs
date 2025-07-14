@@ -149,6 +149,21 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Raise an exception if the specified country doesn't exist
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <exception cref="CountryNotFoundException"></exception>
+        public async Task CheckCountryExists(long countryId)
+        {
+            var country = await _factory.Countries.GetAsync(x => x.Id == countryId);
+            if (country == null)
+            {
+                var message = $"Country with ID {countryId} not found";
+                throw new CountryNotFoundException(message);
+            }
+        }
+
+        /// <summary>
         /// Raise an exception if an attempt is made to add/update a country with a duplicate
         /// name
         /// </summary>

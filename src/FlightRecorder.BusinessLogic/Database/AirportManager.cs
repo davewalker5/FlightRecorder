@@ -82,6 +82,9 @@ namespace FlightRecorder.BusinessLogic.Database
             code = code.CleanString().ToUpper();            
             await CheckAirportIsNotADuplicate(code, 0);
 
+            // Check the country exists
+            await _factory.Countries.CheckCountryExists(countryId);
+
             // Add the airport and save changes
             var airport = new Airport
             {
@@ -98,6 +101,24 @@ namespace FlightRecorder.BusinessLogic.Database
 
             _factory.Logger.LogMessage(Severity.Debug, $"Added airport {airport}");
 
+            return airport;
+        }
+
+        /// <summary>
+        /// Add an airport, if it doesn't already exist
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="name"></param>
+        /// <param name="countryId"></param>
+        /// <returns></returns>
+        public async Task<Airport> AddIfNotExistsAsync(string code, string name, long countryId)
+        {
+            code = code.CleanString().ToUpper();
+            var airport = await GetAsync(x => x.Name == code);
+            if (airport == null)
+            {
+                airport = await AddAsync(code, name, countryId);
+            }
             return airport;
         }
 
@@ -124,6 +145,9 @@ namespace FlightRecorder.BusinessLogic.Database
             // Check the airport doesn't already exist
             code = code.CleanString().ToUpper();            
             await CheckAirportIsNotADuplicate(code, id);
+
+            // Check the country exists
+            await _factory.Countries.CheckCountryExists(countryId);
 
             // Update the airport properties and save changes
             airport.Name = name;
@@ -171,6 +195,21 @@ namespace FlightRecorder.BusinessLogic.Database
             // Remove the airport
             _factory.Context.Remove(airport);
             await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if there is no airport with the specified IATA code
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <exception cref="AirportNotFoundException"></exception>
+        public async Task CheckAirportExists(string code)
+        {
+            var airport = await _factory.Airports.GetAsync(x => x.Code == code);
+            if (airport == null)
+            {
+                var message = $"Airport with IATA code {code} not found";
+                throw new AirportNotFoundException(message);
+            }
         }
 
         /// <summary>

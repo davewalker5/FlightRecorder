@@ -1,5 +1,8 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
@@ -10,14 +13,12 @@ namespace FlightRecorder.Api.Controllers
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route("[controller]")]
-    public class SightingsController : Controller
+    public class SightingsController : FlightRecorderApiController
     {
         private const string DateTimeFormat = "yyyy-MM-dd H:mm:ss";
-        private readonly FlightRecorderFactory _factory;
 
-        public SightingsController(FlightRecorderFactory factory)
+        public SightingsController(FlightRecorderFactory factory, IFlightRecorderLogger logger) : base(factory, logger)
         {
-            _factory = factory;
         }
 
         [HttpGet]
@@ -26,7 +27,7 @@ namespace FlightRecorder.Api.Controllers
         {
             string decodedEmbarkation = HttpUtility.UrlDecode(embarkation).ToUpper();
             string decodedDestination = HttpUtility.UrlDecode(destination).ToUpper();
-            List<Sighting> sightings = await _factory.Sightings
+            List<Sighting> sightings = await Factory.Sightings
                                                      .ListAsync(s => (s.Flight.Embarkation == decodedEmbarkation) &&
                                                                      (s.Flight.Destination == decodedDestination), pageNumber, pageSize)
                                                      .ToListAsync();
@@ -44,7 +45,7 @@ namespace FlightRecorder.Api.Controllers
         public async Task<ActionResult<List<Sighting>>> GetSightingsByFlightAsync(string number, int pageNumber, int pageSize)
         {
             string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
-            List<Sighting> sightings = await _factory.Sightings
+            List<Sighting> sightings = await Factory.Sightings
                                                      .ListAsync(s => s.Flight.Number == decodedNumber, pageNumber, pageSize)
                                                      .ToListAsync();
 
@@ -60,7 +61,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("airline/{airlineId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Sighting>>> GetSightingsByAirlineAsync(int airlineId, int pageNumber, int pageSize)
         {
-            List<Sighting> sightings = await _factory.Sightings
+            List<Sighting> sightings = await Factory.Sightings
                                                      .ListAsync(s => s.Flight.AirlineId == airlineId, pageNumber, pageSize)
                                                      .ToListAsync();
 
@@ -76,7 +77,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("aircraft/{aircraftId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Sighting>>> GetSightingsByAircraftAsync(int aircraftId, int pageNumber, int pageSize)
         {
-            List<Sighting> sightings = await _factory.Sightings
+            List<Sighting> sightings = await Factory.Sightings
                                                      .ListAsync(s => s.AircraftId == aircraftId, pageNumber, pageSize)
                                                      .ToListAsync();
 
@@ -95,7 +96,7 @@ namespace FlightRecorder.Api.Controllers
             DateTime startDate = DateTime.ParseExact(HttpUtility.UrlDecode(start), DateTimeFormat, null);
             DateTime endDate = DateTime.ParseExact(HttpUtility.UrlDecode(end), DateTimeFormat, null);
 
-            List<Sighting> sightings = await _factory.Sightings
+            List<Sighting> sightings = await Factory.Sightings
                                                      .ListAsync(s => (s.Date >= startDate) &&
                                                                      (s.Date <= endDate), pageNumber, pageSize)
                                                      .ToListAsync();
@@ -112,20 +113,16 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Sighting>> GetSightingAsync(int id)
         {
-            Sighting sighting = await _factory.Sightings.GetAsync(m => m.Id == id);
+            LogMessage(Severity.Debug, $"Retrieving sighting with ID {id}");
 
+            Sighting sighting = await Factory.Sightings.GetAsync(m => m.Id == id);
             if (sighting == null)
             {
+                LogMessage(Severity.Debug, $"Sighting with ID {id} not found");
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            await _factory.Context.Entry(sighting).Reference(s => s.Aircraft).LoadAsync();
-            await _factory.Context.Entry(sighting.Aircraft).Reference(m => m.Model).LoadAsync();
-            await _factory.Context.Entry(sighting.Aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
-            await _factory.Context.Entry(sighting).Reference(s => s.Flight).LoadAsync();
-            await _factory.Context.Entry(sighting.Flight).Reference(f => f.Airline).LoadAsync();
-            await _factory.Context.Entry(sighting).Reference(s => s.Location).LoadAsync();
+            LogMessage(Severity.Debug, $"Sighting retrieved: {sighting}");
 
             return sighting;
         }
@@ -134,13 +131,18 @@ namespace FlightRecorder.Api.Controllers
         [Route("recent/flight/{number}")]
         public async Task<ActionResult<Sighting>> GetMostRecentFlightSightingAsync(string number)
         {
+            LogMessage(Severity.Debug, $"Retrieving most recent sighting for flight {number}");
+
             string decodedNumber = HttpUtility.UrlDecode(number).ToUpper();
-            Sighting sighting = await _factory.Sightings.GetMostRecent(x => x.Flight.Number == decodedNumber);
+            Sighting sighting = await Factory.Sightings.GetMostRecent(x => x.Flight.Number == decodedNumber);
 
             if (sighting == null)
             {
+                LogMessage(Severity.Debug, $"Sighting for flight {number} not found");
                 return NoContent();
             }
+
+            LogMessage(Severity.Debug, $"Sighting retrieved: {sighting}");
 
             return sighting;
         }
@@ -149,43 +151,53 @@ namespace FlightRecorder.Api.Controllers
         [Route("recent/aircraft/{registration}")]
         public async Task<ActionResult<Sighting>> GetMostRecentAircraftSightingAsync(string registration)
         {
+            LogMessage(Severity.Debug, $"Retrieving most recent sighting for aircraft {registration}");
+
             string decodedRegistration = HttpUtility.UrlDecode(registration);
-            Sighting sighting = await _factory.Sightings.GetMostRecent(x => x.Aircraft.Registration == decodedRegistration);
+            Sighting sighting = await Factory.Sightings.GetMostRecent(x => x.Aircraft.Registration == decodedRegistration);
 
             if (sighting == null)
             {
+                LogMessage(Severity.Debug, $"Sighting for aircraft {registration} not found");
                 return NoContent();
             }
 
+            LogMessage(Severity.Debug, $"Sighting retrieved: {sighting}");
+
             return sighting;
         }
-
 
         [HttpPut]
         [Route("")]
         public async Task<ActionResult<Sighting>> UpdateSightingAsync([FromBody] Sighting template)
         {
-            // TODO This logic should be in the business logic
-            Sighting sighting = await _factory.Sightings.GetAsync(s => s.Id == template.Id);
-            if (sighting == null)
+            Sighting sighting;
+
+            LogMessage(Severity.Debug, $"Updating sighting: {template}");
+
+            try
             {
+                sighting = await Factory.Sightings.UpdateAsync(
+                    template.Id,
+                    template.Altitude,
+                    template.Date,
+                    template.LocationId,
+                    template.FlightId,
+                    template.AircraftId,
+                    template.IsMyFlight);
+            }
+            catch (SightingNotFoundException ex)
+            {
+                Logger.LogException(ex);
                 return NotFound();
             }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+                return BadRequest();
+            }
 
-            sighting.Date = template.Date;
-            sighting.AircraftId = template.AircraftId;
-            sighting.Altitude = template.Altitude;
-            sighting.FlightId = template.FlightId;
-            sighting.LocationId = template.LocationId;
-            sighting.IsMyFlight = template.IsMyFlight;
-            await _factory.Context.SaveChangesAsync();
-            await _factory.Context.Entry(sighting).Reference(s => s.Aircraft).LoadAsync();
-            await _factory.Context.Entry(sighting.Aircraft).Reference(m => m.Model).LoadAsync();
-            await _factory.Context.Entry(sighting.Aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
-            await _factory.Context.Entry(sighting).Reference(s => s.Flight).LoadAsync();
-            await _factory.Context.Entry(sighting.Flight).Reference(f => f.Airline).LoadAsync();
-            await _factory.Context.Entry(sighting).Reference(s => s.Location).LoadAsync();
-
+            LogMessage(Severity.Debug, $"Sighting updated: {sighting}");
             return sighting;
         }
 
@@ -193,7 +205,9 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Sighting>> CreateSightingAsync([FromBody] Sighting template)
         {
-            Sighting location = await _factory.Sightings
+            LogMessage(Severity.Debug, $"Creating sighting: {template}");
+
+            Sighting location = await Factory.Sightings
                                               .AddAsync(template.Altitude,
                                                         template.Date,
                                                         template.LocationId,
@@ -201,6 +215,15 @@ namespace FlightRecorder.Api.Controllers
                                                         template.AircraftId,
                                                         template.IsMyFlight);
             return location;
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteSightingAsync(int id)
+        {
+            LogMessage(Severity.Debug, $"Deleting sighting: ID = {id}");
+            await Factory.Sightings.DeleteAsync(id);
+            return Ok();
         }
     }
 }

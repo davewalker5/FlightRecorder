@@ -9,5 +9,6 @@ namespace FlightRecorder.Client.Interfaces
         Task<Sighting> GetSightingAsync(long id);
         Task<Sighting> AddSightingAsync(DateTime date, long altitude, long aircraftId, long flightId, long locationId, bool isMyFlight);
         Task<Sighting> UpdateSightingAsync(long id, DateTime date, long altitude, long aircraftId, long flightId, long locationId, bool isMyFlight);
+        Task DeleteSightingAsync(long id);
     }
 }

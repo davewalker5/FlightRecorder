@@ -7,15 +7,15 @@ using FlightRecorder.BusinessLogic.Extensions;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.DataExchange;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Database
 {
     internal class SightingManager : ISightingManager
     {
-        private const int AllFlightsPageSize = 1000000;
-
         private readonly FlightRecorderFactory _factory;
 
         internal SightingManager(FlightRecorderFactory factory)
@@ -119,7 +119,15 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<Sighting> AddAsync(long altitude, DateTime date, long locationId, long flightId, long aircraftId, bool isMyFlight)
         {
-            Sighting sighting = new Sighting
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding sighting: Altitude = {altitude}, Date = {date}, Location ID = {locationId}, Flight ID = {flightId}, Aircraft ID = {aircraftId}");
+
+            // Check the location, flight and aircraft all exist
+            await _factory.Locations.CheckLocationExists(locationId);
+            await _factory.Flights.CheckFlightExists(flightId);
+            await _factory.Aircraft.CheckAircraftExists(aircraftId);
+
+            // Add the sighting and save changes
+            var sighting = new Sighting
             {
                 Altitude = altitude,
                 Date = date,
@@ -133,13 +141,15 @@ namespace FlightRecorder.BusinessLogic.Database
             await _factory.Context.SaveChangesAsync();
 
             // Loading the related entities using the following syntax is problematic if the model and/or
-            // manufacturer are NULL on the aircraft related to the sighting:
+            // sighting are NULL on the aircraft related to the sighting:
             //
             // await _factory.Context.Entry(sighting.Aircraft).Reference(a => a.Model).LoadAsync();
-            // await _factory.Context.Entry(sighting.Aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
+            // await _factory.Context.Entry(sighting.Aircraft.Model).Reference(m => m.Sighting).LoadAsync();
             //
             // Instead, reload the sighting as this handles the above case
             sighting = await GetAsync(x => x.Id == sighting.Id);
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Added sighting {sighting}");
             return sighting;
         }
 
@@ -150,20 +160,108 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<Sighting> AddAsync(FlattenedSighting flattened)
         {
-            // TODO : Need to check if entities exist before attempting to add them
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding sighting: {flattened}");
+
+            // The aircraft model can only be created if both the model name and sighting are specified. If they
+            // are, create the sighting and model
             long? modelId = null;
             if (!string.IsNullOrEmpty(flattened.Model) && !string.IsNullOrEmpty(flattened.Manufacturer))
             {
-                long manufacturerId = (await _factory.Manufacturers.AddAsync(flattened.Manufacturer)).Id;
-                modelId = (await _factory.Models.AddAsync(flattened.Model, manufacturerId)).Id;
+                long manufacturerId = (await _factory.Manufacturers.AddIfNotExistsAsync(flattened.Manufacturer)).Id;
+                modelId = (await _factory.Models.AddIfNotExistsAsync(flattened.Model, manufacturerId)).Id;
             }
 
+            // Get the year of sighting and create the aircraft
             long? yearOfManufacture = !string.IsNullOrEmpty(flattened.Age) ? DateTime.Now.Year - long.Parse(flattened.Age) : null;
-            long aircraftId = (await _factory.Aircraft.AddAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, modelId)).Id;
-            long airlineId = (await _factory.Airlines.AddAsync(flattened.Airline)).Id;
-            long flightId = (await _factory.Flights.AddAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, airlineId)).Id;
-            long locationId = (await _factory.Locations.AddAsync(flattened.Location)).Id;
-            return await AddAsync(flattened.Altitude, flattened.Date, locationId, flightId, aircraftId, flattened.IsMyFlight);
+            long aircraftId = (await _factory.Aircraft.AddIfNotExistsAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, modelId)).Id;
+
+            // Add the airline and flight details
+            long airlineId = (await _factory.Airlines.AddIfNotExistsAsync(flattened.Airline)).Id;
+            long flightId = (await _factory.Flights.AddIfNotExistsAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, airlineId)).Id;
+            long locationId = (await _factory.Locations.AddIfNotExistsAsync(flattened.Location)).Id;
+
+            // Finally, add the sighting
+            var sighting = await AddAsync(flattened.Altitude, flattened.Date, locationId, flightId, aircraftId, flattened.IsMyFlight);
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Added sighting {sighting}");
+
+            return sighting;
+        }
+
+        /// <summary>
+        /// Update a sighting
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="altitude"></param>
+        /// <param name="date"></param>
+        /// <param name="locationId"></param>
+        /// <param name="flightId"></param>
+        /// <param name="aircraftId"></param>
+        /// <param name="isMyFlight"></param>
+        /// <returns></returns>
+        public async Task<Sighting> UpdateAsync(long id, long altitude, DateTime date, long locationId, long flightId, long aircraftId, bool isMyFlight)
+        {
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating sighting: ID = {id}, Altitude = {altitude}, Date = {date}, Location ID = {locationId}, Flight ID = {flightId}, Aircraft ID = {aircraftId}");
+
+            // Retrieve the sighting
+            var sighting = await _factory.Context.Sightings.FirstOrDefaultAsync(x => x.Id == id);
+            if (sighting == null)
+            {
+                var message = $"Sighting with ID {id} not found";
+                throw new SightingNotFoundException(message);
+            }
+
+            // Check the location, flight and aircraft all exist
+            await _factory.Locations.CheckLocationExists(locationId);
+            await _factory.Flights.CheckFlightExists(flightId);
+            await _factory.Aircraft.CheckAircraftExists(aircraftId);
+
+            // Update sighting properties and save changes
+            sighting.Date = date;
+            sighting.AircraftId = aircraftId;
+            sighting.Altitude = altitude;
+            sighting.FlightId = flightId;
+            sighting.LocationId = locationId;
+            sighting.IsMyFlight = isMyFlight;
+
+            await _factory.Context.Sightings.AddAsync(sighting);
+            await _factory.Context.SaveChangesAsync();
+
+            // Loading the related entities using the following syntax is problematic if the model and/or
+            // sighting are NULL on the aircraft related to the sighting:
+            //
+            // await _factory.Context.Entry(sighting.Aircraft).Reference(a => a.Model).LoadAsync();
+            // await _factory.Context.Entry(sighting.Aircraft.Model).Reference(m => m.Sighting).LoadAsync();
+            //
+            // Instead, reload the sighting as this handles the above case
+            sighting = await GetAsync(x => x.Id == sighting.Id);
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Updated sighting {sighting}");
+
+            return sighting;
+        }
+
+        /// <summary>
+        /// Delete the sighting with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="SightingNotFoundException"></exception>
+        public async Task DeleteAsync(long id)
+        {
+            _factory.Logger.LogMessage(Severity.Debug, $"Deleting sighting: ID = {id}");
+
+            // Check the sighting exists
+            var sighting = await _factory.Context.Sightings.FirstOrDefaultAsync(x => x.Id == id);
+            if (sighting == null)
+            {
+                var message = $"Sighting with ID {id} not found";
+                throw new SightingNotFoundException(message);
+            }
+
+            // Remove the sighting
+            _factory.Context.Remove(sighting);
+            await _factory.Context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -203,7 +301,7 @@ namespace FlightRecorder.BusinessLogic.Database
             destination = destination.CleanString().ToUpper();
             List<Flight> flights = await _factory.Flights
                                                  .ListAsync(f => (f.Embarkation == embarkation) &&
-                                                                 (f.Destination == destination), 1, AllFlightsPageSize)
+                                                                 (f.Destination == destination), 1, int.MaxValue)
                                                  .ToListAsync();
             if (flights.Any())
             {
@@ -226,7 +324,7 @@ namespace FlightRecorder.BusinessLogic.Database
             IAsyncEnumerable<Sighting> sightings = null;
 
             airlineName = airlineName.CleanString();
-            IAsyncEnumerable<Flight> matches = await _factory.Flights.ListByAirlineAsync(airlineName, 1, AllFlightsPageSize);
+            IAsyncEnumerable<Flight> matches = await _factory.Flights.ListByAirlineAsync(airlineName, 1, int.MaxValue);
             if (matches != null)
             {
                 List<Flight> flights = await matches.ToListAsync();

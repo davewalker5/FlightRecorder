@@ -95,6 +95,22 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Add a named location, if it doesn't already exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task<Location> AddIfNotExistsAsync(string name)
+        {
+            name = name.CleanString();
+            var location = await GetAsync(x => x.Name == name);
+            if (location == null)
+            {
+                location = await AddAsync(name);
+            }
+            return location;
+        }
+
+        /// <summary>
         /// Update a location
         /// </summary>
         /// <param name="id"></param>
@@ -155,6 +171,21 @@ namespace FlightRecorder.BusinessLogic.Database
             // Remove the location
             _factory.Context.Remove(location);
             await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if the specified location doesn't exist
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <exception cref="LocationNotFoundException"></exception>
+        public async Task CheckLocationExists(long locationId)
+        {
+            var location = await _factory.Locations.GetAsync(x => x.Id == locationId);
+            if (location == null)
+            {
+                var message = $"Location with ID {locationId} not found";
+                throw new LocationNotFoundException(message);
+            }
         }
 
         /// <summary>

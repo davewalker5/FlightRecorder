@@ -114,8 +114,10 @@ namespace FlightRecorder.BusinessLogic.Database
             destination = destination.CleanString().ToUpper();
             await CheckFlightIsNotADuplicate(number, embarkation, destination, airlineId, 0);
 
-            // Check the airline exists
-            await CheckAirlineExists(airlineId);
+            // Check the airline and the airports exist
+            await _factory.Airlines.CheckAirlineExists(airlineId);
+            await _factory.Airports.CheckAirportExists(embarkation);
+            await _factory.Airports.CheckAirportExists(destination);
 
             // Add the flight and save changes
             var flight = new Flight
@@ -133,6 +135,32 @@ namespace FlightRecorder.BusinessLogic.Database
             await _factory.Context.Entry(flight).Reference(m => m.Airline).LoadAsync();
 
             _factory.Logger.LogMessage(Severity.Debug, $"Added flight {flight}");
+
+            return flight;
+        }
+
+        /// <summary>
+        /// Add a named manufacturer, if it doesn't already exist
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="embarkation"></param>
+        /// <param name="destination"></param>
+        /// <param name="airlineId"></param>
+        /// <returns></returns>
+        public async Task<Flight> AddIfNotExistsAsync(string number, string embarkation, string destination, long airlineId)
+        {
+            number = number.CleanString().ToUpper();
+            embarkation = embarkation.CleanString().ToUpper();
+            destination = destination.CleanString().ToUpper();
+
+            var flight = await GetAsync(a => (a.Number == number) &&
+                                                (a.Embarkation == embarkation) &&
+                                                (a.Destination == destination) &&
+                                                (a.AirlineId == airlineId));
+            if (flight == null)
+            {
+                flight = await AddAsync(number, embarkation, destination, airlineId);
+            }
 
             return flight;
         }
@@ -164,8 +192,10 @@ namespace FlightRecorder.BusinessLogic.Database
             destination = destination.CleanString().ToUpper();
             await CheckFlightIsNotADuplicate(number, embarkation, destination, airlineId, id);
 
-            // Check the airline exists
-            await CheckAirlineExists(airlineId);
+            // Check the airline and the airports exist
+            await _factory.Airlines.CheckAirlineExists(airlineId);
+            await _factory.Airports.CheckAirportExists(embarkation);
+            await _factory.Airports.CheckAirportExists(destination);
 
             // Update the flight properties and save changes
             flight.Number = number;
@@ -215,6 +245,21 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Raise an exception if the specified flight doesn't exist
+        /// </summary>
+        /// <param name="flightId"></param>
+        /// <exception cref="FlightNotFoundException"></exception>
+        public async Task CheckFlightExists(long flightId)
+        {
+            var flight = await _factory.Flights.GetAsync(x => x.Id == flightId);
+            if (flight == null)
+            {
+                var message = $"Flight with ID {flightId} not found";
+                throw new FlightNotFoundException(message);
+            }
+        }
+
+        /// <summary>
         /// Raise an exception if an attempt is made to add/update a duplicate flight
         /// </summary>
         /// <param name="number"></param>
@@ -227,26 +272,12 @@ namespace FlightRecorder.BusinessLogic.Database
         {
             var flight = await GetAsync(a => (a.Number == number) &&
                                                 (a.Embarkation == embarkation) &&
-                                                (a.Destination == destination));
+                                                (a.Destination == destination) &&
+                                                (a.AirlineId == airlineId));
             if ((flight != null) && (flight.Id != id))
             {
                 var message = $"Flight {number} with route {embarkation}-{destination} for airline with ID {airlineId} already exists";
                 throw new FlightExistsException(message);
-            }
-        }
-
-        /// <summary>
-        /// Raise an exception if an attempt is made to add/update a flight with a non-existant airline
-        /// </summary>
-        /// <param name="airlineId"></param>
-        /// <exception cref="AirlineNotFoundException"></exception>
-        private async Task CheckAirlineExists(long airlineId)
-        {
-            var airline = await _factory.Airlines.GetAsync(x => x.Id == airlineId);
-            if (airline == null)
-            {
-                var message = $"Airline with ID {airlineId} not found";
-                throw new AirlineNotFoundException(message);
             }
         }
     }

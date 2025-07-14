@@ -73,7 +73,7 @@ namespace FlightRecorder.Api.Controllers
                 Logger.LogException(ex);
                 return NotFound();
             }
-            catch (AirlineExistsException ex)
+            catch (Exception ex)
             {
                 Logger.LogException(ex);
                 return BadRequest();

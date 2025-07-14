@@ -93,6 +93,22 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Add a named manufacturer, if it doesn't already exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task<Manufacturer> AddIfNotExistsAsync(string name)
+        {
+            name = name.CleanString();
+            var manufacturer = await GetAsync(x => x.Name == name);
+            if (manufacturer == null)
+            {
+                manufacturer = await AddAsync(name);
+            }
+            return manufacturer;
+        }
+
+        /// <summary>
         /// Update a manufacturer
         /// </summary>
         /// <param name="id"></param>
@@ -111,7 +127,7 @@ namespace FlightRecorder.BusinessLogic.Database
             }
 
             // Check the manufacturer doesn't already exist
-            name = name.CleanString();            
+            name = name.CleanString();
             await CheckManufacturerIsNotADuplicate(name, id);
 
             // Update the manufacturer properties and save changes
@@ -153,6 +169,21 @@ namespace FlightRecorder.BusinessLogic.Database
             // Remove the manufacturer
             _factory.Context.Remove(manufacturer);
             await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if the specified manufacturer doesn't exist
+        /// </summary>
+        /// <param name="manufacturerId"></param>
+        /// <exception cref="ManufacturerNotFoundException"></exception>
+        public async Task CheckManufacturerExists(long manufacturerId)
+        {
+            var manufacturer = await _factory.Manufacturers.GetAsync(x => x.Id == manufacturerId);
+            if (manufacturer == null)
+            {
+                var message = $"Manufacturer with ID {manufacturerId} not found";
+                throw new ManufacturerNotFoundException(message);
+            }
         }
 
         /// <summary>

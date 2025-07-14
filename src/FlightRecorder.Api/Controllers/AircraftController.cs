@@ -120,7 +120,7 @@ namespace FlightRecorder.Api.Controllers
                 Logger.LogException(ex);
                 return NotFound();
             }
-            catch (AircraftExistsException ex)
+            catch (Exception ex)
             {
                 Logger.LogException(ex);
                 return BadRequest();
@@ -136,7 +136,6 @@ namespace FlightRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Creating aircraft: {template}");
 
-            // TODO : Should have create method taking model and manufacturer IDs
             long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             Aircraft aircraft = await Factory.Aircraft
                                                 .AddAsync(template.Registration,

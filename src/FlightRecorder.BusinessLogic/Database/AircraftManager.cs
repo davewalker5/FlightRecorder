@@ -140,8 +140,12 @@ namespace FlightRecorder.BusinessLogic.Database
         {
             _factory.Logger.LogMessage(Severity.Debug, $"Adding aircraft: Registration = {registration}, Serial Number = {serialNumber}, Manufactured = {yearOfManufacture}, Model ID = {modelId}");
 
+            // Check this isn't a duplicate
             registration = registration.CleanString().ToUpper();
             await CheckAircraftIsNotADuplicate(registration, 0);
+
+            // Check the model exists
+            await _factory.Models.CheckModelExists(modelId);
 
             // Similarly, the serial number should be cleaned and then treated as null when assigning
             // to the new aircraft, below, if the result is empty
@@ -174,6 +178,25 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Add an aircraft if it doesn't already exist
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <param name="serialNumber"></param>
+        /// <param name="yearOfManufacture"></param>
+        /// <param name="modelId"></param>
+        /// <returns></returns>
+        public async Task<Aircraft> AddIfNotExistsAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId)
+        {
+            registration = registration.CleanString();
+            var aircraft = await GetAsync(x => x.Registration == registration);
+            if (aircraft == null)
+            {
+                aircraft = await AddAsync(registration, serialNumber, yearOfManufacture, modelId);
+            }
+            return aircraft;
+        }
+
+        /// <summary>
         /// Update an aircraft
         /// </summary>
         /// <param name="id"></param>
@@ -197,6 +220,9 @@ namespace FlightRecorder.BusinessLogic.Database
             // Check we're not going to create a duplicate
             registration = registration.CleanString().ToUpper();
             await CheckAircraftIsNotADuplicate(registration, id);
+
+            // Check the model exists
+            await _factory.Models.CheckModelExists(modelId);
 
             // The serial number should be cleaned and then treated as null when assigning
             // to the updated aircraft, below, if the result is empty
@@ -252,6 +278,21 @@ namespace FlightRecorder.BusinessLogic.Database
             // Remove the aircraft
             _factory.Context.Remove(aircraft);
             await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if the specified aircraft doesn't exist
+        /// </summary>
+        /// <param name="aircraftId"></param>
+        /// <exception cref="AircraftNotFoundException"></exception>
+        public async Task CheckAircraftExists(long aircraftId)
+        {
+            var aircraft = await _factory.Aircraft.GetAsync(x => x.Id == aircraftId);
+            if (aircraft == null)
+            {
+                var message = $"Aircraft with ID {aircraftId} not found";
+                throw new AircraftNotFoundException(message);
+            }
         }
 
         /// <summary>

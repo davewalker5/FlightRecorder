@@ -93,5 +93,17 @@ namespace FlightRecorder.Client.ApiClient
             Sighting sighting = Deserialize<Sighting>(json);
             return sighting;
         }
+
+        /// <summary>
+        /// Delete an existing sighting
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task DeleteSightingAsync(long id)
+        {
+            string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
+            _ = await SendDirectAsync(route, null, HttpMethod.Delete);
+        }
     }
 }

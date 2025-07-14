@@ -37,12 +37,16 @@ namespace FlightRecorder.Tests
 
         private FlightRecorderFactory _factory;
         private long _sightingId;
+        private long _countryId;
 
         [TestInitialize]
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             _factory = new FlightRecorderFactory(context, new MockFileLogger());
+            _countryId = Task.Run(() => _factory.Countries.AddAsync("")).Result.Id;
+            Task.Run(() => _factory.Airports.AddAsync(Embarkation, "", _countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync(Destination, "", _countryId)).Wait();
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(new FlattenedSighting
             {
                 FlightNumber = FlightNumber,
@@ -143,11 +147,21 @@ namespace FlightRecorder.Tests
 
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
             FlightRecorderFactory factory = new FlightRecorderFactory(context, new MockFileLogger());
+
+            var codes = sightings.Select(x => x.Flight.Embarkation).ToList();
+            codes.AddRange(sightings.Select(x => x.Flight.Destination));
+            
+            long countryId = (await factory.Countries.AddAsync("")).Id;
+            foreach (var code in codes)
+            {
+                await factory.Airports.AddIfNotExistsAsync(code, "", countryId);
+            }
+
             await new SightingsImporter().Import(filePath, factory);
 
             File.Delete(filePath);
 
-            var imported = await factory.Sightings.ListAsync(x => true, 1, 1000000).ToListAsync();
+            var imported = await factory.Sightings.ListAsync(x => true, 1, int.MaxValue).ToListAsync();
             var importedAircraft = imported.Select(x => x.Aircraft).Distinct();
             var importedModels = imported.Select(x => x.Aircraft.Model).Distinct();
             var importedManufacturers = imported.Select(x => x.Aircraft.Model.Manufacturer).Distinct();

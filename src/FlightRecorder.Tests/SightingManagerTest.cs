@@ -47,6 +47,12 @@ namespace FlightRecorder.Tests
 
             _locationId = Task.Run(() => _factory.Locations.AddAsync(LocationName)).Result.Id;
             _airlineId = Task.Run(() => _factory.Airlines.AddAsync(AirlineName)).Result.Id;
+            long countryId = Task.Run(() => _factory.Countries.AddAsync("")).Result.Id;
+            Task.Run(() => _factory.Airports.AddAsync(Embarkation, "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync(Destination, "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync("LHR", "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync("YYZ", "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync("MAN", "", countryId)).Wait();
             _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId)).Result.Id;
             _manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
             _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, _manufacturerId)).Result.Id;

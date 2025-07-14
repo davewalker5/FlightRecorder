@@ -9,10 +9,12 @@ namespace FlightRecorder.Entities.Interfaces
     public interface IAirlineManager
     {
         Task<Airline> AddAsync(string name);
+        Task<Airline> AddIfNotExistsAsync(string name);
         Task<Airline> GetAsync(Expression<Func<Airline, bool>> predicate);
         IAsyncEnumerable<Airline> ListAsync(Expression<Func<Airline, bool>> predicate, int pageNumber, int pageSize);
         Task<int> CountAsync();
         Task<Airline> UpdateAsync(long id, string name);
         Task DeleteAsync(long id);
+        Task CheckAirlineExists(long airlineId);
     }
 }

@@ -116,7 +116,7 @@ namespace FlightRecorder.Api.Controllers
                 Logger.LogException(ex);
                 return NotFound();
             }
-            catch (AirportExistsException ex)
+            catch (Exception ex)
             {
                 Logger.LogException(ex);
                 return BadRequest();

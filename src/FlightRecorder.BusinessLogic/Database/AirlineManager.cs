@@ -93,6 +93,22 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Add a named airline, if it doesn't already exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task<Airline> AddIfNotExistsAsync(string name)
+        {
+            name = name.CleanString();
+            var airline = await GetAsync(x => x.Name == name);
+            if (airline == null)
+            {
+                airline = await AddAsync(name);
+            }
+            return airline;
+        }
+
+        /// <summary>
         /// Update an airline
         /// </summary>
         /// <param name="id"></param>
@@ -153,6 +169,21 @@ namespace FlightRecorder.BusinessLogic.Database
             // Remove the airline
             _factory.Context.Remove(airline);
             await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if the specified airline doesn't exist
+        /// </summary>
+        /// <param name="airlineId"></param>
+        /// <exception cref="AirlineNotFoundException"></exception>
+        public async Task CheckAirlineExists(long airlineId)
+        {
+            var airline = await _factory.Airlines.GetAsync(x => x.Id == airlineId);
+            if (airline == null)
+            {
+                var message = $"Airline with ID {airlineId} not found";
+                throw new AirlineNotFoundException(message);
+            }
         }
 
         /// <summary>

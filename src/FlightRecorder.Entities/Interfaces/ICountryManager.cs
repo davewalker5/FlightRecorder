@@ -13,5 +13,6 @@ namespace FlightRecorder.Entities.Interfaces
         IAsyncEnumerable<Country> ListAsync(Expression<Func<Country, bool>> predicate, int pageNumber, int pageSize);
         Task<Country> UpdateAsync(long id, string name);
         Task DeleteAsync(long id);
+        Task CheckCountryExists(long countryId);
     }
 }

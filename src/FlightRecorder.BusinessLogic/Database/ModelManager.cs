@@ -106,7 +106,7 @@ namespace FlightRecorder.BusinessLogic.Database
             await CheckModelIsNotADuplicate(name, manufacturerId, 0);
 
             // Check the manufacturer exists
-            await CheckManufacturerExists(manufacturerId);
+            await _factory.Manufacturers.CheckManufacturerExists(manufacturerId);
 
             // Add the model and save changes
             var model = new Model
@@ -123,6 +123,23 @@ namespace FlightRecorder.BusinessLogic.Database
 
             _factory.Logger.LogMessage(Severity.Debug, $"Added model {model}");
 
+            return model;
+        }
+
+        /// <summary>
+        /// Add a named model, if it doesn't already exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="manufacturerId"></param>
+        /// <returns></returns>
+        public async Task<Model> AddIfNotExistsAsync(string name, long manufacturerId)
+        {
+            name = name.CleanString();
+            var model = await GetAsync(x => (x.Name == name) && (x.ManufacturerId == manufacturerId));
+            if (model == null)
+            {
+                model = await AddAsync(name, manufacturerId);
+            }
             return model;
         }
 
@@ -150,7 +167,7 @@ namespace FlightRecorder.BusinessLogic.Database
             await CheckModelIsNotADuplicate(name, manufacturerId, id);
 
             // Check the airline exists
-            await CheckManufacturerExists(manufacturerId);
+            await _factory.Manufacturers.CheckManufacturerExists(manufacturerId);
 
             // Update the model properties and save changes
             model.Name = name;
@@ -198,6 +215,24 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Raise an exception if the specified model doesn't exist
+        /// </summary>
+        /// <param name="modelId"></param>
+        /// <exception cref="ModelNotFoundException"></exception>
+        public async Task CheckModelExists(long? modelId)
+        {
+            if (modelId != null)
+            {
+                var model = await _factory.Manufacturers.GetAsync(x => x.Id == modelId);
+                if (model == null)
+                {
+                    var message = $"Model with ID {modelId} not found";
+                    throw new ModelNotFoundException(message);
+                }
+            }
+        }
+
+        /// <summary>
         /// Raise an exception if an attempt is made to add/update a duplicate model
         /// </summary>
         /// <param name="name"></param>
@@ -211,21 +246,6 @@ namespace FlightRecorder.BusinessLogic.Database
             {
                 var message = $"Model {name} for manufacturer with ID {manufacturerId} already exists";
                 throw new ModelExistsException(message);
-            }
-        }
-
-        /// <summary>
-        /// Raise an exception if an attempt is made to add/update a model with a non-existant manufacturer
-        /// </summary>
-        /// <param name="manufacturerId"></param>
-        /// <exception cref="AirlineNotFoundException"></exception>
-        private async Task CheckManufacturerExists(long manufacturerId)
-        {
-            var airline = await _factory.Manufacturers.GetAsync(x => x.Id == manufacturerId);
-            if (airline == null)
-            {
-                var message = $"Manufacturer with ID {manufacturerId} not found";
-                throw new ManufacturerNotFoundException(message);
             }
         }
     }
