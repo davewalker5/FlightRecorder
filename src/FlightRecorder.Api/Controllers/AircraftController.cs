@@ -100,7 +100,7 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Aircraft>> AddAircraftAsync([FromBody] Aircraft template)
         {
-            LogMessage(Severity.Debug, $"Creating aircraft: {template}");
+            LogMessage(Severity.Debug, $"Adding aircraft: {template}");
 
             long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             Aircraft aircraft = await Factory.Aircraft
@@ -108,6 +108,8 @@ namespace FlightRecorder.Api.Controllers
                                                           template.SerialNumber,
                                                           manufactured,
                                                           template.ModelId);
+                                                    
+            LogMessage(Severity.Debug, $"Added aircraft: {aircraft}");
             return aircraft;
         }
 

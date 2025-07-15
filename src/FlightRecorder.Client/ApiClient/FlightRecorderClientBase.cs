@@ -118,7 +118,7 @@ namespace FlightRecorder.Client.ApiClient
                 }
             }
 
-            return json;
+            return response.IsSuccessStatusCode ? json : null;
         }
 
         /// <summary>

@@ -223,7 +223,7 @@ namespace FlightRecorder.BusinessLogic.Database
         {
             if (modelId != null)
             {
-                var model = await _factory.Manufacturers.GetAsync(x => x.Id == modelId);
+                var model = await _factory.Models.GetAsync(x => x.Id == modelId);
                 if (model == null)
                 {
                     var message = $"Model with ID {modelId} not found";

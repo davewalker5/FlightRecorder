@@ -106,9 +106,20 @@ namespace FlightRecorder.Mvc
         {
             if (env.IsDevelopment())
             {
-                // app.UseDeveloperExceptionPage();
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                // Resolve the settings singleton to see whether we should use the custom error page, even in
+                // the development environment
+                var settings = app.ApplicationServices.GetService<FlightRecorderApplicationSettings>();
+                bool useCustomErrorPage = settings?.UseCustomErrorPageInDevelopment ?? false;
+
+                if (useCustomErrorPage)
+                {
+                    app.UseExceptionHandler("/Home/Error");
+                    app.UseHsts();
+                }
+                else
+                {
+                    app.UseDeveloperExceptionPage();
+                }      
             }
             else
             {

@@ -21,5 +21,6 @@ namespace FlightRecorder.Entities.Config
         public int CacheLifetimeSeconds { get; set; }
         public string DateTimeFormat { get; set; }
         public string DefaultLocationAttribute { get; set; }
+        public bool UseCustomErrorPageInDevelopment { get; set; }
     }
 }

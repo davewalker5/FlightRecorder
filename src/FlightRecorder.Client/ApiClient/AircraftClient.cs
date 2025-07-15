@@ -14,7 +14,6 @@ namespace FlightRecorder.Client.ApiClient
     {
         private const string RouteKey = "Aircraft";
         private const string CacheKeyPrefix = "Aircraft";
-        private const int AllAircraftPageSize = 1000000;
 
         private readonly IModelClient _models;
 
@@ -41,7 +40,7 @@ namespace FlightRecorder.Client.ApiClient
             List<Aircraft> aircraft = Cache.Get<List<Aircraft>>(key);
             if (aircraft == null)
             {
-                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/model/{modelId}/1/{AllAircraftPageSize}";
+                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/model/{modelId}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {

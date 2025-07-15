@@ -14,7 +14,6 @@ namespace FlightRecorder.Client.ApiClient
     {
         private const string RouteKey = "Flights";
         private const string CacheKeyPrefix = "Flights";
-        private const int AllFlightsPageSize = 1000000;
 
         private IAirlineClient _airlines;
 
@@ -42,7 +41,7 @@ namespace FlightRecorder.Client.ApiClient
             List<Flight> flights = Cache.Get<List<Flight>>(key);
             if (flights == null)
             {
-                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/route/{embarkation}/{destination}/1/{AllFlightsPageSize}";
+                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/route/{embarkation}/{destination}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -68,7 +67,7 @@ namespace FlightRecorder.Client.ApiClient
             List<Flight> flights = Cache.Get<List<Flight>>(key);
             if (flights == null)
             {
-                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/airline/{airlineId}/1/{AllFlightsPageSize}";
+                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/airline/{airlineId}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {
@@ -95,7 +94,7 @@ namespace FlightRecorder.Client.ApiClient
             List<Flight> flights = Cache.Get<List<Flight>>(key);
             if (flights == null)
             {
-                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/number/{number}/1/{AllFlightsPageSize}";
+                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/number/{number}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 if (!string.IsNullOrEmpty(json))
                 {

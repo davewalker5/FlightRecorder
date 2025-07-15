@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public class AircraftDetailsViewModel
+    public class AircraftDetailsViewModel : FlightRecorderEntityBase
     {
         public long? AircraftId { get; set; }
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public class FlightDetailsViewModel
+    public class FlightDetailsViewModel : FlightRecorderEntityBase
     {
         [DisplayName("Flight Number")]
         public string FlightNumber { get; set; }

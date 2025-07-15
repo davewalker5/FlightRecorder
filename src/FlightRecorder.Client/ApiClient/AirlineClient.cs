@@ -13,7 +13,6 @@ namespace FlightRecorder.Client.ApiClient
     {
         private const string RouteKey = "Airlines";
         private const string CacheKey = "Airlines";
-        private const int AllAirlinesPageSize = 1000000;
 
         public AirlineClient(
             IFlightRecorderHttpClient client,
@@ -34,7 +33,7 @@ namespace FlightRecorder.Client.ApiClient
             List<Airline> airlines = Cache.Get<List<Airline>>(CacheKey);
             if (airlines == null)
             {
-                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{AllAirlinesPageSize}";
+                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/1/{int.MaxValue}";
                 string json = await SendDirectAsync(route, null, HttpMethod.Get);
                 airlines = Deserialize<List<Airline>>(json)?.OrderBy(m => m.Name).ToList();
                 Cache.Set(CacheKey, airlines, Settings.CacheLifetimeSeconds);
