@@ -20,7 +20,7 @@ namespace FlightRecorder.Tests
         private const string MalformedResponse = "[{\"fullName\": \"London Heathrow\",\"country\": {\"name\": \"United Kingdom\"}}]";
         private const string Response = "{\"fullName\": \"London Heathrow\",\"country\": {\"name\": \"United Kingdom\"}}";
 
-        private MockHttpClient _client;
+        private MockExternalApiHttpClient _client;
         private IAirportsApi _api;
 
         [TestInitialize]
@@ -28,7 +28,7 @@ namespace FlightRecorder.Tests
         {
             // Create the logger, mock client and API wrappers
             var logger = new MockFileLogger();
-            _client = new MockHttpClient();
+            _client = new MockExternalApiHttpClient();
             _api = new AeroDataBoxAirportsApi(logger, _client, EndpointBaseUrl, "");
         }
 

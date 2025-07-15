@@ -1,25 +1,28 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class LocationsController : Controller
+    public class LocationsController : FlightRecorderControllerBase
     {
-        private readonly LocationClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly ILocationClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
+        private readonly ILogger<LocationsController> _logger;
 
-        public LocationsController(LocationClient client, IOptions<AppSettings> settings)
+        public LocationsController(
+            ILocationClient client,
+            FlightRecorderApplicationSettings settings,
+            ILogger<LocationsController> logger)
         {
             _client = client;
             _settings = settings;
+            _logger = logger;
         }
 
         /// <summary>
@@ -29,9 +32,14 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Location> locations = await _client.GetLocationsAsync(1, _settings.Value.SearchPageSize);
+            // Get the list of current locations
+            List<Location> locations = await _client.GetLocationsAsync(1, _settings.SearchPageSize);
+            var plural = locations.Count == 1 ? "" : "s";
+            _logger.LogDebug($"{locations.Count} location{plural} loaded via the service");
+
+            // Construct the view model and serve the page
             var model = new LocationListViewModel();
-            model.SetLocations(locations, 1, _settings.Value.SearchPageSize);
+            model.SetLocations(locations, 1, _settings.SearchPageSize);
             return View(model);
         }
 
@@ -65,8 +73,12 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Retrieve the matching airport records
-                var locations = await _client.GetLocationsAsync(page, _settings.Value.SearchPageSize);
-                model.SetLocations(locations, page, _settings.Value.SearchPageSize);
+                var locations = await _client.GetLocationsAsync(page, _settings.SearchPageSize);
+                model.SetLocations(locations, page, _settings.SearchPageSize);
+            }
+            else
+            {
+                LogModelStateErrors(_logger);
             }
 
             return View(model);
@@ -93,10 +105,15 @@ namespace FlightRecorder.Mvc.Controllers
         {
             if (ModelState.IsValid)
             {
+                _logger.LogDebug($"Adding location: Name = {model.Name}");
                 Location location = await _client.AddLocationAsync(model.Name);
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Location '{location.Name}' added successfully";
+            }
+            else
+            {
+                LogModelStateErrors(_logger);
             }
 
             return View(model);
@@ -127,6 +144,7 @@ namespace FlightRecorder.Mvc.Controllers
 
             if (ModelState.IsValid)
             {
+                _logger.LogDebug($"Updating location: ID = {model.Id}, Name = {model.Name}");
                 await _client.UpdateLocationAsync(model.Id, model.Name);
                 result = RedirectToAction("Index");
             }

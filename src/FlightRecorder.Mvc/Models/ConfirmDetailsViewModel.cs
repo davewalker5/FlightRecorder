@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using FlightRecorder.Entities.Db;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public class ConfirmDetailsViewModel
+    public class ConfirmDetailsViewModel : FlightRecorderEntityBase
     {
         [DisplayName("Date")]
         public DateTime Date { get; set; }

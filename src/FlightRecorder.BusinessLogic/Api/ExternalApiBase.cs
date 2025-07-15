@@ -11,10 +11,10 @@ namespace FlightRecorder.BusinessLogic.Api
 {
     public abstract class ExternalApiBase
     {
-        private readonly IFlightRecorderHttpClient _client;
+        private readonly IExternalApiHttpClient _client;
         protected IFlightRecorderLogger Logger { get; private set; }
 
-        protected ExternalApiBase(IFlightRecorderLogger logger, IFlightRecorderHttpClient client)
+        protected ExternalApiBase(IFlightRecorderLogger logger, IExternalApiHttpClient client)
         {
             Logger = logger;
             _client = client;

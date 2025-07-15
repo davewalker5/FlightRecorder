@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FlightRecorder.Tests
@@ -17,24 +19,24 @@ namespace FlightRecorder.Tests
         private const string AirlineName = "EasyJet";
 
         private FlightRecorderFactory _factory;
+        private long _airlineId;
 
         [TestInitialize]
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
-            Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, AirlineName)).Wait();
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
+            _airlineId = Task.Run(() => _factory.Airlines.AddAsync(AirlineName)).Result.Id;
+            long countryId = Task.Run(() => _factory.Countries.AddAsync("")).Result.Id;
+            Task.Run(() => _factory.Airports.AddAsync(Embarkation, "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync(Destination, "", countryId)).Wait();
+            Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId)).Wait();
         }
 
         [TestMethod]
-        public async Task AddDuplicateAsyncTest()
-        {
-            await _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, AirlineName);
-            var flights = await _factory.Flights.ListAsync(null, 1, 100).ToListAsync();
-            var airlines = await _factory.Airlines.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, flights.Count);
-            Assert.AreEqual(1, airlines.Count);
-        }
+        [ExpectedException(typeof(FlightExistsException))]
+        public async Task CannotAddDuplicateAsyncTest()
+            => await _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId);
 
         [TestMethod]
         public async Task AddAndGetAsyncTest()

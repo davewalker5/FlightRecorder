@@ -4,8 +4,6 @@ using FlightRecorder.Entities.Db;
 using FlightRecorder.Entities.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace FlightRecorder.Api.Controllers

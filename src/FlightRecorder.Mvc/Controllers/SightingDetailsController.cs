@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Entities;
+﻿using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class SightingDetailsController : Controller
+    public class SightingDetailsController : FlightRecorderControllerBase
     {
         private AddSightingWizard _wizard;
 

@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
-using FlightRecorder.Mvc.Entities;
+﻿using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightRecorder.Mvc.Controllers
 {
-    public class ConfirmDetailsController : Controller
+    [Authorize]
+    public class ConfirmDetailsController : FlightRecorderControllerBase
     {
         private AddSightingWizard _wizard;
 

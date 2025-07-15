@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Entities;
+﻿using AutoMapper;
+using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DroneFlightLog.Mvc.Controllers
+namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class ModelsController : Controller
+    public class ModelsController : FlightRecorderControllerBase
     {
-        private readonly ManufacturerClient _manufacturers;
-        private readonly ModelClient _models;
+        private readonly IManufacturerClient _manufacturers;
+        private readonly IModelClient _models;
         private readonly IMapper _mapper;
 
-        public ModelsController(ManufacturerClient manufacturers, ModelClient models, IMapper mapper)
+        public ModelsController(IManufacturerClient manufacturers, IModelClient models, IMapper mapper)
         {
             _manufacturers = manufacturers;
             _models = models;

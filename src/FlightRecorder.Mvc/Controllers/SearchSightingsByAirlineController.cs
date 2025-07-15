@@ -1,23 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class SearchSightingsByAirlineController : Controller
+    public class SearchSightingsByAirlineController : FlightRecorderControllerBase
     {
-        private readonly AirlineClient _airlines;
-        private readonly SightingsSearchClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly IAirlineClient _airlines;
+        private readonly ISightingsSearchClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        public SearchSightingsByAirlineController(AirlineClient airlines, SightingsSearchClient client, IOptions<AppSettings> settings)
+        public SearchSightingsByAirlineController(IAirlineClient airlines, ISightingsSearchClient client, FlightRecorderApplicationSettings settings)
         {
             _airlines = airlines;
             _client = client;
@@ -72,8 +70,8 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                List<Sighting> sightings = await _client.GetSightingsByAirline(model.AirlineId, page, _settings.Value.SearchPageSize);
-                model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
+                List<Sighting> sightings = await _client.GetSightingsByAirline(model.AirlineId, page, _settings.SearchPageSize);
+                model.SetSightings(sightings, page, _settings.SearchPageSize);
 
                 List<Airline> airlines = await _airlines.GetAirlinesAsync();
                 model.SetAirlines(airlines);

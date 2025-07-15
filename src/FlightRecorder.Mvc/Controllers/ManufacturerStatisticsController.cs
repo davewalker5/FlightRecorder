@@ -1,27 +1,26 @@
-﻿using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Reporting;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 
 namespace FlightRecorder.Mvc.Controllers
 {
-    public class ManufacturerStatisticsController : Controller
+    [Authorize]
+    public class ManufacturerStatisticsController : FlightRecorderControllerBase
     {
-        private readonly ReportsClient _reportsClient;
-        private readonly ExportClient _exportClient;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly IReportsClient _reportsClient;
+        private readonly IExportClient _exportClient;
+        private readonly FlightRecorderApplicationSettings _settings;
 
         public ManufacturerStatisticsController(
-            ReportsClient reportsClient,
-            ExportClient exportsClient,
-            IOptions<AppSettings> settings)
+            IReportsClient iReportsClient,
+            IExportClient exportsClient,
+            FlightRecorderApplicationSettings settings)
         {
-            _reportsClient = reportsClient;
+            _reportsClient = iReportsClient;
             _exportClient = exportsClient;
             _settings = settings;
         }
@@ -75,8 +74,8 @@ namespace FlightRecorder.Mvc.Controllers
                 DateTime start = !string.IsNullOrEmpty(model.From) ? DateTime.Parse(model.From) : DateTime.MinValue;
                 DateTime end = !string.IsNullOrEmpty(model.To) ? DateTime.Parse(model.To) : DateTime.MaxValue;
 
-                List<ManufacturerStatistics> records = await _reportsClient.ManufacturerStatisticsAsync(start, end, page, _settings.Value.SearchPageSize);
-                model.SetRecords(records, page, _settings.Value.SearchPageSize);
+                List<ManufacturerStatistics> records = await _reportsClient.ManufacturerStatisticsAsync(start, end, page, _settings.SearchPageSize);
+                model.SetRecords(records, page, _settings.SearchPageSize);
             }
 
             return View(model);
@@ -90,7 +89,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpPost]
         public async Task<IActionResult> Export([FromBody] ManufacturerStatisticsViewModel model)
         {
-            await _exportClient.ExportReport<ManufacturerStatistics>(model);
+            await _exportClient.ExportReport<ManufacturerStatistics>(model.From, model.To);
             return Ok();
         }
     }

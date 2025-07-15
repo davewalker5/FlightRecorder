@@ -28,6 +28,7 @@ namespace FlightRecorder.BusinessLogic.Factory
         private readonly Lazy<IDateBasedReport<MyFlights>> _myFlights = null;
 
         public FlightRecorderDbContext Context { get; private set; }
+        public IFlightRecorderLogger Logger { get; private set; }
 
         public IAirlineManager Airlines { get { return _airlines.Value; } }
         public ILocationManager Locations { get { return _locations.Value; } }
@@ -59,33 +60,34 @@ namespace FlightRecorder.BusinessLogic.Factory
         [ExcludeFromCodeCoverage]
         public IDateBasedReport<MyFlights> MyFlights { get { return _myFlights.Value; } }
 
-        public FlightRecorderFactory(FlightRecorderDbContext context)
+        public FlightRecorderFactory(FlightRecorderDbContext context, IFlightRecorderLogger logger)
         {
-            // Store the database context
+            // Store the database context and logger
             Context = context;
+            Logger = logger;
 
             // Lazily instantiate the database managers : They'll only actually be created if called by
             // the application
-            _airlines = new Lazy<IAirlineManager>(() => new AirlineManager(context));
-            _locations = new Lazy<ILocationManager>(() => new LocationManager(context));
-            _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(context));
+            _airlines = new Lazy<IAirlineManager>(() => new AirlineManager(this));
+            _locations = new Lazy<ILocationManager>(() => new LocationManager(this));
+            _manufacturers = new Lazy<IManufacturerManager>(() => new ManufacturerManager(this));
             _models = new Lazy<IModelManager>(() => new ModelManager(this));
             _aircraft = new Lazy<IAircraftManager>(() => new AircraftManager(this));
             _flights = new Lazy<IFlightManager>(() => new FlightManager(this));
             _sightings = new Lazy<ISightingManager>(() => new SightingManager(this));
-            _users = new Lazy<IUserManager>(() => new UserManager(context));
-            _countries = new Lazy<ICountryManager>(() => new CountryManager(context));
+            _users = new Lazy<IUserManager>(() => new UserManager(this));
+            _countries = new Lazy<ICountryManager>(() => new CountryManager(this));
             _airports = new Lazy<IAirportManager>(() => new AirportManager(this));
-            _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(context));
+            _jobStatuses = new Lazy<IJobStatusManager>(() => new JobStatusManager(this));
 
             // Lazily instantiate the reporting managers : Once again, they'll only actually be created if called by
             // the application
-            _airlineStatistics = new Lazy<IDateBasedReport<AirlineStatistics>>(() => new DateBasedReport<AirlineStatistics>(context));
-            _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(context));
-            _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(context));
-            _modelStatistics = new Lazy<IDateBasedReport<ModelStatistics>>(() => new DateBasedReport<ModelStatistics>(context));
-            _flightsByMonth = new Lazy<IDateBasedReport<FlightsByMonth>>(() => new DateBasedReport<FlightsByMonth>(context));
-            _myFlights = new Lazy<IDateBasedReport<MyFlights>>(() => new DateBasedReport<MyFlights>(context));
+            _airlineStatistics = new Lazy<IDateBasedReport<AirlineStatistics>>(() => new DateBasedReport<AirlineStatistics>(this));
+            _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(this));
+            _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(this));
+            _modelStatistics = new Lazy<IDateBasedReport<ModelStatistics>>(() => new DateBasedReport<ModelStatistics>(this));
+            _flightsByMonth = new Lazy<IDateBasedReport<FlightsByMonth>>(() => new DateBasedReport<FlightsByMonth>(this));
+            _myFlights = new Lazy<IDateBasedReport<MyFlights>>(() => new DateBasedReport<MyFlights>(this));
         }
     }
 }

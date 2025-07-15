@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FlightRecorder.BusinessLogic.Factory;
+﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,22 +11,23 @@ namespace FlightRecorder.Api.Controllers
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route("[controller]")]
-    public class ModelsController : Controller
+    public class ModelsController : FlightRecorderApiController
     {
-        private readonly FlightRecorderFactory _factory;
-
-        public ModelsController(FlightRecorderFactory factory)
+        public ModelsController(FlightRecorderFactory factory, IFlightRecorderLogger logger) : base(factory, logger)
         {
-            _factory = factory;
         }
 
         [HttpGet]
         [Route("manufacturer/{manufacturerId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Model>>> GetModelsAsync(int manufacturerId, int pageNumber, int pageSize)
         {
-            List<Model> models = await _factory.Models
+            LogMessage(Severity.Debug, $"Retrieving list of models for manufacturer with ID {manufacturerId} (page {pageNumber}, page size {pageSize})");
+
+            List<Model> models = await Factory.Models
                                                .ListAsync(m => m.ManufacturerId == manufacturerId, pageNumber, pageSize)
                                                .ToListAsync();
+
+            LogMessage(Severity.Debug, $"Retrieved {models.Count} model(s)");
 
             if (!models.Any())
             {
@@ -41,16 +41,26 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Model>> GetModelAsync(int id)
         {
-            Model model = await _factory.Models.GetAsync(m => m.Id == id);
+            LogMessage(Severity.Debug, $"Retrieving model with ID {id}");
+
+            Model model = await Factory.Models.GetAsync(m => m.Id == id);
 
             if (model == null)
             {
+                LogMessage(Severity.Debug, $"Model with ID {id} not found");
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+            return model;
+        }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Model>> AddModelAsync([FromBody] Model template)
+        {
+            LogMessage(Severity.Debug, $"Adding model: {template}");
+            Model model = await Factory.Models.AddAsync(template.Name, template.ManufacturerId);
+            LogMessage(Severity.Debug, $"Added model: {model}");
             return model;
         }
 
@@ -58,36 +68,25 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Model>> UpdateModelAsync([FromBody] Model template)
         {
-            // TODO : Move this functionality to the Business Logic assembly
-            Model model = await _factory.Models
-                                        .GetAsync(m => (m.Name == template.Name) &&
-                                                       (m.ManufacturerId == template.ManufacturerId));
-            if (model != null)
-            {
-                return BadRequest();
-            }
+            LogMessage(Severity.Debug, $"Updating model: {template}");
 
-            model = await _factory.Models.GetAsync(m => m.Id == template.Id);
-            if (model == null)
-            {
-                return NotFound();
-            }
+            Model model = await Factory.Models.UpdateAsync(
+                template.Id,
+                template.Name,
+                template.ManufacturerId);
 
-            model.Name = template.Name;
-            model.ManufacturerId = template.ManufacturerId;
-            await _factory.Context.SaveChangesAsync();
-            await _factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+            LogMessage(Severity.Debug, $"Model updated: {model}");
 
             return model;
         }
 
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Model>> CreateModelAsync([FromBody] Model template)
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteModelAsync(int id)
         {
-            // TODO : Should have an add method using the manufacturer ID
-            Model location = await _factory.Models.AddAsync(template.Name, template.Manufacturer.Name);
-            return location;
+            LogMessage(Severity.Debug, $"Deleting model: ID = {id}");
+            await Factory.Models.DeleteAsync(id);
+            return Ok();
         }
     }
 }

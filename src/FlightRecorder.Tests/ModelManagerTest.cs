@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace FlightRecorder.Tests
 {
@@ -15,29 +18,26 @@ namespace FlightRecorder.Tests
         private const string ManufacturerName = "Airbus";
 
         private FlightRecorderFactory _factory;
+        private long _manufacturerId;
 
         [TestInitialize]
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
-            Task.Run(() => _factory.Models.AddAsync(ModelName, ManufacturerName)).Wait();
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
+            _manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
+            Console.WriteLine(_manufacturerId);
+            Task.Run(() => _factory.Models.AddAsync(ModelName, _manufacturerId)).Wait();
         }
 
         [TestMethod]
-        public async Task AddDuplicateAsyncTest()
-        {
-            await _factory.Models.AddAsync(ModelName, ManufacturerName);
-            var models = await _factory.Models.ListAsync(null, 1, 100).ToListAsync();
-            var manufacturers = await _factory.Manufacturers.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, models.Count);
-            Assert.AreEqual(1, manufacturers.Count);
-        }
+        [ExpectedException(typeof(ModelExistsException))]
+        public async Task CannotAddDuplicateAsyncTest()
+            => await _factory.Models.AddAsync(ModelName, _manufacturerId);
 
         [TestMethod]
         public async Task AddAndGetAsyncTest()
         {
-            await _factory.Models.AddAsync(ModelName, ManufacturerName);
             Model model = await _factory.Models.GetAsync(a => a.Name == ModelName);
 
             Assert.IsNotNull(model);

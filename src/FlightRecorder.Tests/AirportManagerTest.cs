@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 
@@ -17,22 +19,21 @@ namespace FlightRecorder.Tests
         private const string Country = "UK";
 
         private FlightRecorderFactory _factory;
+        private long _countryId;
 
         [TestInitialize]
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
-            Task.Run(() => _factory.Airports.AddAsync(Code, Name, Country)).Wait();
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
+            _countryId = Task.Run(() => _factory.Countries.AddAsync(Country)).Result.Id;
+            Task.Run(() => _factory.Airports.AddAsync(Code, Name, _countryId)).Wait();
         }
 
         [TestMethod]
-        public async Task AddDuplicateAsyncTest()
-        {
-            await _factory.Airports.AddAsync(Code, Name, Country);
-            var airports = await _factory.Airports.ListAsync(null, 1, 100).ToListAsync();
-            Assert.AreEqual(1, airports.Count);
-        }
+        [ExpectedException(typeof(AirportExistsException))]
+        public async Task CannotAddDuplicateAsyncTest()
+            => await _factory.Airports.AddAsync(Code, Name, _countryId);
 
         [TestMethod]
         public async Task AddAndGetAsyncTest()

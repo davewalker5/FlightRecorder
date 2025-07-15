@@ -1,13 +1,15 @@
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Attributes;
-using FlightRecorder.Mvc.Configuration;
+using FlightRecorder.Client.ApiClient;
 using FlightRecorder.Mvc.Controllers;
-using FlightRecorder.Mvc.Interfaces;
+using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using FlightRecorder.Mvc.Api;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Attributes;
 
 namespace FlightRecorder.Mvc
 {
@@ -28,32 +30,47 @@ namespace FlightRecorder.Mvc
             // Configure automapper
             services.AddAutoMapper(typeof(Startup));
 
-            // Configure strongly typed application settings
-            IConfigurationSection section = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(section);
+            // Set up the configuration reader
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-            // The typed HttpClient needs to access session via the context
+            // Read the application settings section
+            IConfigurationSection section = configuration.GetSection("ApplicationSettings");
+            var settings = section.Get<FlightRecorderApplicationSettings>();
+            services.AddSingleton<FlightRecorderApplicationSettings>(settings);
+
+            // The authentication token provider needs to access session via the context
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IAuthenticationTokenProvider, AuthenticationTokenProvider>();
 
-            // Interactions with the REST service are managed via typed HttpClients
-            // with "lookup" caching for performance
+            // Configure the cache
             services.AddMemoryCache();
             services.AddSingleton<ICacheWrapper>(s => new CacheWrapper(new MemoryCacheOptions()));
+            
+            // Configure the client APIs
+            services.AddSingleton<IFlightRecorderHttpClient>(provider => FlightRecorderHttpClient.Instance);
+            services.AddSingleton<IAuthenticationClient, AuthenticationClient>();
+            services.AddSingleton<IAirlineClient, AirlineClient>();
+            services.AddSingleton<IAircraftClient, AircraftClient>();
+            services.AddSingleton<ICountriesClient, CountriesClient>();
+            services.AddSingleton<IFlightClient, FlightClient>();
+            services.AddSingleton<ILocationClient, LocationClient>();
+            services.AddSingleton<IManufacturerClient, ManufacturerClient>();
+            services.AddSingleton<IModelClient, ModelClient>();
+            services.AddSingleton<ISightingClient, SightingClient>();
+            services.AddSingleton<ISightingsSearchClient, SightingsSearchClient>();
+            services.AddSingleton<IReportsClient, ReportsClient>();
+            services.AddSingleton<IExportClient, ExportClient>();
+            services.AddSingleton<IUserAttributesClient, UserAttributesClient>();
+
+            // The airports client implements two interfaces. We want to register a singleton for both
+            services.AddSingleton<AirportsClient>();
+            services.AddSingleton<IAirportsRetriever>(sp => sp.GetRequiredService<AirportsClient>());
+            services.AddSingleton<IAirportsClient>(sp => sp.GetRequiredService<AirportsClient>());
+
+            // Configure the sightings wizard
             services.AddScoped<AddSightingWizard>();
-            services.AddHttpClient<AuthenticationClient>();
-            services.AddHttpClient<AirlineClient>();
-            services.AddHttpClient<AircraftClient>();
-            services.AddHttpClient<AirportsClient>();
-            services.AddHttpClient<CountriesClient>();
-            services.AddHttpClient<FlightClient>();
-            services.AddHttpClient<LocationClient>();
-            services.AddHttpClient<ManufacturerClient>();
-            services.AddHttpClient<ModelClient>();
-            services.AddHttpClient<SightingClient>();
-            services.AddHttpClient<SightingsSearchClient>();
-            services.AddHttpClient<ReportsClient>();
-            services.AddHttpClient<ExportClient>();
-            services.AddHttpClient<UserAttributesClient>();
 
             // Configure session state for token storage
             services.AddSession(options =>
@@ -64,7 +81,6 @@ namespace FlightRecorder.Mvc
             });
 
             // Configure JWT
-            AppSettings settings = section.Get<AppSettings>();
             byte[] key = Encoding.ASCII.GetBytes(settings.Secret);
             services.AddAuthentication(x =>
             {
@@ -90,7 +106,20 @@ namespace FlightRecorder.Mvc
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // Resolve the settings singleton to see whether we should use the custom error page, even in
+                // the development environment
+                var settings = app.ApplicationServices.GetService<FlightRecorderApplicationSettings>();
+                bool useCustomErrorPage = settings?.UseCustomErrorPageInDevelopment ?? false;
+
+                if (useCustomErrorPage)
+                {
+                    app.UseExceptionHandler("/Home/Error");
+                    app.UseHsts();
+                }
+                else
+                {
+                    app.UseDeveloperExceptionPage();
+                }      
             }
             else
             {
@@ -105,7 +134,7 @@ namespace FlightRecorder.Mvc
             // Set up a class that provides classes that are not managed by the DI container (Attributes)
             // with access to the instances of the cache and HTTP clients that are registered in the
             // ConfigureServices() method
-            new ServiceAccessor().SetProvider(app.ApplicationServices);
+            ServiceAccessor.SetProvider(app.ApplicationServices);
 
             // JWT authentication with the service is used to authenticate in the UI, so the user data
             // is held in one place (the service database). The login page authenticates with the service
@@ -113,7 +142,7 @@ namespace FlightRecorder.Mvc
             // token (if present) into an incoming request
             app.Use(async (context, next) =>
             {
-                string token = context.Session.GetString(LoginController.TokenSessionKey);
+                string token = context.Session.GetString(AuthenticationTokenProvider.TokenSessionKey);
                 if (!string.IsNullOrEmpty(token))
                 {
                     context.Request.Headers.Append("Authorization", "Bearer " + token);

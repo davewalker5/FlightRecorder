@@ -1,21 +1,20 @@
-﻿using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class CountriesController : Controller
+    public class CountriesController : FlightRecorderControllerBase
     {
-        private readonly CountriesClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly ICountriesClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        public CountriesController(CountriesClient client, IOptions<AppSettings> settings)
+        public CountriesController(ICountriesClient client, FlightRecorderApplicationSettings settings)
         {
             _client = client;
             _settings = settings;
@@ -28,9 +27,9 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var countries = await _client.GetCountriesAsync(1, _settings.Value.SearchPageSize);
+            var countries = await _client.GetCountriesAsync(1, _settings.SearchPageSize);
             var model = new CountryListViewModel();
-            model.SetCountries(countries, 1, _settings.Value.SearchPageSize);
+            model.SetCountries(countries, 1, _settings.SearchPageSize);
             return View(model);
         }
 
@@ -64,8 +63,8 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Retrieve the matching country records
-                var countries = await _client.GetCountriesAsync(page, _settings.Value.SearchPageSize);
-                model.SetCountries(countries, page, _settings.Value.SearchPageSize);
+                var countries = await _client.GetCountriesAsync(page, _settings.SearchPageSize);
+                model.SetCountries(countries, page, _settings.SearchPageSize);
             }
 
             return View(model);

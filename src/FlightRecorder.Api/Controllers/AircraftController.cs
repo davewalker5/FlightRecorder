@@ -1,5 +1,7 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
@@ -10,22 +12,23 @@ namespace FlightRecorder.Api.Controllers
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route("[controller]")]
-    public class AircraftController : Controller
+    public class AircraftController : FlightRecorderApiController
     {
-        private readonly FlightRecorderFactory _factory;
-
-        public AircraftController(FlightRecorderFactory factory)
+        public AircraftController(FlightRecorderFactory factory, IFlightRecorderLogger logger) : base(factory, logger)
         {
-            _factory = factory;
         }
 
         [HttpGet]
         [Route("manufacturer/{manufacturerId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Aircraft>>> GetAircraftByManufacturerAsync(int manufacturerId, int pageNumber, int pageSize)
         {
-            List<Aircraft> aircraft = await _factory.Aircraft
+            LogMessage(Severity.Debug, $"Retrieving list of aircraft for manufacturer with ID {manufacturerId} (page {pageNumber}, page size {pageSize})");
+
+            List<Aircraft> aircraft = await Factory.Aircraft
                                                     .ListAsync(a => a.Model.ManufacturerId == manufacturerId, pageNumber, pageSize)
                                                     .ToListAsync();
+
+            LogMessage(Severity.Debug, $"Retrieved {aircraft.Count} aircraft");
 
             if (!aircraft.Any())
             {
@@ -39,9 +42,13 @@ namespace FlightRecorder.Api.Controllers
         [Route("model/{modelId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Aircraft>>> GetAircraftByModelAsync(int modelId, int pageNumber, int pageSize)
         {
-            List<Aircraft> aircraft = await _factory.Aircraft
+            LogMessage(Severity.Debug, $"Retrieving list of aircraft for model with ID {modelId} (page {pageNumber}, page size {pageSize})");
+
+            List<Aircraft> aircraft = await Factory.Aircraft
                                                     .ListAsync(a => a.ModelId == modelId, pageNumber, pageSize)
                                                     .ToListAsync();
+
+            LogMessage(Severity.Debug, $"Retrieved {aircraft.Count} aircraft");
 
             if (!aircraft.Any())
             {
@@ -56,21 +63,17 @@ namespace FlightRecorder.Api.Controllers
         public async Task<ActionResult<Aircraft>> GetAircraftByRegistrationAsync(string registration)
         {
             string decodedRegistration = HttpUtility.UrlDecode(registration).ToUpper();
-            Aircraft aircraft = await _factory.Aircraft
+            LogMessage(Severity.Debug, $"Retrieving aircraft with registration {registration}");
+            Aircraft aircraft = await Factory.Aircraft
                                               .GetAsync(a => a.Registration == decodedRegistration);
 
             if (aircraft == null)
             {
+                LogMessage(Severity.Debug, $"Aircraft with registration {registration} not found");
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            // Load the model and manufacturer, if specified
-            if (aircraft.ModelId != null)
-            {
-                await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
-                await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
-            }
+            LogMessage(Severity.Debug, $"Aircraft retrieved: {aircraft}");
 
             return aircraft;
         }
@@ -79,21 +82,34 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Aircraft>> GetAircraftByIdAsync(int id)
         {
-            Aircraft aircraft = await _factory.Aircraft.GetAsync(a => a.Id == id);
+            LogMessage(Severity.Debug, $"Retrieving aircraft with ID {id}");
+            Aircraft aircraft = await Factory.Aircraft.GetAsync(a => a.Id == id);
 
             if (aircraft == null)
             {
+                LogMessage(Severity.Debug, $"Aircraft with ID {id} not found");
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            // Load the model and manufacturer, if specified
-            if (aircraft.ModelId != null)
-            {
-                await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
-                await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
-            }
+            LogMessage(Severity.Debug, $"Aircraft retrieved: {aircraft}");
 
+            return aircraft;
+        }
+
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Aircraft>> AddAircraftAsync([FromBody] Aircraft template)
+        {
+            LogMessage(Severity.Debug, $"Adding aircraft: {template}");
+
+            long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
+            Aircraft aircraft = await Factory.Aircraft
+                                                .AddAsync(template.Registration,
+                                                          template.SerialNumber,
+                                                          manufactured,
+                                                          template.ModelId);
+                                                    
+            LogMessage(Severity.Debug, $"Added aircraft: {aircraft}");
             return aircraft;
         }
 
@@ -101,56 +117,27 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Aircraft>> UpdateAircraftAsync([FromBody] Aircraft template)
         {
-            // TODO : Move this functionality to the Business Logic assembly
-            template.Registration = template.Registration.ToUpper();
-            template.SerialNumber = template.SerialNumber.ToUpper();
+            LogMessage(Severity.Debug, $"Updating aircraft: {template}");
 
-            Aircraft aircraft = await _factory.Aircraft
-                        .GetAsync(a => (a.Registration == template.Registration) ||
-                                       (  (a.Model.ManufacturerId == template.Model.ManufacturerId) &&
-                                          (a.SerialNumber == template.SerialNumber) &&
-                                          !string.IsNullOrEmpty(a.SerialNumber)));
+            long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
+            Aircraft aircraft = await Factory.Aircraft.UpdateAsync(
+                template.Id,
+                template.Registration,
+                template.SerialNumber,
+                manufactured,
+                template.ModelId);
 
-            if ((aircraft != null) && (aircraft.Id != template.Id))
-            {
-                return BadRequest();
-            }
-
-            aircraft = await _factory.Aircraft.GetAsync(m => m.Id == template.Id);
-            if (aircraft == null)
-            {
-                return NotFound();
-            }
-
-            aircraft.Registration = template.Registration;
-            aircraft.SerialNumber = template.SerialNumber;
-            aircraft.Manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
-            aircraft.ModelId = template.ModelId;
-            await _factory.Context.SaveChangesAsync();
-
-            // Load the model and manufacturer, if specified
-            if (aircraft.ModelId != null)
-            {
-                await _factory.Context.Entry(aircraft).Reference(a => a.Model).LoadAsync();
-                await _factory.Context.Entry(aircraft.Model).Reference(m => m.Manufacturer).LoadAsync();
-            }
-
+            LogMessage(Severity.Debug, $"Aircraft updated: {aircraft}");
             return aircraft;
         }
 
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Aircraft>> CreateAircraftAsync([FromBody] Aircraft template)
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteAircraftAsync(int id)
         {
-            // TODO : Should have create method taking model and manufacturer IDs
-            long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
-            Aircraft aircraft = await _factory.Aircraft
-                                              .AddAsync(template.Registration,
-                                                        template.SerialNumber,
-                                                        manufactured,
-                                                        template.Model?.Name,
-                                                        template.Model?.Manufacturer?.Name);
-            return aircraft;
+            LogMessage(Severity.Debug, $"Deleting aircraft: ID = {id}");
+            await Factory.Aircraft.DeleteAsync(id);
+            return Ok();
         }
     }
 }

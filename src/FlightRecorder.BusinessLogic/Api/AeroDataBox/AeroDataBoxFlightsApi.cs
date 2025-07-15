@@ -17,7 +17,7 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
 
         public AeroDataBoxFlightsApi(
             IFlightRecorderLogger logger,
-            IFlightRecorderHttpClient client,
+            IExternalApiHttpClient client,
             string url,
             string key)
             : base(logger, client)

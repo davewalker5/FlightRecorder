@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <PackageId>FlightRecorder.Entities</PackageId>
-    <PackageVersion>1.10.0.0</PackageVersion>
+    <PackageVersion>1.19.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
-    <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023, 2024</Copyright>
+    <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023, 2024, 2025</Copyright>
     <Owners>Dave Walker</Owners>
-    <PackageReleaseNotes>Dependency updates</PackageReleaseNotes>
     <Summary>Flight Recorder Domain Models</Summary>
     <PackageTags>FlightRecorder domain models entities</PackageTags>
     <Title>Flight Recorder Domain Models</Title>
@@ -16,14 +15,14 @@
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <ReleaseVersion>1.10.0.0</ReleaseVersion>
+    <ReleaseVersion>1.19.0.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Exceptions\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Interfaces\IFlightRecorderDbContext.cs" />

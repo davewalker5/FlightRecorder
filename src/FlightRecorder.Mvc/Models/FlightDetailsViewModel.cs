@@ -1,20 +1,18 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using FlightRecorder.Mvc.Attributes;
-using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Entities.Attributes;
+using FlightRecorder.Entities.Db;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public class FlightDetailsViewModel
+    public class FlightDetailsViewModel : FlightRecorderEntityBase
     {
         [DisplayName("Flight Number")]
         public string FlightNumber { get; set; }
 
         [DisplayName("Flight")]
-        public int FlightId { get; set; }
+        public long FlightId { get; set; }
 
         [IATACode]
         [DisplayName("Embarkation")]
@@ -27,13 +25,13 @@ namespace FlightRecorder.Mvc.Models
         public string Destination { get; set; }
 
         [DisplayName("Airline")]
-        public int AirlineId { get; set; }
+        public long AirlineId { get; set; }
 
         [DisplayName("New Airline")]
         public string NewAirline { get; set; }
         public bool IsDuplicate { get; set; }
         public Sighting MostRecentSighting { get; set; }
-        public int? SightingId { get; set;}
+        public long? SightingId { get; set;}
 
         public string Action { get; set; }
         public string AirlineErrorMessage { get; set; }

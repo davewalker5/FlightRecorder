@@ -1,7 +1,10 @@
 ﻿using FlightRecorder.BusinessLogic.Extensions;
+using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,11 +16,11 @@ namespace FlightRecorder.BusinessLogic.Database
 {
     internal class JobStatusManager : IJobStatusManager
     {
-        private readonly FlightRecorderDbContext _context;
+        private readonly FlightRecorderFactory _factory;
 
-        internal JobStatusManager(FlightRecorderDbContext context)
+        internal JobStatusManager(FlightRecorderFactory factory)
         {
-            _context = context;
+            _factory = factory;
         }
 
         /// <summary>
@@ -43,7 +46,7 @@ namespace FlightRecorder.BusinessLogic.Database
             IAsyncEnumerable<JobStatus> results;
             if (predicate == null)
             {
-                results = _context.JobStatuses
+                results = _factory.Context.JobStatuses
                                   .OrderByDescending(x => x.Start)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
@@ -51,7 +54,7 @@ namespace FlightRecorder.BusinessLogic.Database
             }
             else
             {
-                results = _context.JobStatuses
+                results = _factory.Context.JobStatuses
                                   .Where(predicate)
                                   .OrderByDescending(x => x.Start)
                                   .Skip((pageNumber - 1) * pageSize)
@@ -69,6 +72,8 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<JobStatus> AddAsync(string name, string parameters)
         {
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding job status: Name = {name}, Parameters = {parameters}");
+
             JobStatus status = new JobStatus
             {
                 Name = name.CleanString(),
@@ -76,8 +81,10 @@ namespace FlightRecorder.BusinessLogic.Database
                 Start = DateTime.Now
             };
 
-            await _context.JobStatuses.AddAsync(status);
-            await _context.SaveChangesAsync();
+            await _factory.Context.JobStatuses.AddAsync(status);
+            await _factory.Context.SaveChangesAsync();
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Added job status {status}");
 
             return status;
         }
@@ -90,13 +97,22 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<JobStatus> UpdateAsync(long id, string error)
         {
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating job status: ID = {id}, Error = {error}");
+
+            // Retrieve the job status record
             JobStatus status = await GetAsync(x => x.Id == id);
-            if (status != null)
+            if (status == null)
             {
-                status.End = DateTime.Now;
-                status.Error = error.CleanString();
-                await _context.SaveChangesAsync();
+                var message = $"Job status record with ID {id} not found";
+                throw new JobStatusNotFoundException(message);
             }
+            
+            // Update the record properties and save changes
+            status.End = DateTime.Now;
+            status.Error = error.CleanString();
+            await _factory.Context.SaveChangesAsync();
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Updated job status {status}");
 
             return status;
         }

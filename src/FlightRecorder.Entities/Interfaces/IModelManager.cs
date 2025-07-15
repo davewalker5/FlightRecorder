@@ -8,10 +8,14 @@ namespace FlightRecorder.Entities.Interfaces
 {
     public interface IModelManager
     {
-        Task<Model> AddAsync(string name, string manufacturerName);
+        Task<Model> AddAsync(string name, long manufacturerId);
+        Task<Model> AddIfNotExistsAsync(string name, long manufacturerId);
         Task<Model> GetAsync(Expression<Func<Model, bool>> predicate);
         IAsyncEnumerable<Model> ListAsync(Expression<Func<Model, bool>> predicate, int pageNumber, int pageSize);
         Task<int> CountAsync();
         IAsyncEnumerable<Model> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize);
+        Task<Model> UpdateAsync(long id, string name, long manufacturerId);
+        Task DeleteAsync(long id);
+        Task CheckModelExists(long? modelId);
     }
 }

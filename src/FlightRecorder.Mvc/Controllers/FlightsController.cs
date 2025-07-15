@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoMapper;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Entities;
+﻿using AutoMapper;
+using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class FlightsController : Controller
+    public class FlightsController : FlightRecorderControllerBase 
     {
-        private readonly AirlineClient _airlines;
-        private readonly FlightClient _flights;
+        private readonly IAirlineClient _airlines;
+        private readonly IFlightClient _flights;
         private readonly IMapper _mapper;
 
-        public FlightsController(AirlineClient airlines, FlightClient flights, IMapper mapper)
+        public FlightsController(IAirlineClient airlines, IFlightClient flights, IMapper mapper)
         {
             _airlines = airlines;
             _flights = flights;

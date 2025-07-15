@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using FlightRecorder.Entities.Reporting;
 
 namespace FlightRecorder.Api.Entities
 {

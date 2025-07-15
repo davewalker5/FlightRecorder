@@ -27,16 +27,16 @@ namespace FlightRecorder.Manager
             Operation op = new CommandParser().ParseCommandLine(args);
             if (op.Valid)
             {
-                // Create a database context and a factory class
-                FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateDbContext(null);
-                factory = new FlightRecorderFactory(context);
-
                 // Read the application settings
                 var settings = new FlightRecorderConfigReader().Read("appsettings.json", "ApplicationSettings");
 
                 // Create a file logger
                 var logger = new FileLogger();
                 logger.Initialise(settings.LogFile, settings.MinimumLogLevel);
+
+                // Create a database context and a factory class
+                FlightRecorderDbContext context = new FlightRecorderDbContextFactory().CreateDbContext(null);
+                factory = new FlightRecorderFactory(context, logger);
 
                 try
                 {

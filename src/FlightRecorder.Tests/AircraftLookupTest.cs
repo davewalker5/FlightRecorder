@@ -34,7 +34,7 @@ namespace FlightRecorder.Tests
         private const string MalformedAgeResponse = "{ \"reg\": \"EI-DEA\", \"serial\": \"2191\", \"hexIcao\": \"4CA213\", \"model\": \"A320\", \"modelCode\": \"320-214\", \"registrationDate\": \"This is not a date\", \"typeName\": \"Airbus A320\", \"productionLine\": \"Airbus A320\" }";
         private const string Response = "{ \"reg\": \"EI-DEA\", \"serial\": \"2191\", \"hexIcao\": \"4CA213\", \"model\": \"A320\", \"modelCode\": \"320-214\", \"registrationDate\": \"2004-05-04\", \"typeName\": \"Airbus A320\", \"productionLine\": \"Airbus A320\" }";
 
-        private MockHttpClient _client;
+        private MockExternalApiHttpClient _client;
         private IAircraftApi _api;
 
         [TestInitialize]
@@ -42,7 +42,7 @@ namespace FlightRecorder.Tests
         {
             // Create the logger, mock client and API wrappers
             var logger = new MockFileLogger();
-            _client = new MockHttpClient();
+            _client = new MockExternalApiHttpClient();
             _api = new AeroDataBoxAircraftApi(logger, _client, EndpointBaseUrl, "");
         }
 

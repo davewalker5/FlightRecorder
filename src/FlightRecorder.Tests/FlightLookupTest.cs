@@ -21,7 +21,7 @@ namespace FlightRecorder.Tests
         private const string MalformedResponse = "{}";
         private const string Response = "[{\"departure\": {\"airport\": {\"iata\": \"MAN\"}},\"arrival\": {\"airport\": {\"iata\": \"BCN\"}},\"airline\": {\"name\": \"Jet2\"}}]";
 
-        private MockHttpClient _client;
+        private MockExternalApiHttpClient _client;
         private IFlightsApi _api;
 
         [TestInitialize]
@@ -29,7 +29,7 @@ namespace FlightRecorder.Tests
         {
             // Create the logger, mock client and API wrappers
             var logger = new MockFileLogger();
-            _client = new MockHttpClient();
+            _client = new MockExternalApiHttpClient();
             _api = new AeroDataBoxFlightsApi(logger, _client, EndpointBaseUrl, "");
         }
 

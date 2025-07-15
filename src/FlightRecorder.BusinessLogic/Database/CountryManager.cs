@@ -1,24 +1,25 @@
-﻿using FlightRecorder.BusinessLogic.Extensions;
-using FlightRecorder.Data;
-using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
+using FlightRecorder.BusinessLogic.Extensions;
+using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Exceptions;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlightRecorder.BusinessLogic.Database
 {
     internal class CountryManager : ICountryManager
     {
-        private readonly FlightRecorderDbContext _context;
+        private readonly FlightRecorderFactory _factory;
 
-        internal CountryManager(FlightRecorderDbContext context)
+        internal CountryManager(FlightRecorderFactory factory)
         {
-            _context = context;
+            _factory = factory;
         }
 
         /// <summary>
@@ -44,14 +45,18 @@ namespace FlightRecorder.BusinessLogic.Database
             IAsyncEnumerable<Country> results;
             if (predicate == null)
             {
-                results = _context.Countries
+                results = _factory.Context.Countries
+                                  .OrderBy(c => c.Name)
                                   .Skip((pageNumber - 1) * pageSize)
                                   .Take(pageSize)
                                   .AsAsyncEnumerable();
             }
             else
             {
-                results = _context.Countries.Where(predicate).AsAsyncEnumerable();
+                results = _factory.Context.Countries
+                                  .Where(predicate)
+                                  .OrderBy(c => c.Name)
+                                  .AsAsyncEnumerable();
             }
 
             return results;
@@ -64,17 +69,115 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         public async Task<Country> AddAsync(string name)
         {
-            name = name.CleanString();
-            Country country = await GetAsync(a => a.Name == name);
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding country: Name = {name}");
 
-            if (country == null)
-            {
-                country = new Country { Name = name };
-                await _context.Countries.AddAsync(country);
-                await _context.SaveChangesAsync();
-            }
+            // Check the country doesn't already exist
+            name = name.CleanString();            
+            await CheckCountryIsNotADuplicate(name, 0);
+
+            // Add the country and save changes
+            var country = new Country { Name = name };
+            await _factory.Context.Countries.AddAsync(country);
+            await _factory.Context.SaveChangesAsync();
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Added country {country}");
 
             return country;
+        }
+
+        /// <summary>
+        /// Update a country
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task<Country> UpdateAsync(long id, string name)
+        {
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating country: ID = {id}, Name = {name}");
+
+            // Retrieve the country
+            var country = await _factory.Context.Countries.FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
+            {
+                var message = $"Country with ID {id} not found";
+                throw new CountryNotFoundException(message);
+            }
+
+            // Check the country doesn't already exist
+            name = name.CleanString();            
+            await CheckCountryIsNotADuplicate(name, id);
+
+            // Update the country properties and save changes
+            country.Name = name;
+            await _factory.Context.SaveChangesAsync();
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Updated country {country}");
+
+            return country;
+        }
+
+        /// <summary>
+        /// Delete the country with the specified ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="CountryNotFoundException"></exception>
+        /// <exception cref="CountryInUseException"></exception>
+        public async Task DeleteAsync(long id)
+        {
+            _factory.Logger.LogMessage(Severity.Debug, $"Deleting country: ID = {id}");
+
+            // Check the country exists
+            var country = await _factory.Context.Countries.FirstOrDefaultAsync(x => x.Id == id);
+            if (country == null)
+            {
+                var message = $"Country with ID {id} not found";
+                throw new CountryNotFoundException(message);
+            }
+
+            // Check there are no airports for this country
+            var airports = await _factory.Airports.ListAsync(x => x.CountryId == id, 1, 1).ToListAsync();
+            if (airports.Any())
+            {
+                var message = $"Country with Id {id} has airports associated with it and cannot be deleted";
+                throw new CountryInUseException(message);
+            }
+
+            // Remove the country
+            _factory.Context.Remove(country);
+            await _factory.Context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Raise an exception if the specified country doesn't exist
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <exception cref="CountryNotFoundException"></exception>
+        public async Task CheckCountryExists(long countryId)
+        {
+            var country = await _factory.Countries.GetAsync(x => x.Id == countryId);
+            if (country == null)
+            {
+                var message = $"Country with ID {countryId} not found";
+                throw new CountryNotFoundException(message);
+            }
+        }
+
+        /// <summary>
+        /// Raise an exception if an attempt is made to add/update a country with a duplicate
+        /// name
+        /// </summary>
+        /// <param code="name"></param>
+        /// <param name="id"></param>
+        /// <exception cref="CountryExistsException"></exception>
+        private async Task CheckCountryIsNotADuplicate(string name, long id)
+        {
+            var Country = await _factory.Context.Countries.FirstOrDefaultAsync(x => x.Name == name);
+            if ((Country != null) && (Country.Id != id))
+            {
+                var message = $"Country {name} already exists";
+                throw new CountryExistsException(message);
+            }
         }
     }
 }

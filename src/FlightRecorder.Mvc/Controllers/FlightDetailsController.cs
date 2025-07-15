@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightRecorder.Mvc.Controllers
 {
-    public class FlightDetailsController : Controller
+    [Authorize]
+    public class FlightDetailsController : FlightRecorderControllerBase
     {
         private AddSightingWizard _wizard;
 
@@ -63,7 +64,7 @@ namespace FlightRecorder.Mvc.Controllers
             else if (model.Action == ControllerActions.ActionPreviousPage)
             {
                 _wizard.ClearCachedFlightDetailsModel(User.Identity.Name);
-                int? sightingId = _wizard.GetCurrentSightingId(User.Identity.Name);
+                long? sightingId = _wizard.GetCurrentSightingId(User.Identity.Name);
                 result = RedirectToAction("Index", "SightingDetails", new { Id = sightingId });
             }
             else

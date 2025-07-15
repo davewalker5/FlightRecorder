@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace FlightRecorder.Entities.Db
 {
     [ExcludeFromCodeCoverage]
-    public class User
+    public class User : FlightRecorderEntityBase
     {
         [Key]
         public int Id { get; set; }

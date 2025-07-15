@@ -1,12 +1,12 @@
 ﻿using FlightRecorder.Entities.Attributes;
+using FlightRecorder.Entities.Db;
 using System;
 using System.Globalization;
 
 namespace FlightRecorder.Entities.DataExchange
 {
-    public class FlattenedSighting
+    public class FlattenedSighting : FlightRecorderEntityBase
     {
-        // TODO : Add IsMyFlight to the Regex pattern
         public const string CsvRecordPattern = @"^(""[a-zA-Z0-9-() \/']+"",){6}""[0-9]+"",(""[a-zA-Z0-9-() \/']+"",){3}""[0-9]+\/[0-9]+\/[0-9]+"",""[a-zA-Z0-9-() \/']+"",""True|False""$";
         private const string DateTimeFormat = "dd/MM/yyyy";
 

@@ -4,12 +4,10 @@ using FlightRecorder.Entities.Api;
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Manager.Entities;
-using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace FlightRecorder.Manager.Logic
@@ -19,7 +17,7 @@ namespace FlightRecorder.Manager.Logic
         private readonly IFlightRecorderLogger _logger;
         private readonly IEnumerable<ApiEndpoint> _endpoints;
         private readonly IEnumerable<ApiServiceKey> _keys;
-        private readonly IFlightRecorderHttpClient _client = FlightRecorderHttpClient.Instance;
+        private readonly IExternalApiHttpClient _client = ExternalApiHttpClient.Instance;
 
         public EntityLookup(IFlightRecorderLogger logger, IEnumerable<ApiEndpoint> endpoints, IEnumerable<ApiServiceKey> keys)
         {

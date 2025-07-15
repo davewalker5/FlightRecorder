@@ -1,6 +1,6 @@
 ﻿using System;
 using AutoMapper;
-using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 
 namespace FlightRecorder.Mvc.Configuration

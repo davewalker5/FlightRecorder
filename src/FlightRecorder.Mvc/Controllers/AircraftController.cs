@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using AutoMapper;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Entities;
+﻿using AutoMapper;
+using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,14 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class AircraftController : Controller
+    public class AircraftController : FlightRecorderControllerBase
     {
-        private readonly ManufacturerClient _manufacturers;
-        private readonly ModelClient _models;
-        private readonly AircraftClient _aircraft;
+        private readonly IManufacturerClient _manufacturers;
+        private readonly IModelClient _models;
+        private readonly IAircraftClient _aircraft;
         private readonly IMapper _mapper;
 
-        public AircraftController(ManufacturerClient manufacturers, ModelClient models, AircraftClient aircraft, IMapper mapper)
+        public AircraftController(IManufacturerClient manufacturers, IModelClient models, IAircraftClient aircraft, IMapper mapper)
         {
             _manufacturers = manufacturers;
             _models = models;
@@ -158,7 +154,7 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 int? manufactured = (viewModel.Age != null) ? DateTime.Now.Year - viewModel.Age : null;
-                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ManufacturerId, viewModel.ModelId);
+                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ModelId);
                 result = RedirectToAction("Index", new { manufacturerId = viewModel.ManufacturerId, modelId = viewModel.ModelId });
             }
             else

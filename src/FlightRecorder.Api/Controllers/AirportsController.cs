@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using FlightRecorder.BusinessLogic.Factory;
+﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Entities.Interfaces;
+using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Web;
 
 namespace FlightRecorder.Api.Controllers
 {
@@ -14,22 +12,23 @@ namespace FlightRecorder.Api.Controllers
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Route("[controller]")]
-    public class AirportsController : Controller
+    public class AirportsController : FlightRecorderApiController
     {
-        private readonly FlightRecorderFactory _factory;
-
-        public AirportsController(FlightRecorderFactory factory)
+        public AirportsController(FlightRecorderFactory Factory, IFlightRecorderLogger logger) : base(Factory, logger)
         {
-            _factory = factory;
         }
 
         [HttpGet]
         [Route("{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Airport>>> GetAirportsAsync(int pageNumber, int pageSize)
         {
-            List<Airport> airports = await _factory.Airports
+            LogMessage(Severity.Debug, $"Retrieving list of airports (page {pageNumber}, page size {pageSize})");
+
+            List<Airport> airports = await Factory.Airports
                                                  .ListAsync(null, pageNumber, pageSize)
                                                  .ToListAsync();
+
+            LogMessage(Severity.Debug, $"Retrieved {airports.Count} airport(s)");
 
             if (!airports.Any())
             {
@@ -43,13 +42,16 @@ namespace FlightRecorder.Api.Controllers
         [Route("code/{code}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Airport>>> GetAirportsByCodeAsync(string code, int pageNumber, int pageSize)
         {
+            LogMessage(Severity.Debug, $"Retrieving list of airports with code {code} (page {pageNumber}, page size {pageSize})");
+
             string decodedCode = HttpUtility.UrlDecode(code).ToUpper();
-            List<Airport> airports = await _factory.Airports
+            List<Airport> airports = await Factory.Airports
                                                  .ListAsync(f => f.Code == decodedCode, pageNumber, pageSize)
                                                  .ToListAsync();
 
             if (!airports.Any())
             {
+                LogMessage(Severity.Debug, $"No matching airports found");
                 return NoContent();
             }
 
@@ -60,12 +62,15 @@ namespace FlightRecorder.Api.Controllers
         [Route("country/{countryId}/{pageNumber}/{pageSize}")]
         public async Task<ActionResult<List<Airport>>> GetAirportsByCountryAsync(int countryId, int pageNumber, int pageSize)
         {
-            List<Airport> airports = await _factory.Airports
+            LogMessage(Severity.Debug, $"Retrieving list of airports for country ID {countryId} (page {pageNumber}, page size {pageSize})");
+
+            List<Airport> airports = await Factory.Airports
                                                  .ListAsync(f => f.CountryId == countryId, pageNumber, pageSize)
                                                  .ToListAsync();
 
             if (!airports.Any())
             {
+                LogMessage(Severity.Debug, $"No matching airports found");
                 return NoContent();
             }
 
@@ -76,16 +81,29 @@ namespace FlightRecorder.Api.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Airport>> GetAirportByIdAsync(int id)
         {
-            Airport airport = await _factory.Airports.GetAsync(f => f.Id == id);
+            LogMessage(Severity.Debug, $"Retrieving airport with ID {id}");
+
+            Airport airport = await Factory.Airports.GetAsync(f => f.Id == id);
 
             if (airport == null)
             {
+                LogMessage(Severity.Debug, $"Airport with ID {id} not found");
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            await _factory.Context.Entry(airport).Reference(f => f.Country).LoadAsync();
+            return airport;
+        }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Airport>> AddAirportAsync([FromBody] Airport template)
+        {
+            LogMessage(Severity.Debug, $"Adding airport: {template}");
+            Airport airport = await Factory.Airports
+                                          .AddAsync(template.Code,
+                                                    template.Name,
+                                                    template.CountryId);
+            LogMessage(Severity.Debug, $"Added airport: {airport}");
             return airport;
         }
 
@@ -93,32 +111,25 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Airport>> UpdateAirportAsync([FromBody] Airport template)
         {
-            // TODO This logic should be in the business logic
-            Airport airport = await _factory.Airports.GetAsync(f => f.Id == template.Id);
-            if (airport == null)
-            {
-                return NotFound();
-            }
+            LogMessage(Severity.Debug, $"Updating airport: {template}");
 
-            airport.Code = template.Code.ToUpper();
-            airport.Name = template.Name;
-            airport.CountryId = template.CountryId;
-            await _factory.Context.SaveChangesAsync();
-            await _factory.Context.Entry(airport).Reference(a => a.Country).LoadAsync();
+            Airport airport = await Factory.Airports.UpdateAsync(
+                template.Id,
+                template.Code,
+                template.Name,
+                template.CountryId);
 
+            LogMessage(Severity.Debug, $"Airport updated: {airport}");
             return airport;
         }
 
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Airport>> CreateAirportAsync([FromBody] Airport template)
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteAirportAsync(int id)
         {
-            // TODO : Should have a method taking the country ID
-            Airport airport = await _factory.Airports
-                                          .AddAsync(template.Code,
-                                                    template.Name,
-                                                    template.Country.Name);
-            return airport;
+            LogMessage(Severity.Debug, $"Deleting airport: ID = {id}");
+            await Factory.Airports.DeleteAsync(id);
+            return Ok();
         }
     }
 }

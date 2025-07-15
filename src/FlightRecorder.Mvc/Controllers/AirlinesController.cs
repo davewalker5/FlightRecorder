@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Entities;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class AirlinesController : Controller
+    public class AirlinesController : FlightRecorderControllerBase
     {
-        private readonly AirlineClient _client;
+        private readonly IAirlineClient _client;
 
-        public AirlinesController(AirlineClient client)
+        public AirlinesController(IAirlineClient client)
         {
             _client = client;
         }
@@ -25,7 +23,7 @@ namespace FlightRecorder.Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<Airline> airlines = await _client.GetAirlinesAsync();
+            List<Airline> airlines = await _client.GetAirlinesAsync() ?? [];
             return View(airlines);
         }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Data;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FlightRecorder.Tests
@@ -31,7 +32,10 @@ namespace FlightRecorder.Tests
 
         private FlightRecorderFactory _factory;
         private long _locationId;
+        private long _airlineId;
         private long _flightId;
+        private long _manufacturerId;
+        private long _modelId;
         private long _aircraftId;
         private long _sightingId;
 
@@ -39,11 +43,20 @@ namespace FlightRecorder.Tests
         public void TestInitialize()
         {
             FlightRecorderDbContext context = FlightRecorderDbContextFactory.CreateInMemoryDbContext();
-            _factory = new FlightRecorderFactory(context);
+            _factory = new FlightRecorderFactory(context, new MockFileLogger());
 
             _locationId = Task.Run(() => _factory.Locations.AddAsync(LocationName)).Result.Id;
-            _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, AirlineName)).Result.Id;
-            _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, ModelName, ManufacturerName)).Result.Id;
+            _airlineId = Task.Run(() => _factory.Airlines.AddAsync(AirlineName)).Result.Id;
+            long countryId = Task.Run(() => _factory.Countries.AddAsync("")).Result.Id;
+            Task.Run(() => _factory.Airports.AddAsync(Embarkation, "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync(Destination, "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync("LHR", "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync("YYZ", "", countryId)).Wait();
+            Task.Run(() => _factory.Airports.AddAsync("MAN", "", countryId)).Wait();
+            _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId)).Result.Id;
+            _manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
+            _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, _manufacturerId)).Result.Id;
+            _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, _modelId)).Result.Id;
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(Altitude, SightingDate, _locationId, _flightId, _aircraftId, IsMyFlight)).Result.Id;
         }
 
@@ -114,7 +127,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListByAircraftWithNoSightingsAsyncTest()
         {
-            await _factory.Aircraft.AddAsync("G-EZEH", "2184", 2004, ModelName, ManufacturerName);
+            await _factory.Aircraft.AddAsync("G-EZEH", "2184", 2004, _modelId);
             List<Sighting> sightings = await _factory.Sightings.ListByAircraftAsync("G-EZEH", 1, 100).Result.ToListAsync();
             Assert.AreEqual(0, sightings.Count);
         }
@@ -139,7 +152,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListByRouteWithNoSightingsAsyncTest()
         {
-            await _factory.Flights.AddAsync("BA92", "YYZ", "LHR", "British Airways");
+            await _factory.Flights.AddAsync("BA92", "YYZ", "LHR", _airlineId);
             List<Sighting> sightings = await _factory.Sightings.ListByRouteAsync("YYZ", "LHR", 1, 100).Result.ToListAsync();
             Assert.AreEqual(0, sightings.Count);
         }

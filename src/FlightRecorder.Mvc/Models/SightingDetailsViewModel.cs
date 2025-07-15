@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Entities.Db;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public class SightingDetailsViewModel
+    public class SightingDetailsViewModel : FlightRecorderEntityBase
     {
-        public int? SightingId { get; set; }
+        public long? SightingId { get; set; }
 
         [DisplayName("Date")]
         [Required(ErrorMessage = "You must provide a date for the sighting")]
@@ -15,10 +15,10 @@ namespace FlightRecorder.Mvc.Models
 
         [DisplayName("Altitude")]
         [Required(ErrorMessage = "You must provide an altitude")]
-        public int? Altitude { get; set; }
+        public long? Altitude { get; set; }
 
         [DisplayName("Location")]
-        public int LocationId { get; set; }
+        public long LocationId { get; set; }
 
         [DisplayName("New Location")]
         public string NewLocation { get; set; }

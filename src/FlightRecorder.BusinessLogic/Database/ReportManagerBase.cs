@@ -1,4 +1,5 @@
-﻿using FlightRecorder.Data;
+﻿using FlightRecorder.BusinessLogic.Factory;
+using FlightRecorder.Entities.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,11 +13,12 @@ namespace FlightRecorder.BusinessLogic.Database
     [ExcludeFromCodeCoverage]
     internal abstract class ReportManagerBase
     {
-        private readonly FlightRecorderDbContext _context;
 
-        protected ReportManagerBase(FlightRecorderDbContext context)
+        private readonly FlightRecorderFactory _factory;
+
+        protected ReportManagerBase(FlightRecorderFactory factory)
         {
-            _context = context;
+            _factory = factory;
         }
 
         /// <summary>
@@ -28,13 +30,17 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <returns></returns>
         protected async Task<IEnumerable<T>> GenerateReportAsync<T>(string query, int pageNumber, int pageSize) where T : class
         {
+            _factory.Logger.LogMessage(Severity.Debug, $"Executing : {query}");
+
             // Pagination using Skip and Take causes the database query to fail with FromSqlRaw, possible
             // dependent on the DBS. To avoid this, the results are queried in two steps:
             //
             // 1) Query the database for all the report results and convert to a list
             // 2) Extract the required page from the in-memory list
-            var all = await _context.Set<T>().FromSqlRaw(query).ToListAsync();
+            var all = await _factory.Context.Set<T>().FromSqlRaw(query).ToListAsync();
             var results = all.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+            _factory.Logger.LogMessage(Severity.Debug, $"Retrieved {results?.Count() ?? 0} results for page {pageNumber}, page size {pageSize}");
             return results;
         }
 

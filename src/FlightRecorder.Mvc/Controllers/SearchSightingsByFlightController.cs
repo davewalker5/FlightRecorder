@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using FlightRecorder.Mvc.Api;
-using FlightRecorder.Mvc.Configuration;
+﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Entities.Config;
+using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc.Controllers
 {
     [Authorize]
-    public class SearchSightingsByFlightController : Controller
+    public class SearchSightingsByFlightController : FlightRecorderControllerBase
     {
-        private readonly SightingsSearchClient _client;
-        private readonly IOptions<AppSettings> _settings;
+        private readonly ISightingsSearchClient _client;
+        private readonly FlightRecorderApplicationSettings _settings;
 
-        public SearchSightingsByFlightController(SightingsSearchClient client, IOptions<AppSettings> settings)
+        public SearchSightingsByFlightController(ISightingsSearchClient client, FlightRecorderApplicationSettings settings)
         {
             _client = client;
             _settings = settings;
@@ -68,8 +66,8 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                List<Sighting> sightings = await _client.GetSightingsByFlight(model.FlightNumber, page, _settings.Value.SearchPageSize);
-                model.SetSightings(sightings, page, _settings.Value.SearchPageSize);
+                List<Sighting> sightings = await _client.GetSightingsByFlight(model.FlightNumber, page, _settings.SearchPageSize);
+                model.SetSightings(sightings, page, _settings.SearchPageSize);
             }
 
             return View(model);

@@ -1,4 +1,4 @@
-using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Entities.Reporting;
 
 namespace FlightRecorder.Mvc.Models
 {
