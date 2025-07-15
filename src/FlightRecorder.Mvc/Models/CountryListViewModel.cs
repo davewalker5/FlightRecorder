@@ -1,6 +1,4 @@
 ﻿using FlightRecorder.Entities.Db;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace FlightRecorder.Mvc.Models
 {
@@ -16,9 +14,9 @@ namespace FlightRecorder.Mvc.Models
         /// <param name="pageSize"></param>
         public void SetCountries(IEnumerable<Country> countries, int pageNumber, int pageSize)
         {
-            Countries = countries;
+            Countries = countries ?? [];
             PageNumber = pageNumber;
-            SetPreviousNextEnabled(countries.Count(), pageNumber, pageSize);
+            SetPreviousNextEnabled(Countries.Count(), pageNumber, pageSize);
         }
     }
 }

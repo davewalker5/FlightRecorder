@@ -16,9 +16,9 @@ namespace FlightRecorder.Mvc.Models
         /// <param name="pageSize"></param>
         public void SetManufacturers(IEnumerable<Manufacturer> manufacturers, int pageNumber, int pageSize)
         {
-            Manufacturers = manufacturers;
+            Manufacturers = manufacturers ?? [];
             PageNumber = pageNumber;
-            SetPreviousNextEnabled(manufacturers.Count(), pageNumber, pageSize);
+            SetPreviousNextEnabled(Manufacturers.Count(), pageNumber, pageSize);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -97,9 +96,20 @@ namespace FlightRecorder.Api.Controllers
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            await Factory.Context.Entry(flight).Reference(f => f.Airline).LoadAsync();
+            return flight;
+        }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Flight>> AddFlightAsync([FromBody] Flight template)
+        {
+            LogMessage(Severity.Debug, $"Adding flight: {template}");
+            Flight flight = await Factory.Flights
+                                          .AddAsync(template.Number,
+                                                    template.Embarkation,
+                                                    template.Destination,
+                                                    template.AirlineId);
+            LogMessage(Severity.Debug, $"Added flight: {flight}");
             return flight;
         }
 
@@ -107,45 +117,17 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Flight>> UpdateFlightAsync([FromBody] Flight template)
         {
-            Flight flight;
-
             LogMessage(Severity.Debug, $"Updating flight: {template}");
 
-            try
-            {
-                flight = await Factory.Flights.UpdateAsync(
-                    template.Id,
-                    template.Number,
-                    template.Embarkation,
-                    template.Destination,
-                    template.AirlineId);
-            }
-            catch (FlightNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
+            Flight flight = await Factory.Flights.UpdateAsync(
+                template.Id,
+                template.Number,
+                template.Embarkation,
+                template.Destination,
+                template.AirlineId);
 
             LogMessage(Severity.Debug, $"Flight updated: {flight}");
 
-            return flight;
-        }
-
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Flight>> CreateFlightAsync([FromBody] Flight template)
-        {
-            LogMessage(Severity.Debug, $"Creating flight: {template}");
-            Flight flight = await Factory.Flights
-                                          .AddAsync(template.Number,
-                                                    template.Embarkation,
-                                                    template.Destination,
-                                                    template.AirlineId);
             return flight;
         }
 

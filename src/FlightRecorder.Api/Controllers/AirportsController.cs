@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -95,46 +94,32 @@ namespace FlightRecorder.Api.Controllers
             return airport;
         }
 
-        [HttpPut]
-        [Route("")]
-        public async Task<ActionResult<Airport>> UpdateAirportAsync([FromBody] Airport template)
-        {
-            Airport airport;
-
-            LogMessage(Severity.Debug, $"Updating airport: {template}");
-
-            try
-            {
-                airport = await Factory.Airports.UpdateAsync(
-                    template.Id,
-                    template.Code,
-                    template.Name,
-                    template.CountryId);
-            }
-            catch (AirportNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
-            LogMessage(Severity.Debug, $"Airport updated: {airport}");
-            return airport;
-        }
-
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Airport>> CreateAirportAsync([FromBody] Airport template)
+        public async Task<ActionResult<Airport>> AddAirportAsync([FromBody] Airport template)
         {
-            LogMessage(Severity.Debug, $"Creating airport: {template}");
+            LogMessage(Severity.Debug, $"Adding airport: {template}");
             Airport airport = await Factory.Airports
                                           .AddAsync(template.Code,
                                                     template.Name,
                                                     template.CountryId);
+            LogMessage(Severity.Debug, $"Added airport: {airport}");
+            return airport;
+        }
+
+        [HttpPut]
+        [Route("")]
+        public async Task<ActionResult<Airport>> UpdateAirportAsync([FromBody] Airport template)
+        {
+            LogMessage(Severity.Debug, $"Updating airport: {template}");
+
+            Airport airport = await Factory.Airports.UpdateAsync(
+                template.Id,
+                template.Code,
+                template.Name,
+                template.CountryId);
+
+            LogMessage(Severity.Debug, $"Airport updated: {airport}");
             return airport;
         }
 

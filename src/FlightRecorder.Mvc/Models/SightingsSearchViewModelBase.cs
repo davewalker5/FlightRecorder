@@ -14,10 +14,10 @@ namespace FlightRecorder.Mvc.Models
         /// <param name="pageSize"></param>
         public void SetSightings(List<Sighting> sightings, int pageNumber, int pageSize)
         {
-            Sightings = sightings;
-            HasNoMatchingResults = (sightings == null);
+            Sightings = sightings ?? [];
+            HasNoMatchingResults = !Sightings.Any();
             PageNumber = pageNumber;
-            SetPreviousNextEnabled(sightings?.Count ?? 0, pageNumber, pageSize);
+            SetPreviousNextEnabled(Sightings.Count, pageNumber, pageSize);
         }
     }
 }

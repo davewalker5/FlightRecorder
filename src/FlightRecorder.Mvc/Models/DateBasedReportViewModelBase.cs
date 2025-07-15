@@ -20,10 +20,10 @@ namespace FlightRecorder.Mvc.Models
         /// <param name="pageSize"></param>
         public void SetRecords(List<T> records, int pageNumber, int pageSize)
         {
-            Records = records;
-            HasNoMatchingResults = (records == null);
+            Records = records ?? [];
+            HasNoMatchingResults = !Records.Any();
             PageNumber = pageNumber;
-            SetPreviousNextEnabled(records?.Count ?? 0, pageNumber, pageSize);
+            SetPreviousNextEnabled(Records.Count, pageNumber, pageSize);
         }
     }
 }

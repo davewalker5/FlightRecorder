@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;

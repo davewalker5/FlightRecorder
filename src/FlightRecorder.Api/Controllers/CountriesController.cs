@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -56,40 +55,23 @@ namespace FlightRecorder.Api.Controllers
             return country;
         }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Country>> AddCountryAsync([FromBody] string name)
+        {
+            LogMessage(Severity.Debug, $"Adding country: Name = {name}");
+            Country country = await Factory.Countries.AddAsync(name);
+            LogMessage(Severity.Debug, $"Added country: {country}");
+            return country;
+        }
+
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<Country>> UpdateCountryAsync(int id, [FromBody] string name)
         {
-            Country country;
-
             LogMessage(Severity.Debug, $"Updating country: ID = {id}, Name = {name}");
-
-            try
-            {
-                country = await Factory.Countries.UpdateAsync(id, name);
-            }
-            catch (CountryNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
+            Country country = await Factory.Countries.UpdateAsync(id, name);
             LogMessage(Severity.Debug, $"Country updated: {country}");
-
-            return country;
-        }
-
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Country>> CreateCountryAsync([FromBody] string name)
-        {
-            LogMessage(Severity.Debug, $"Creating country: Name = {name}");
-            Country country = await Factory.Countries.AddAsync(name);
             return country;
         }
 

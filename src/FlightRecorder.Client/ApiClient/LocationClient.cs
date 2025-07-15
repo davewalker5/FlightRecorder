@@ -45,7 +45,7 @@ namespace FlightRecorder.Client.ApiClient
             }
 
             // Extract and return the page of interest
-            var page = locations?.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var page = locations?.Skip((pageNumber - 1) * pageSize)?.Take(pageSize)?.ToList();
             return page;
         }
 

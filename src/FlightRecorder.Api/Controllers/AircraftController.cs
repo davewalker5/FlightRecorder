@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -97,42 +96,9 @@ namespace FlightRecorder.Api.Controllers
             return aircraft;
         }
 
-        [HttpPut]
-        [Route("")]
-        public async Task<ActionResult<Aircraft>> UpdateAircraftAsync([FromBody] Aircraft template)
-        {
-            Aircraft aircraft;
-
-            LogMessage(Severity.Debug, $"Updating aircraft: {template}");
-
-            try
-            {
-                long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
-                aircraft = await Factory.Aircraft.UpdateAsync(
-                    template.Id,
-                    template.Registration,
-                    template.SerialNumber,
-                    manufactured,
-                    template.ModelId);
-            }
-            catch (AircraftNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
-            LogMessage(Severity.Debug, $"Aircraft updated: {aircraft}");
-            return aircraft;
-        }
-
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Aircraft>> CreateAircraftAsync([FromBody] Aircraft template)
+        public async Task<ActionResult<Aircraft>> AddAircraftAsync([FromBody] Aircraft template)
         {
             LogMessage(Severity.Debug, $"Creating aircraft: {template}");
 
@@ -142,6 +108,24 @@ namespace FlightRecorder.Api.Controllers
                                                           template.SerialNumber,
                                                           manufactured,
                                                           template.ModelId);
+            return aircraft;
+        }
+
+        [HttpPut]
+        [Route("")]
+        public async Task<ActionResult<Aircraft>> UpdateAircraftAsync([FromBody] Aircraft template)
+        {
+            LogMessage(Severity.Debug, $"Updating aircraft: {template}");
+
+            long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
+            Aircraft aircraft = await Factory.Aircraft.UpdateAsync(
+                template.Id,
+                template.Registration,
+                template.SerialNumber,
+                manufactured,
+                template.ModelId);
+
+            LogMessage(Severity.Debug, $"Aircraft updated: {aircraft}");
             return aircraft;
         }
 

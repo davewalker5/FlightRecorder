@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -52,9 +51,16 @@ namespace FlightRecorder.Api.Controllers
                 return NotFound();
             }
 
-            // TODO : This logic should be in the business logic
-            await Factory.Context.Entry(model).Reference(m => m.Manufacturer).LoadAsync();
+            return model;
+        }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Model>> AddModelAsync([FromBody] Model template)
+        {
+            LogMessage(Severity.Debug, $"Adding model: {template}");
+            Model model = await Factory.Models.AddAsync(template.Name, template.ManufacturerId);
+            LogMessage(Severity.Debug, $"Added model: {model}");
             return model;
         }
 
@@ -62,40 +68,16 @@ namespace FlightRecorder.Api.Controllers
         [Route("")]
         public async Task<ActionResult<Model>> UpdateModelAsync([FromBody] Model template)
         {
-            Model model;
-
             LogMessage(Severity.Debug, $"Updating model: {template}");
 
-            try
-            {
-                model = await Factory.Models.UpdateAsync(
-                    template.Id,
-                    template.Name,
-                    template.ManufacturerId);
-            }
-            catch (ModelNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
+            Model model = await Factory.Models.UpdateAsync(
+                template.Id,
+                template.Name,
+                template.ManufacturerId);
 
             LogMessage(Severity.Debug, $"Model updated: {model}");
 
             return model;
-        }
-
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Model>> CreateModelAsync([FromBody] Model template)
-        {
-            LogMessage(Severity.Debug, $"Creating model: {template}");
-            Model location = await Factory.Models.AddAsync(template.Name, template.ManufacturerId);
-            return location;
         }
 
         [HttpDelete]

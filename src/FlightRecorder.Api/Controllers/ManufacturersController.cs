@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -56,41 +55,24 @@ namespace FlightRecorder.Api.Controllers
             return manufacturer;
         }
 
+        [HttpPost]
+        [Route("")]
+        public async Task<ActionResult<Manufacturer>> AddManufacturerAsync([FromBody] string name)
+        {
+            LogMessage(Severity.Debug, $"Adding manufacturer: Name = {name}");
+            Manufacturer manufacturer = await Factory.Manufacturers.AddAsync(name);
+            LogMessage(Severity.Debug, $"Added manufacturer: {manufacturer}");
+            return manufacturer;
+        }
+
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<Manufacturer>> UpdateManufacturerAsync(int id, [FromBody] string name)
         {
-            Manufacturer manufacturer;
 
             LogMessage(Severity.Debug, $"Updating manufacturer: ID = {id}, Name = {name}");
-
-            try
-            {
-                manufacturer = await Factory.Manufacturers.UpdateAsync(id, name);
-            }
-            catch (ManufacturerNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
+            Manufacturer manufacturer = await Factory.Manufacturers.UpdateAsync(id, name);
             LogMessage(Severity.Debug, $"Manufacturer updated: {manufacturer}");
-
-            return manufacturer;
-        }
-
-        [HttpPost]
-        [Route("")]
-        public async Task<ActionResult<Manufacturer>> CreateManufacturerAsync([FromBody] string name)
-        {
-            LogMessage(Severity.Debug, $"Creating manufacturer: Name = {name}");
-            Manufacturer manufacturer = await Factory.Manufacturers
-                                                      .AddAsync(name);
             return manufacturer;
         }
 

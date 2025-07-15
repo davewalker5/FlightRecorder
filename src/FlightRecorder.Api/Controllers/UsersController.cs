@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using FlightRecorder.Api.Entities;
+﻿using FlightRecorder.Api.Entities;
 using FlightRecorder.Api.Interfaces;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;

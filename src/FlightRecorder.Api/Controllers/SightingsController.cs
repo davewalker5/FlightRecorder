@@ -1,6 +1,5 @@
 ﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Db;
-using FlightRecorder.Entities.Exceptions;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -167,54 +166,41 @@ namespace FlightRecorder.Api.Controllers
             return sighting;
         }
 
-        [HttpPut]
-        [Route("")]
-        public async Task<ActionResult<Sighting>> UpdateSightingAsync([FromBody] Sighting template)
-        {
-            Sighting sighting;
-
-            LogMessage(Severity.Debug, $"Updating sighting: {template}");
-
-            try
-            {
-                sighting = await Factory.Sightings.UpdateAsync(
-                    template.Id,
-                    template.Altitude,
-                    template.Date,
-                    template.LocationId,
-                    template.FlightId,
-                    template.AircraftId,
-                    template.IsMyFlight);
-            }
-            catch (SightingNotFoundException ex)
-            {
-                Logger.LogException(ex);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-                return BadRequest();
-            }
-
-            LogMessage(Severity.Debug, $"Sighting updated: {sighting}");
-            return sighting;
-        }
-
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Sighting>> CreateSightingAsync([FromBody] Sighting template)
+        public async Task<ActionResult<Sighting>> AddSightingAsync([FromBody] Sighting template)
         {
-            LogMessage(Severity.Debug, $"Creating sighting: {template}");
+            LogMessage(Severity.Debug, $"Adding sighting: {template}");
 
-            Sighting location = await Factory.Sightings
+            Sighting sighting = await Factory.Sightings
                                               .AddAsync(template.Altitude,
                                                         template.Date,
                                                         template.LocationId,
                                                         template.FlightId,
                                                         template.AircraftId,
                                                         template.IsMyFlight);
-            return location;
+
+            LogMessage(Severity.Debug, $"Added sighting: {template}");
+            return sighting;
+        }
+
+        [HttpPut]
+        [Route("")]
+        public async Task<ActionResult<Sighting>> UpdateSightingAsync([FromBody] Sighting template)
+        {
+            LogMessage(Severity.Debug, $"Updating sighting: {template}");
+
+            Sighting sighting = await Factory.Sightings.UpdateAsync(
+                template.Id,
+                template.Altitude,
+                template.Date,
+                template.LocationId,
+                template.FlightId,
+                template.AircraftId,
+                template.IsMyFlight);
+
+            LogMessage(Severity.Debug, $"Sighting updated: {sighting}");
+            return sighting;
         }
 
         [HttpDelete]
