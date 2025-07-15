@@ -82,12 +82,12 @@ namespace FlightRecorder.BusinessLogic.Factory
 
             // Lazily instantiate the reporting managers : Once again, they'll only actually be created if called by
             // the application
-            _airlineStatistics = new Lazy<IDateBasedReport<AirlineStatistics>>(() => new DateBasedReport<AirlineStatistics>(context));
-            _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(context));
-            _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(context));
-            _modelStatistics = new Lazy<IDateBasedReport<ModelStatistics>>(() => new DateBasedReport<ModelStatistics>(context));
-            _flightsByMonth = new Lazy<IDateBasedReport<FlightsByMonth>>(() => new DateBasedReport<FlightsByMonth>(context));
-            _myFlights = new Lazy<IDateBasedReport<MyFlights>>(() => new DateBasedReport<MyFlights>(context));
+            _airlineStatistics = new Lazy<IDateBasedReport<AirlineStatistics>>(() => new DateBasedReport<AirlineStatistics>(this));
+            _locationStatistics = new Lazy<IDateBasedReport<LocationStatistics>>(() => new DateBasedReport<LocationStatistics>(this));
+            _manufacturerStatistics = new Lazy<IDateBasedReport<ManufacturerStatistics>>(() => new DateBasedReport<ManufacturerStatistics>(this));
+            _modelStatistics = new Lazy<IDateBasedReport<ModelStatistics>>(() => new DateBasedReport<ModelStatistics>(this));
+            _flightsByMonth = new Lazy<IDateBasedReport<FlightsByMonth>>(() => new DateBasedReport<FlightsByMonth>(this));
+            _myFlights = new Lazy<IDateBasedReport<MyFlights>>(() => new DateBasedReport<MyFlights>(this));
         }
     }
 }

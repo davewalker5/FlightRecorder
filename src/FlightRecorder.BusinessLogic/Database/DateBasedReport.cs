@@ -1,4 +1,4 @@
-﻿using FlightRecorder.Data;
+﻿using FlightRecorder.BusinessLogic.Factory;
 using FlightRecorder.Entities.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace FlightRecorder.BusinessLogic.Database
         private const string FromDatePlaceHolder = "$from";
         private const string ToDatePlaceHolder = "$to";
 
-        internal DateBasedReport(FlightRecorderDbContext context) : base(context)
+        internal DateBasedReport(FlightRecorderFactory factory) : base(factory)
         {
         }
 
