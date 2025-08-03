@@ -28,7 +28,11 @@
             <div class="col">
                 <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
                 <div class="input-group">
-                    @Html.EditorFor(m => m.FlightNumber, new { @class = "form-control" })
+                    @Html.TextBoxFor(m => m.FlightNumber, new {
+                        @class = "form-control",
+                        style = "text-transform: uppercase;",
+                        oninput = "this.value = this.value.toUpperCase();"
+                    })
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.FlightNumber, "", new { @class = "text-danger" })</span>
             </div>

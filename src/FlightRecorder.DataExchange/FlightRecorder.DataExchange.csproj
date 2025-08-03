@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <PackageId>FlightRecorder.DataExchange</PackageId>
-    <PackageVersion>1.19.0.0</PackageVersion>
+    <PackageVersion>1.20.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
     <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023, 2024, 2025</Copyright>
     <Owners>Dave Walker</Owners>
@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://github.com/davewalker5/FlightRecorderDb</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <ReleaseVersion>1.19.0.0</ReleaseVersion>
+    <ReleaseVersion>1.20.0.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>

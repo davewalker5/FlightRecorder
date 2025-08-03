@@ -14,7 +14,11 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.Code)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Code, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Code, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })</span>
         </div>
