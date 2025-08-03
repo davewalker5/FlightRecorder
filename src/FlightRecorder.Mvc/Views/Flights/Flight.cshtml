@@ -14,7 +14,11 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.FlightNumber, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.FlightNumber, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.FlightNumber, "", new { @class = "text-danger" })</span>
         </div>
@@ -23,7 +27,11 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.Embarkation)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Embarkation, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.Embarkation, "", new { @class = "text-danger" })</span>
         </div>
@@ -32,7 +40,11 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.Destination)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Destination, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Destination, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.Destination, "", new { @class = "text-danger" })</span>
         </div>

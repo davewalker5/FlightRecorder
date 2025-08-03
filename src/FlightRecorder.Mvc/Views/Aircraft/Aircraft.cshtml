@@ -16,7 +16,11 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.Registration)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Registration, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Registration, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.Registration, "", new { @class = "text-danger" })</span>
         </div>
@@ -25,7 +29,11 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.SerialNumber)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.SerialNumber, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.SerialNumber, "", new { @class = "text-danger" })</span>
         </div>
@@ -34,7 +42,13 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.Age)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Age, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Age, new {
+                    @class = "form-control",
+                    type = "text",
+                    inputmode = "numeric",
+                    pattern = "[0-9]*",
+                    oninput = "this.value = this.value.replace(/[^0-9]/g, '')"
+                })
             </div>
             <span>@Html.ValidationMessageFor(m => m.Age, "", new { @class = "text-danger" })</span>
         </div>

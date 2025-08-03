@@ -49,7 +49,11 @@
                 <div class="input-group">
                     @if (Model.AircraftId == null)
                     {
-                        @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.SerialNumber, new {
+                            @class = "form-control",
+                            style = "text-transform: uppercase;",
+                            oninput = "this.value = this.value.toUpperCase();"
+                        })
                     }
                     else
                     {
@@ -70,7 +74,13 @@
                 <div class="input-group">
                     @if (Model.AircraftId == null)
                     {
-                        @Html.TextBoxFor(m => m.Age, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.Age, new {
+                            @class = "form-control",
+                            type = "text",
+                            inputmode = "numeric",
+                            pattern = "[0-9]*",
+                            oninput = "this.value = this.value.replace(/[^0-9]/g, '')"
+                        })
                     }
                     else
                     {

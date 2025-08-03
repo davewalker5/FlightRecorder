@@ -65,7 +65,10 @@
             </div>
             <div class="col">
                 <div class="input-group">
-                    @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control" })
+                    @Html.TextBoxFor(m => m.Embarkation, new {
+                        @class = "form-control",
+                        autocomplete = "off"
+                    })
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.Embarkation, "", new { @class = "text-danger" })</span>
             </div>
@@ -79,7 +82,10 @@
             </div>
             <div class="col">
                 <div class="input-group">
-                    @Html.TextBoxFor(m => m.Destination, new { @class = "form-control" })
+                    @Html.TextBoxFor(m => m.Destination, new {
+                        @class = "form-control",
+                        autocomplete = "off"
+                    })
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.Destination, "", new { @class = "text-danger" })</span>
             </div>
@@ -153,6 +159,17 @@
         $("#FlightId").change(function () {
             var flightId = $("#FlightId").val();
             LoadFlightDetails(flightId);
+        });
+
+        // Make sure the embarkation and destination codes are uppercase
+        $("#Embarkation").on("input", function () {
+            this.value = this.value.toUpperCase();
+            $(this).trigger("change");
+        });
+
+        $("#Destination").on("input", function () {
+            this.value = this.value.toUpperCase();
+            $(this).trigger("change");
         });
 
         // If we start to manually enter the route, clear the flight selection as

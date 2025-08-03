@@ -21,7 +21,7 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.Registration)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Registration, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Registration, new { @class = "form-control", autocomplete = "off" })
             </div>
         </div>
         <div class="col">
@@ -134,16 +134,28 @@
 
         // Respond to change events on the manufacturer list by loading the models for
         // the new selection
-        $("#ManufacturerId").change(function () {
+        $("#ManufacturerId").on("change", function () {
             var manufacturerId = $("#ManufacturerId").val();
             $("#Registration").val("");
             $("#AircraftList").html("");
             LoadModelsForManufacturer(manufacturerId);
         });
 
+        // Make sure the registration number is always upper case
+        $("#Registration").on("input", function () {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Respond to the ENTER key on the registration field by triggering the change event
+        $('#Registration').on("keydown", function (e) {
+            if (e.key === "Enter") {
+                $(this).trigger("change");
+            }
+        });
+
         // Respond to change events on the registration number text box by loading aircraft
         // with that registration
-        $("#Registration").change(function () {
+        $("#Registration").on("change", function () {
             var registration = $("#Registration").val();
             $("#ManufacturerId").val("");
             $("#ModelsList").html("");

@@ -27,19 +27,23 @@
         <div class="col">
             <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.FlightNumber, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.FlightNumber, new {
+                    @class = "form-control",
+                    style = "text-transform: uppercase;",
+                    oninput = "this.value = this.value.toUpperCase();"
+                })
             </div>
         </div>
         <div class="col">
             <strong>@Html.LabelFor(m => m.Embarkation)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Embarkation, new { @class = "form-control", autocomplete ="off" })
             </div>
         </div>
         <div class="col">
             <strong>@Html.LabelFor(m => m.Destination)</strong>
             <div class="input-group">
-                @Html.TextBoxFor(m => m.Destination, new { @class = "form-control" })
+                @Html.TextBoxFor(m => m.Destination, new { @class = "form-control", autocomplete ="off" })
             </div>
         </div>
     </div>
@@ -143,6 +147,10 @@
     }
 
     function RespondToRouteFilterChange() {
+        // Clear the other filters
+        $("#AirlineId").val("");
+        $("#FlightNumber").val("");
+
         // Get the new start and end points
         var embarkation = $("#Embarkation").val();
         var destination = $("#Destination").val();
@@ -180,12 +188,34 @@
             LoadFlightsByNumber(number);
         });
 
+        // Ensure the route filters are always entered in uppercase
+        $("#Embarkation").on("input", function () {
+            this.value = this.value.toUpperCase();
+        });
+
+        $("#Destination").on("input", function () {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Respond to the ENTER key on the route filters by triggering the change event
+        $("#Embarkation").on("keydown", function (e) {
+            if (e.key === "Enter") {
+                $(this).trigger("change");
+            }
+        });
+
+        $("#Destination").on("keydown", function (e) {
+            if (e.key === "Enter") {
+                $(this).trigger("change");
+            }
+        });
+
         // Respond to changes in the route filters
-        $("#Embarkation").change(function () {
+        $("#Embarkation").on("change", function () {
             RespondToRouteFilterChange();
         });
 
-        $("#Destination").change(function () {
+        $("#Destination").on("change",function () {
             RespondToRouteFilterChange();
         });
     });
