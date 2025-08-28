@@ -66,6 +66,12 @@ The following data can be exported in CSV format:
 
 Please see the [Wiki](https://github.com/davewalker5/FlightRecorder/wiki) for configuration details and the user guide.
 
+# Sightings Hub
+
+My own sightings, recorded using the application, are published on the following site:
+
+[Sightings Hub](https://davewalker5.github.io)
+
 ## Authors
 
 - **Dave Walker** - _Initial work_ - [LinkedIn](https://www.linkedin.com/in/davewalker5/)
