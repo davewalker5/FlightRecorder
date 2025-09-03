@@ -11,7 +11,7 @@ namespace FlightRecorder.Mvc.Models
     {
         [DisplayName("Airline")]
         [Required(ErrorMessage = "You must provide an airline")]
-        public int AirlineId { get; set; }
+        public int? AirlineId { get; set; }
 
         public List<SelectListItem> Airlines { get; set; }
 

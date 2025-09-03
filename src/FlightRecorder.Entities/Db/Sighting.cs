@@ -15,6 +15,7 @@ namespace FlightRecorder.Entities.Db
         public long AircraftId { get; set; }
         public long Altitude { get; set; }
         public DateTime Date { get; set; }
+
         public bool IsMyFlight { get; set; }
 
         public virtual Aircraft Aircraft { get; set; }

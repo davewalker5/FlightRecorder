@@ -74,11 +74,11 @@ namespace FlightRecorder.Client.ApiClient
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public async Task ExportReport<T>(string from, string to) where T: class
+        public async Task ExportReport<T>(DateTime? from, DateTime? to) where T: class
         {
             // Get the date and time
-            DateTime start = !string.IsNullOrEmpty(from) ? DateTime.Parse(from) : DateTime.MinValue;
-            DateTime end = !string.IsNullOrEmpty(to) ? DateTime.Parse(to) : DateTime.MaxValue;
+            DateTime start = from ?? DateTime.MinValue;
+            DateTime end = to ?? DateTime.MaxValue;
 
             // Get the report definition
             var definition = ReportDefinitions.Definitions.First(x => x.EntityType == typeof(T));

@@ -10,6 +10,8 @@ namespace FlightRecorder.Mvc.Models
         public long? SightingId { get; set; }
 
         [DisplayName("Date")]
+        [UIHint("DatePicker")]
+        [DataType(DataType.Date)]
         [Required(ErrorMessage = "You must provide a date for the sighting")]
         public DateTime? Date { get; set; }
 

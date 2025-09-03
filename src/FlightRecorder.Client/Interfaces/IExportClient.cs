@@ -9,6 +9,6 @@ namespace FlightRecorder.Client.Interfaces
         Task ExportSightings(string fileName);
         Task ExportAirports(string fileName);
         Task ExportReport(ReportType type, DateTime? from, DateTime? to, string fileName);
-        Task ExportReport<T>(string from, string to) where T : class;
+        Task ExportReport<T>(DateTime? from, DateTime? to) where T : class;
     }
 }

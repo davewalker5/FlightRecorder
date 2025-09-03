@@ -7,12 +7,16 @@ namespace FlightRecorder.Mvc.Models
     public class SightingSearchByDateViewModel : SightingsSearchViewModelBase
     {
         [DisplayName("From")]
+        [UIHint("DatePicker")]
+        [DataType(DataType.Date)]
         [Required(ErrorMessage = "You must enter a 'from' date")]
-        public string From { get; set; }
+        public DateTime? From { get; set; }
 
         [DisplayName("To")]
+        [UIHint("DatePicker")]
+        [DataType(DataType.Date)]
         [Required(ErrorMessage = "You must enter a 'to' date")]
-        public string To { get; set; }
+        public DateTime? To { get; set; }
 
     }
 }

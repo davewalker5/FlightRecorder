@@ -1,0 +1,42 @@
+@model DateTime?
+@{
+    var inputId   = Html.IdForModel();
+    var inputName = Html.NameForModel();
+    var value     = Model.HasValue ? Model.Value.ToString("yyyy-MM-dd") : "";
+
+    var min = ViewData["min"] as string; // optional ISO "yyyy-MM-dd"
+    var max = ViewData["max"] as string;
+}
+<input type="date"
+       id="@inputId"
+       name="@inputName"
+       class="form-control"
+       value="@value"
+       @(string.IsNullOrWhiteSpace(min) ? null : Html.Raw($"min=\"{min}\""))
+       @(string.IsNullOrWhiteSpace(max) ? null : Html.Raw($"max=\"{max}\""))
+       autocomplete="off" />
+
+<script>
+    (function () {
+        var el = document.getElementById('@inputId');
+        if (!el) return;
+
+        // In many browsers the calendar stays open until the field loses focus.
+        // Blurring on selection (input/change) closes it right away.
+        var closePicker = function() {
+            // Defer blur to let the control update its value first
+            setTimeout(function(){ el.blur(); }, 0);
+        };
+
+        // 'input' fires when a day is clicked in the calendar in Safari/Chromium.
+        el.addEventListener('input', closePicker);
+
+        // 'change' is a fallback (e.g., keyboard selection / Enter / tab)
+        el.addEventListener('change', closePicker);
+
+        // Optional: pressing Enter should also close
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') closePicker();
+        });
+    })();
+</script>
