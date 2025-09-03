@@ -70,13 +70,12 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                List<Sighting> sightings = await _client.GetSightingsByAirline(model.AirlineId, page, _settings.SearchPageSize);
+                List<Sighting> sightings = await _client.GetSightingsByAirline(model.AirlineId ?? 0, page, _settings.SearchPageSize);
                 model.SetSightings(sightings, page, _settings.SearchPageSize);
-
-                List<Airline> airlines = await _airlines.GetAirlinesAsync();
-                model.SetAirlines(airlines);
             }
 
+            List<Airline> airlines = await _airlines.GetAirlinesAsync();
+            model.SetAirlines(airlines);
             return View(model);
         }
     }

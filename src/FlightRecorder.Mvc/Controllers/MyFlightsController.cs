@@ -71,8 +71,8 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                DateTime start = !string.IsNullOrEmpty(model.From) ? DateTime.Parse(model.From) : DateTime.MinValue;
-                DateTime end = !string.IsNullOrEmpty(model.To) ? DateTime.Parse(model.To) : DateTime.MaxValue;
+                DateTime start = model.From ?? DateTime.MinValue;
+                DateTime end = model.To ?? DateTime.MaxValue;
 
                 List<MyFlights> records = await _reportsClient.MyFlightsAsync(start, end, page, _settings.SearchPageSize);
                 model.SetRecords(records, page, _settings.SearchPageSize);

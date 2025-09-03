@@ -66,8 +66,8 @@ namespace FlightRecorder.Mvc.Controllers
                 // and amend the page number, above, then apply it, below
                 ModelState.Clear();
 
-                DateTime start = DateTime.Parse(model.From);
-                DateTime end = DateTime.Parse(model.To);
+                DateTime start = model.From ?? DateTime.MinValue;
+                DateTime end = model.To ?? DateTime.MaxValue;
 
                 List<Sighting> sightings = await _client.GetSightingsByDate(start, end, page, _settings.SearchPageSize);
                 model.SetSightings(sightings, page, _settings.SearchPageSize);

@@ -5,6 +5,7 @@ using FlightRecorder.Mvc.Entities;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace FlightRecorder.Mvc.Controllers
 {
@@ -13,6 +14,7 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private readonly IReportsClient _reportsClient;
         private readonly IExportClient _exportClient;
+    
         private readonly FlightRecorderApplicationSettings _settings;
 
         public AirlineStatisticsController(
@@ -72,8 +74,8 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
 
                 // Get the date and time
-                DateTime start = !string.IsNullOrEmpty(model.From) ? DateTime.Parse(model.From) : DateTime.MinValue;
-                DateTime end = !string.IsNullOrEmpty(model.To) ? DateTime.Parse(model.To) : DateTime.MaxValue;
+                DateTime start = model.From ?? DateTime.MinValue;
+                DateTime end = model.To ?? DateTime.MaxValue;
 
                 // Retrieve the matching report records
                 List<AirlineStatistics> records = await _reportsClient.AirlineStatisticsAsync(start, end, page, _settings.SearchPageSize);

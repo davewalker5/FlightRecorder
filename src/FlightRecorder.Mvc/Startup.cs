@@ -10,6 +10,9 @@ using FlightRecorder.Mvc.Api;
 using FlightRecorder.Entities.Interfaces;
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Attributes;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 namespace FlightRecorder.Mvc
 {
@@ -25,6 +28,29 @@ namespace FlightRecorder.Mvc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Define the supported cultures
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-GB"),
+                new CultureInfo("en-US")
+            };
+
+            // Register request localization options
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture("en-GB"); // fallback
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+
+                // Use Accept-Language first (browser), then cookie, then query if you add it
+                options.RequestCultureProviders = new IRequestCultureProvider[]
+                {
+                    new AcceptLanguageHeaderRequestCultureProvider(), // browser header
+                    new CookieRequestCultureProvider(),               // optional cookie
+                    new QueryStringRequestCultureProvider()           // optional ?culture=en-GB
+                };
+            });
+
             services.AddControllersWithViews();
 
             // Configure automapper
@@ -104,6 +130,11 @@ namespace FlightRecorder.Mvc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // This pulls the request localisation options configured in ConfigureServices and registers
+            // the middleware early, which is crucial
+            var options = app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(options);
+
             if (env.IsDevelopment())
             {
                 // Resolve the settings singleton to see whether we should use the custom error page, even in

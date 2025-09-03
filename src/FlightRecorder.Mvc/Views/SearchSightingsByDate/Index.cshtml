@@ -29,9 +29,6 @@
                 <strong>@Html.LabelFor(m => m.From)</strong>
                 <div class="input-group">
                     @Html.EditorFor(m => m.From, new { @class = "form-control" })
-                    <script type="text/javascript">
-                        new GijgoDatePicker(document.getElementById("From"), { calendarWeeks: false, uiLibrary: "bootstrap4" });
-                    </script>
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.From, "", new { @class = "text-danger" })</span>
             </div>
@@ -39,9 +36,6 @@
                 <strong>@Html.LabelFor(m => m.To)</strong>
                 <div class="input-group">
                     @Html.EditorFor(m => m.To, new { @class = "form-control" })
-                    <script type="text/javascript">
-                        new GijgoDatePicker(document.getElementById("To"), { calendarWeeks: false, uiLibrary: "bootstrap4" });
-                    </script>
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.To, "", new { @class = "text-danger" })</span>
             </div>

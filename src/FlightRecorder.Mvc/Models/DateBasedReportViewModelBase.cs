@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlightRecorder.Mvc.Models
 {
@@ -7,10 +8,14 @@ namespace FlightRecorder.Mvc.Models
         public List<T> Records { get; private set; }
 
         [DisplayName("From")]
-        public string From { get; set; }
+        [UIHint("DatePicker")]
+        [DataType(DataType.Date)]
+        public DateTime? From { get; set; }
 
         [DisplayName("To")]
-        public string To { get; set; }
+        [UIHint("DatePicker")]
+        [DataType(DataType.Date)]
+        public DateTime? To { get; set; }
 
         /// <summary>
         /// Set the collection of records that are exposed to the view
