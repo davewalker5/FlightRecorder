@@ -597,7 +597,7 @@ namespace FlightRecorder.Mvc.Wizard
 
                     // Create the aircraft
                     long? manufactured = (details.Age != null) ? DateTime.Now.Year - details.Age : null;
-                    aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId ?? 0);
+                    aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId);
                 }
             }
 
