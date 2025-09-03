@@ -19,6 +19,7 @@
             <th>Model</th>
             <th>Manufacturer</th>
             <th>Date</th>
+            <th>My Flight</th>
             <th />
         </tr>
         @foreach (var sighting in Model.Sightings)
@@ -35,6 +36,12 @@
                 <td valign="center">@modelName</td>
                 <td valign="center">@manufacturerName</td>
                 <td valign="center">@sighting.FormattedDate</td>
+                <td align="center" valign="center">
+                    @if (sighting.IsMyFlight)
+                    {
+                        <span style="color: green"><i class="fas fa-check-circle"></i></span>
+                    }
+                </td>
                 <td valign="center">
                     <a class="btn btn-lg" asp-area="" asp-controller="SightingDetails" asp-action="Index" asp-route-id="@sighting.Id">
                         <i class="fas fa-edit"></i>
