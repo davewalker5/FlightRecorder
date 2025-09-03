@@ -22,7 +22,7 @@ namespace FlightRecorder.Entities.Db
         public string SerialNumber { get; set; }
 
         [DisplayName("Year of Manufacturer")]
-        [Range(1, int.MaxValue, ErrorMessage = "Year of manufacture is not valid")]
+        [Range(0, int.MaxValue, ErrorMessage = "Year of manufacture is not valid")]
         public long? Manufactured { get; set; }
 
         public virtual Model Model { get; set; }
