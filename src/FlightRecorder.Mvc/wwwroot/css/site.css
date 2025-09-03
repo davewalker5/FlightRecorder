@@ -99,3 +99,12 @@ div.message {
     color: #007316;
     text-align: center;
 }
+
+table caption,
+.table caption,
+.table > caption,
+table.table > caption,
+table.table.table > caption {
+  caption-side: top !important;
+  text-align: left;
+}

@@ -1,0 +1,45 @@
+@using FlightRecorder.Mvc.Models
+@model SightingSummaryViewModel
+
+@{
+    var modelName = Model.Sighting.Aircraft.Model?.Name ?? "";
+    var manufacturerName =  Model.Sighting.Aircraft.Model?.Manufacturer?.Name ?? "";
+}
+
+<div class="row">
+    <table class="table table-striped table-bordered">
+        <caption style="caption-side: top !important; text-align:center">
+            @Model.Message
+        </caption>
+        <thead class="table-light">
+            <tr>
+                <th>Last Seen</th>
+                <th>Location</th>
+                <th>Flight</th>
+                <th>Route</th>
+                <th>Aircraft</th>
+                <th>Model</th>
+                <th>Manufacturer</th>
+                <th>My Flight</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.Sighting.Date.ToShortDateString()</td>
+                <td>@Model.Sighting.Location.Name</td>
+                <td>@Model.Sighting.Flight.Number</td>
+                <td>@Model.Sighting.Flight.Route</td>
+                <td>@Model.Sighting.Aircraft.Registration</td>
+                <td>@modelName</td>
+                <td>@manufacturerName</td>
+                <td align="center">
+                    @if (Model.Sighting.IsMyFlight)
+                    {
+                        <span style="color: green"><i class="fas fa-check-circle"></i></span>
+                    }
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<hr />
