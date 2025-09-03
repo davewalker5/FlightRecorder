@@ -20,14 +20,14 @@
         </div>
         <hr />
 
-        @if (!string.IsNullOrEmpty(Model.LastSightingAddedMessage) && (Model.SightingId == null))
+        @if ((Model.LastSightingAdded != null) && (Model.SightingId == null))
         {
-            <div class="row">
-                <div class="col-md-12 message">
-                    <span>@Html.Raw(Model.LastSightingAddedMessage)</span>
-                </div>
-            </div>
-            <hr />
+            @await Html.PartialAsync("SightingSummary",
+            new SightingSummaryViewModel()
+            {
+                Message = $"Sighting Saved",
+                Sighting = Model.LastSightingAdded
+            });
         }
 
         <div class="row">

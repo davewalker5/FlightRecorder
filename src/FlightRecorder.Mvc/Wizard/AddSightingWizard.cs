@@ -118,8 +118,8 @@ namespace FlightRecorder.Mvc.Wizard
             if ((model == null) || (model.SightingId != sightingId))
             {
                 // Not cached or the ID has changed, so create a new one and set the "last sighting added" message
-                string lastAdded = GetLastSightingAddedMessage(userName);
-                ClearCachedLastSightingAddedMessage(userName);
+                Sighting lastAdded = GetLastSightingAdded(userName);
+                ClearCachedLastSightingAdded(userName);
 
                 // If an existing sighting is specified, construct the model using its
                 // details
@@ -129,7 +129,7 @@ namespace FlightRecorder.Mvc.Wizard
                     model = new SightingDetailsViewModel
                     {
                         SightingId = sightingId,
-                        LastSightingAddedMessage = lastAdded,
+                        LastSightingAdded = lastAdded,
                         Altitude = sighting.Altitude,
                         Date = sighting.Date,
                         FlightNumber = sighting.Flight.Number,
@@ -142,7 +142,7 @@ namespace FlightRecorder.Mvc.Wizard
                     _logger.LogDebug($"Creating new sighting details model");
                     model = new SightingDetailsViewModel
                     {
-                        LastSightingAddedMessage = lastAdded,
+                        LastSightingAdded = lastAdded,
                         Date = GetDefaultDate(userName),
                         LocationId = await GetDefaultLocationId(userName)
                     };
@@ -359,14 +359,14 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
-        /// Retrieve the message giving the details of the last sighting added
+        /// Retrieve the last sighting added
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public string GetLastSightingAddedMessage(string userName)
+        public Sighting GetLastSightingAdded(string userName)
         {
             string key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
-            return _cache.Get<string>(key);
+            return _cache.Get<Sighting>(key);
         }
 
         /// <summary>
@@ -433,10 +433,10 @@ namespace FlightRecorder.Mvc.Wizard
         }
 
         /// <summary>
-        /// Clear the last sighting added message from the cache
+        /// Clear the last sighting added from the cache
         /// </summary>
         /// <param name="userName"></param>
-        public void ClearCachedLastSightingAddedMessage(string userName)
+        public void ClearCachedLastSightingAdded(string userName)
         {
             string key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
             _cache.Remove(key);
@@ -463,7 +463,7 @@ namespace FlightRecorder.Mvc.Wizard
             _logger.LogDebug($"Creating new sighting for user {userName}");
 
             // Clear the last sighting added message
-            ClearCachedLastSightingAddedMessage(userName);
+            ClearCachedLastSightingAdded(userName);
 
             // Retrieve the sighting details from the cache
             string key = GetCacheKey(SightingDetailsKeyPrefix, userName);
@@ -483,7 +483,6 @@ namespace FlightRecorder.Mvc.Wizard
 
                 // If an existing sighting is being edited, then update it. Otherwise, create
                 // a new one
-                string message;
                 if (details.SightingId != null)
                 {
                     _logger.LogDebug($"Updating existing sighting with ID {details.SightingId} for user {userName}");
@@ -495,7 +494,7 @@ namespace FlightRecorder.Mvc.Wizard
                         aircraft.Id, flight.Id,
                         details.LocationId,
                         details.IsMyFlight);
-                    message = BuildSightingMessage(sighting, true);
+                    // REMOVE message = BuildSightingMessage(sighting, true);
                 }
                 else
                 {
@@ -508,13 +507,13 @@ namespace FlightRecorder.Mvc.Wizard
                         flight.Id,
                         details.LocationId,
                         details.IsMyFlight);
-                    message = BuildSightingMessage(sighting, false);
+                    // REMOVE message = BuildSightingMessage(sighting, false);
                 }
 
                 // Cache the message giving its details and other properties that are
                 // cached to improve data entry speed
                 key = GetCacheKey(LastSightingAddedKeyPrefix, userName);
-                _cache.Set<string>(key, message, _settings.CacheLifetimeSeconds);
+                _cache.Set<Sighting>(key, sighting, _settings.CacheLifetimeSeconds);
 
                 key = GetCacheKey(DefaultDateKeyPrefix, userName);
                 _cache.Set<DateTime>(key, sighting.Date, _settings.CacheLifetimeSeconds);
@@ -540,46 +539,6 @@ namespace FlightRecorder.Mvc.Wizard
             ClearCachedSightingDetailsModel(userName);
             ClearCachedFlightDetailsModel(userName);
             ClearCachedAircraftDetailsModel(userName);
-        }
-
-        /// <summary>
-        /// Build the message to report addition/update of a sighting
-        /// </summary>
-        /// <param name="sighting"></param>
-        /// <param name="isUpdate"></param>
-        /// <returns></returns>
-        private static string BuildSightingMessage(Sighting sighting, bool isUpdate)
-        {
-            StringBuilder builder = new();
-            builder.Append("Your sighting of flight ");
-            builder.Append(sighting.Flight.Number);
-            builder.Append(", aircraft ");
-            builder.Append(sighting.Aircraft.Registration);
-
-            if (sighting.Aircraft.Model != null)
-            {
-                builder.Append("(");
-                builder.Append(sighting.Aircraft.Model.Manufacturer.Name);
-                builder.Append(" ");
-                builder.Append(sighting.Aircraft.Model.Name);
-                builder.Append(")");
-            }
-
-            builder.Append(", at ");
-            builder.Append(sighting.Location.Name);
-            builder.Append(" on ");
-            builder.Append(sighting.Date.ToString("dd-MMM-yyyy"));
-
-            if (isUpdate)
-            {
-                builder.Append(" has been updated");
-            }
-            else
-            {
-                builder.Append(" has been added to the database");
-            }
-
-            return builder.ToString();
         }
 
         /// <summary>

@@ -22,11 +22,12 @@
 
         @if (Model.MostRecentSighting != null)
         {
-            <div class="row">
-                <div class="col-md-12 message">
-                    <span>This aircraft was last seen from @Model.MostRecentSighting.Location.Name on @Model.MostRecentSighting.Date.ToShortDateString(), flight @Model.MostRecentSighting.Flight.Number</span>
-                </div>
-            </div>
+            @await Html.PartialAsync("SightingSummary",
+            new SightingSummaryViewModel()
+            {
+                Message = $"Most Recent Sighting of {Model.MostRecentSighting.Aircraft.Registration}",
+                Sighting = Model.MostRecentSighting
+            });
         }
 
         <div class="row">

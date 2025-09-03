@@ -36,7 +36,7 @@ namespace FlightRecorder.Mvc.Models
         [DisplayName("My Flight")]
         public bool IsMyFlight { get; set; }
 
-        public string LastSightingAddedMessage { get; set; }
+        public Sighting LastSightingAdded { get; set; }
         public string LocationErrorMessage { get; set; }
         public string Action { get; set; }
         public List<SelectListItem> Locations { get; set; }
