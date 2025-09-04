@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,12 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly IModelClient _models;
         private readonly IMapper _mapper;
 
-        public ModelsController(IManufacturerClient manufacturers, IModelClient models, IMapper mapper)
+        public ModelsController(
+            IManufacturerClient manufacturers,
+            IModelClient models,
+            IMapper mapper,
+            IPartialViewToStringRenderer renderer,
+            ILogger<ModelsController> logger) : base (renderer, logger)
         {
             _manufacturers = manufacturers;
             _models = models;
@@ -80,6 +86,10 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Model '{aircraftModel.Name}' added successfully";
+            }
+            else
+            {
+                LogModelState();
             }
 
             List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);

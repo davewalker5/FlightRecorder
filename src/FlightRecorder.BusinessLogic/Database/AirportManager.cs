@@ -213,6 +213,29 @@ namespace FlightRecorder.BusinessLogic.Database
         }
 
         /// <summary>
+        /// Assign the embarkation and destination airports to a collection of flights
+        /// </summary>
+        /// <param name="flights"></param>
+        /// <returns></returns>
+        public async Task LoadAirportDetails(IEnumerable<Flight> flights)
+        {
+            // Get a list of IATA codes with no duplicates
+            var embarkationIATACodes = flights.Select(x => x.Embarkation).Distinct();
+            var destinationIATACodes = flights.Select(x => x.Destination).Distinct();
+            var iataCodes = embarkationIATACodes.Union(destinationIATACodes);
+
+            // Load matching airport details
+            var airports = await ListAsync(x => iataCodes.Contains(x.Code), 1, int.MaxValue).ToListAsync();
+
+            // Map them into the flights
+            foreach (var flight in flights)
+            {
+                flight.EmbarkationAirport = airports.FirstOrDefault(x => x.Code == flight.Embarkation);
+                flight.DestinationAirport = airports.FirstOrDefault(x => x.Code == flight.Destination);
+            }
+        }
+
+        /// <summary>
         /// Raise an exception if an attempt is made to add/update an airport with a duplicate
         /// IATA Code
         /// </summary>

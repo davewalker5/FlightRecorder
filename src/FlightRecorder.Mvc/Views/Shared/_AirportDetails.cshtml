@@ -1,0 +1,26 @@
+@using FlightRecorder.Entities.Db
+@model Airport
+
+@if (Model != null)
+{
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>IATA Code</th>
+                <th>Name</th>
+                <th>Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.Code</td>
+                <td>@Model.Name</td>
+                <td>@Model.Country.Name</td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{
+    <span>No airport details found</span>
+}

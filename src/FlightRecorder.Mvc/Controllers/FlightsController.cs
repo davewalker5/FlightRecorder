@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,12 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly IFlightClient _flights;
         private readonly IMapper _mapper;
 
-        public FlightsController(IAirlineClient airlines, IFlightClient flights, IMapper mapper)
+        public FlightsController(
+            IAirlineClient airlines,
+            IFlightClient flights,
+            IMapper mapper,
+            IPartialViewToStringRenderer renderer,
+            ILogger<FlightsController> logger) : base (renderer, logger)
         {
             _airlines = airlines;
             _flights = flights;
@@ -114,6 +120,10 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Clear();
                 model.Message = $"Flight '{number}' added successfully";
             }
+            else
+            {
+                LogModelState();
+            }
 
             List<Airline> airlines = await _airlines.GetAirlinesAsync();
             model.SetAirlines(airlines);
@@ -160,6 +170,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 List<Airline> airlines = await _airlines.GetAirlinesAsync();
                 model.SetAirlines(airlines);
                 result = View(model);

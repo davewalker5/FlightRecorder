@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,12 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly ISightingsSearchClient _client;
         private readonly FlightRecorderApplicationSettings _settings;
 
-        public SearchSightingsByAirlineController(IAirlineClient airlines, ISightingsSearchClient client, FlightRecorderApplicationSettings settings)
+        public SearchSightingsByAirlineController(
+            IAirlineClient airlines,
+            ISightingsSearchClient client,
+            FlightRecorderApplicationSettings settings,
+            IPartialViewToStringRenderer renderer,
+            ILogger<SearchSightingsByAirlineController> logger) : base (renderer, logger)
         {
             _airlines = airlines;
             _client = client;
@@ -72,6 +78,10 @@ namespace FlightRecorder.Mvc.Controllers
 
                 List<Sighting> sightings = await _client.GetSightingsByAirline(model.AirlineId ?? 0, page, _settings.SearchPageSize);
                 model.SetSightings(sightings, page, _settings.SearchPageSize);
+            }
+            else
+            {
+                LogModelState();
             }
 
             List<Airline> airlines = await _airlines.GetAirlinesAsync();

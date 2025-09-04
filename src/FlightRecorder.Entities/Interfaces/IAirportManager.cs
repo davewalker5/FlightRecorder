@@ -15,5 +15,6 @@ namespace FlightRecorder.Entities.Interfaces
         Task<Airport> UpdateAsync(long id, string code, string name, long countryId);
         Task DeleteAsync(long id);
         Task CheckAirportExists(string code);
+        Task LoadAirportDetails(IEnumerable<Flight> flights);
     }
 }

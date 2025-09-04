@@ -70,6 +70,9 @@
                         @class = "form-control",
                         autocomplete = "off"
                     })
+                    <a class="btn btn-lg" href="javascript:ShowAirportDetails('#Embarkation')">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.Embarkation, "", new { @class = "text-danger" })</span>
             </div>
@@ -87,6 +90,9 @@
                         @class = "form-control",
                         autocomplete = "off"
                     })
+                    <a class="btn btn-lg" href="javascript:ShowAirportDetails('#Destination')">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
                 </div>
                 <span>@Html.ValidationMessageFor(m => m.Destination, "", new { @class = "text-danger" })</span>
             </div>
@@ -129,6 +135,13 @@
 </div>
 
 <script type="text/javascript">
+    function ShowAirportDetails(inputId) {
+        var iataCode = $(inputId).val().trim();
+        if (iataCode.length == 3) {
+            LoadModalContent(iataCode, '/Airports/ShowAirportDetails')
+        }
+    }
+
     function LoadFlightDetails(flightId) {
         if (flightId > 0) {
             var route = "/FlightDetails/FlightDetails?flightId=" + flightId;

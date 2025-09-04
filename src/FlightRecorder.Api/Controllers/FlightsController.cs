@@ -38,6 +38,9 @@ namespace FlightRecorder.Api.Controllers
                 return NoContent();
             }
 
+            // Assign airport details
+            await Factory.Airports.LoadAirportDetails(flights);
+
             return flights;
         }
 
@@ -57,6 +60,9 @@ namespace FlightRecorder.Api.Controllers
             {
                 return NoContent();
             }
+
+            // Assign airport details
+            await Factory.Airports.LoadAirportDetails(flights);
 
             return flights;
         }
@@ -79,6 +85,9 @@ namespace FlightRecorder.Api.Controllers
                 return NoContent();
             }
 
+            // Assign airport details
+            await Factory.Airports.LoadAirportDetails(flights);
+
             return flights;
         }
 
@@ -96,6 +105,9 @@ namespace FlightRecorder.Api.Controllers
                 return NotFound();
             }
 
+            // Assign airport details
+            await Factory.Airports.LoadAirportDetails([flight]);
+
             return flight;
         }
 
@@ -110,6 +122,9 @@ namespace FlightRecorder.Api.Controllers
                                                     template.Destination,
                                                     template.AirlineId);
             LogMessage(Severity.Debug, $"Added flight: {flight}");
+
+            // Assign airport details
+            await Factory.Airports.LoadAirportDetails([flight]);
             return flight;
         }
 
@@ -125,6 +140,9 @@ namespace FlightRecorder.Api.Controllers
                 template.Embarkation,
                 template.Destination,
                 template.AirlineId);
+
+            // Assign airport details
+            await Factory.Airports.LoadAirportDetails([flight]);
 
             LogMessage(Severity.Debug, $"Flight updated: {flight}");
 

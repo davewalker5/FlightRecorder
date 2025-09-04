@@ -1,4 +1,5 @@
 ﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Mvc.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,8 +10,13 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private readonly IReportsClient _reportsClient;
 
-        public SightingStatisticsController(IReportsClient iReportsClient)
-            => _reportsClient = iReportsClient;
+        public SightingStatisticsController(
+            IReportsClient iReportsClient,
+            IPartialViewToStringRenderer renderer,
+            ILogger<SightingStatisticsController> logger) : base(renderer, logger)
+        {
+            _reportsClient = iReportsClient;
+        }
 
         /// <summary>
         /// Retrieve and serve the report

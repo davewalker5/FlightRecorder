@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,16 +14,15 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private readonly ILocationClient _client;
         private readonly FlightRecorderApplicationSettings _settings;
-        private readonly ILogger<LocationsController> _logger;
 
         public LocationsController(
             ILocationClient client,
             FlightRecorderApplicationSettings settings,
-            ILogger<LocationsController> logger)
+            IPartialViewToStringRenderer renderer,
+            ILogger<LocationsController> logger) : base (renderer, logger)
         {
             _client = client;
             _settings = settings;
-            _logger = logger;
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
-                LogModelStateErrors(_logger);
+                LogModelState();
             }
 
             return View(model);
@@ -113,7 +113,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
-                LogModelStateErrors(_logger);
+                LogModelState();
             }
 
             return View(model);
@@ -150,6 +150,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 result = View(model);
             }
 

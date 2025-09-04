@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Reporting;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,9 @@ namespace FlightRecorder.Mvc.Controllers
         public AirlineStatisticsController(
             IReportsClient iReportsClient,
             IExportClient exportsClient,
-            FlightRecorderApplicationSettings settings)
+            FlightRecorderApplicationSettings settings,
+            IPartialViewToStringRenderer renderer,
+            ILogger<AirlineStatisticsController> logger) : base (renderer, logger)
         {
             _reportsClient = iReportsClient;
             _exportClient = exportsClient;
@@ -80,6 +83,10 @@ namespace FlightRecorder.Mvc.Controllers
                 // Retrieve the matching report records
                 List<AirlineStatistics> records = await _reportsClient.AirlineStatisticsAsync(start, end, page, _settings.SearchPageSize);
                 model.SetRecords(records, page, _settings.SearchPageSize);
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);

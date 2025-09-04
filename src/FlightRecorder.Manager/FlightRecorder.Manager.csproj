@@ -7,6 +7,7 @@
     <FileVersion>1.21.0.0</FileVersion>
     <ProductVersion>1.21.0.0</ProductVersion>
     <Configurations>Release;Debug</Configurations>
+    <NoWarn>NU1900</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

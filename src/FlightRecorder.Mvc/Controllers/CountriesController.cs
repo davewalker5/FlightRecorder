@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,11 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly ICountriesClient _client;
         private readonly FlightRecorderApplicationSettings _settings;
 
-        public CountriesController(ICountriesClient client, FlightRecorderApplicationSettings settings)
+        public CountriesController(
+            ICountriesClient client,
+            FlightRecorderApplicationSettings settings,
+            IPartialViewToStringRenderer renderer,
+            ILogger<CountriesController> logger) : base (renderer, logger)
         {
             _client = client;
             _settings = settings;
@@ -66,6 +71,10 @@ namespace FlightRecorder.Mvc.Controllers
                 var countries = await _client.GetCountriesAsync(page, _settings.SearchPageSize);
                 model.SetCountries(countries, page, _settings.SearchPageSize);
             }
+            else
+            {
+                LogModelState();
+            }
 
             return View(model);
         }
@@ -95,6 +104,10 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Country '{country.Name}' added successfully";
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);
@@ -130,6 +143,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 result = View(model);
             }
 
