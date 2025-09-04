@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using FlightRecorder.Entities.Attributes;
 
@@ -24,10 +25,16 @@ namespace FlightRecorder.Entities.Db
         [Required(ErrorMessage = "You must provide a point of embarkation")]
         public string Embarkation { get; set; }
 
+        [NotMapped]
+        public Airport EmbarkationAirport { get; set; }
+
         [IATACode]
         [DisplayName("Destination")]
         [Required(ErrorMessage = "You must provide a destination")]
         public string Destination { get; set; }
+
+        [NotMapped]
+        public Airport DestinationAirport { get; set; }
 
         public virtual Airline Airline { get; set; }
 

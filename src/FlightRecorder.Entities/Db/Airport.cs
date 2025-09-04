@@ -35,5 +35,8 @@ namespace FlightRecorder.Entities.Db
                 Country = Country.Name
             };
         }
+
+        public string Description()
+            => $"{Code} - {Name}, {Country}";
     }
 }
