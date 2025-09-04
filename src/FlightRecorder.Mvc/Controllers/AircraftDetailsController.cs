@@ -1,5 +1,6 @@
 ﻿using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private AddSightingWizard _wizard;
 
-        public AircraftDetailsController(AddSightingWizard wizard)
+        public AircraftDetailsController(
+            AddSightingWizard wizard,
+            IPartialViewToStringRenderer renderer,
+            ILogger<AircraftDetailsController> logger) : base (renderer, logger)
         {
             _wizard = wizard;
         }
@@ -67,6 +71,8 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
+
                 // Set the list of available manufacturers
                 List<Manufacturer> manufacturers = await _wizard.GetManufacturersAsync();
                 model.SetManufacturers(manufacturers);

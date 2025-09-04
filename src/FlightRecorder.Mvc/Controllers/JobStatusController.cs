@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,9 @@ namespace FlightRecorder.Mvc.Controllers
         public JobStatusController(
             IReportsClient iReportsClient,
             IExportClient exportsClient,
-            FlightRecorderApplicationSettings settings)
+            FlightRecorderApplicationSettings settings,
+            IPartialViewToStringRenderer renderer,
+            ILogger<JobStatusController> logger) : base (renderer, logger)
         {
             _reportsClient = iReportsClient;
             _exportClient = exportsClient;
@@ -77,6 +80,10 @@ namespace FlightRecorder.Mvc.Controllers
                 // Retrieve the matching report records
                 List<JobStatus> records = await _reportsClient.JobStatusAsync(start, end, page, _settings.SearchPageSize);
                 model.SetRecords(records, page, _settings.SearchPageSize);
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);

@@ -2,6 +2,7 @@
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,11 @@ namespace FlightRecorder.Mvc.Controllers
         private readonly IManufacturerClient _client;
         private readonly FlightRecorderApplicationSettings _settings;
 
-        public ManufacturersController(IManufacturerClient client, FlightRecorderApplicationSettings settings)
+        public ManufacturersController(
+            IManufacturerClient client,
+            FlightRecorderApplicationSettings settings,
+            IPartialViewToStringRenderer renderer,
+            ILogger<ManufacturersController> logger) : base (renderer, logger)
         {
             _client = client;
             _settings = settings;
@@ -66,6 +71,10 @@ namespace FlightRecorder.Mvc.Controllers
                 var manufacturers = await _client.GetManufacturersAsync(page, _settings.SearchPageSize);
                 model.SetManufacturers(manufacturers, page, _settings.SearchPageSize);
             }
+            else
+            {
+                LogModelState();
+            }
 
             return View(model);
         }
@@ -95,6 +104,10 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Manufacturer '{manufacturer.Name}' added successfully";
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);
@@ -130,6 +143,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 result = View(model);
             }
 

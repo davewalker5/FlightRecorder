@@ -1,5 +1,6 @@
 ﻿using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Entities.Db;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private readonly IAirlineClient _client;
 
-        public AirlinesController(IAirlineClient client)
+        public AirlinesController(
+            IAirlineClient client,
+            IPartialViewToStringRenderer renderer,
+            ILogger<AirlinesController> logger) : base (renderer, logger)
         {
             _client = client;
         }
@@ -53,6 +57,10 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Clear();
                 model.Message = $"Airline '{airline.Name}' added successfully";
             }
+            else
+            {
+                LogModelState();
+            }
 
             return View(model);
         }
@@ -87,6 +95,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 result = View(model);
             }
 

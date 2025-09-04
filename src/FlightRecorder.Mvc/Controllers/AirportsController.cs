@@ -3,6 +3,7 @@ using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Entities.Config;
 using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,9 @@ namespace FlightRecorder.Mvc.Controllers
             ICountriesClient countries,
             IAirportsClient airports,
             IMapper mapper,
-            FlightRecorderApplicationSettings settings)
+            FlightRecorderApplicationSettings settings,
+            IPartialViewToStringRenderer renderer,
+            ILogger<AirportsController> logger) : base (renderer, logger)
         {
             _countries = countries;
             _airports = airports;
@@ -75,6 +78,10 @@ namespace FlightRecorder.Mvc.Controllers
                 var airports = await _airports.GetAirportsAsync(page, _settings.SearchPageSize);
                 model.SetAirports(airports, page, _settings.SearchPageSize);
             }
+            else
+            {
+                LogModelState();
+            }
 
             return View(model);
         }
@@ -109,6 +116,10 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Airport '{code} - {name}' added successfully";
+            }
+            else
+            {
+                LogModelState();
             }
 
             List<Country> countries = await _countries.GetCountriesAsync(1, int.MaxValue);
@@ -156,12 +167,27 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 List<Country> countries = await _countries.GetCountriesAsync(1, int.MaxValue);
                 model.SetCountries(countries);
                 result = View(model);
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Show the modal dialog containing the nutritional values for the specified item
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ShowAirportDetails(string identifier)
+        {
+            var airports = await _airports.GetAirportsByCodeAsync(identifier);
+            var airport = airports?.FirstOrDefault();
+            var title = $"Details for Airport IATA Code {identifier}";
+            return await LoadModalContent("_AirportDetails", airport, title);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FlightRecorder.Client.Interfaces;
 using FlightRecorder.Entities.Reporting;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private readonly IExportClient _client;
 
-        public ExportController(IExportClient client)
+        public ExportController(
+            IExportClient client,
+            IPartialViewToStringRenderer renderer,
+            ILogger<ExportController> logger) : base (renderer, logger)
         {
             _client = client;
         }
@@ -45,6 +49,10 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Clear();
                 ModelState.Clear();
             }
+            else
+            {
+                LogModelState();
+            }
 
             return View(model);
         }
@@ -77,6 +85,10 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Message = $"Background export of airports to {model.FileName} has been submitted";
                 model.Clear();
                 ModelState.Clear();
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);
@@ -112,6 +124,10 @@ namespace FlightRecorder.Mvc.Controllers
                 model.Message = $"Background export of the {reportDisplayName} report to {model.FileName} has been submitted";
                 model.Clear();
                 ModelState.Clear();
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);

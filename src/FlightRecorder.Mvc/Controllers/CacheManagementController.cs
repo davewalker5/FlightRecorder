@@ -1,4 +1,5 @@
 ﻿using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private readonly ICacheWrapper _cacheWrapper;
 
-        public CacheManagementController(ICacheWrapper cacheWrapper)
+        public CacheManagementController(
+            ICacheWrapper cacheWrapper,
+            IPartialViewToStringRenderer renderer,
+            ILogger<CacheManagementController> logger) : base (renderer, logger)
         {
             _cacheWrapper = cacheWrapper;
         }
@@ -45,6 +49,10 @@ namespace FlightRecorder.Mvc.Controllers
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"The cache has been cleared";
+            }
+            else
+            {
+                LogModelState();
             }
 
             return View(model);

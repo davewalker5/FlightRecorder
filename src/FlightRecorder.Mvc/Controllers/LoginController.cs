@@ -1,5 +1,6 @@
 ﻿using System.Security.Authentication;
 using FlightRecorder.Client.Interfaces;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +13,15 @@ namespace FlightRecorder.Mvc.Controllers
 
         private readonly IAuthenticationClient _client;
         private readonly IAuthenticationTokenProvider _tokenProvider;
-        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(IAuthenticationClient client, IAuthenticationTokenProvider provider, ILogger<LoginController> logger)
+        public LoginController(
+            IAuthenticationClient client,
+            IAuthenticationTokenProvider provider,
+            IPartialViewToStringRenderer renderer,
+            ILogger<LoginController> logger) : base (renderer, logger)
         {
             _client = client;
             _tokenProvider = provider;
-            _logger = logger;
         }
 
         /// <summary>
@@ -73,6 +76,7 @@ namespace FlightRecorder.Mvc.Controllers
             }
             else
             {
+                LogModelState();
                 result = View(model);
             }
 

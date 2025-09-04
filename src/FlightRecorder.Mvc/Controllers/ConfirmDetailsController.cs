@@ -1,4 +1,5 @@
 ﻿using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private AddSightingWizard _wizard;
 
-        public ConfirmDetailsController(AddSightingWizard wizard)
+        public ConfirmDetailsController(
+            AddSightingWizard wizard,
+            IPartialViewToStringRenderer renderer,
+            ILogger<ConfirmDetailsController> logger) : base (renderer, logger)
         {
             _wizard = wizard;
         }

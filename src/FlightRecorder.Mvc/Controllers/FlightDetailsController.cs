@@ -1,5 +1,6 @@
 ﻿using FlightRecorder.Entities.Db;
 using FlightRecorder.Mvc.Entities;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private AddSightingWizard _wizard;
 
-        public FlightDetailsController(AddSightingWizard wizard)
+        public FlightDetailsController(
+            AddSightingWizard wizard,
+            IPartialViewToStringRenderer renderer,
+            ILogger<FlightDetailsController> logger) : base (renderer, logger)
         {
             _wizard = wizard;
         }
@@ -73,6 +77,8 @@ namespace FlightRecorder.Mvc.Controllers
                 {
                     model.AirlineErrorMessage = "You must select an airline or give a new airline name";
                 }
+
+                LogModelState();
 
                 List<Flight> flights = await _wizard.GetFlightsAsync(model.FlightNumber);
                 model.SetFlights(flights);

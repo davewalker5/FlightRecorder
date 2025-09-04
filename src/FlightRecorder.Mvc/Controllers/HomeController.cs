@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Models;
 using FlightRecorder.Mvc.Wizard;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,10 @@ namespace FlightRecorder.Mvc.Controllers
     {
         private AddSightingWizard _wizard;
 
-        public HomeController(AddSightingWizard wizard)
+        public HomeController(
+            AddSightingWizard wizard,
+            IPartialViewToStringRenderer renderer,
+            ILogger<HomeController> logger) : base (renderer, logger)
         {
             _wizard = wizard;
         }

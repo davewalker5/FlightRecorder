@@ -102,6 +102,7 @@
         <div class="container-fluid">
             <main role="main" class="pb-3">
                 @RenderBody()
+                @await Html.PartialAsync("_AjaxModalDialog")
             </main>
         </div>
 
