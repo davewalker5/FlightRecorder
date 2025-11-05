@@ -1,0 +1,342 @@
+@{
+    ViewData["Title"] = "Aircraft Tracking";
+    var hubUrl = (string)(ViewData["TrackerHubUrl"] ?? "");
+}
+
+<div class="container-fluid">
+    <details open>
+        <summary><strong>Active Aircraft</strong></summary>
+        <br/>
+        <div class="table-scroll">
+            <table id="aircraftTable" border="1" cellspacing="0" cellpadding="6" style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr>
+                    <th>ICAO</th>
+                    <th>Callsign</th>
+                    <th>Sqk</th>
+                    <th>Alt</th>
+                    <th>VR</th>
+                    <th>Bhv</th>
+                    <th>Spd</th>
+                    <th>Hdg</th>
+                    <th>Lat</th>
+                    <th>Lon</th>
+                    <th>Dst</th>
+                    <th>Msgs</th>
+                    <th>Seen</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </details>
+    <br/>
+
+    <details>
+        <summary><strong>Tracking Log</strong></summary>
+        <br/>
+        <pre id="log" data-log-max="100" style="height: 100px; overflow:auto; border:1px solid #ccc; padding:.75rem; background:#fafafa;"></pre>
+    </details>
+</div>
+
+@section Styles {
+    <style>
+        :root {
+            --inactive-bg: #fff7cc;
+            --stale-bg:    #ffd6d6;
+            --visible-rows: 20;
+            --row-h: 1.3em;
+            --header-h: 1.5em;
+        }
+
+        .table-scroll {
+            max-width: 100%;
+            max-height: calc(var(--header-h) + var(--visible-rows) * var(--row-h) + var(--row-h));
+            overflow: auto;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            font-family: system-ui, sans-serif;
+            font-size: 0.85em;
+        }
+
+        #log {
+            font-family: system-ui, sans-serif;
+            font-size: 0.85em;
+        }
+
+        #aircraftTable {
+            width: 100%;
+            border-collapse: separate; /* helps sticky header & borders */
+            border-spacing: 0;
+        }
+
+        #aircraftTable thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            height: var(--header-h);
+            line-height: var(--header-h);
+            background: #f0f0f0;
+            color: #black;
+            text-align: left;
+            padding: 0 .5rem;
+        }
+
+        #aircraftTable tbody td {
+            height: var(--row-h);
+            line-height: var(--row-h);
+            padding: 0 .5rem;
+            border-top: 1px solid #e6e6e6;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        /* Smooth fade between states */
+        #aircraftTable tbody tr,
+        #aircraftTable tbody tr td
+        {
+            transition: background-color .35s ease;
+        }
+
+        /* Status-driven colours (using td to defeat many table themes) */
+        #aircraftTable tbody tr[data-status="inactive"],
+        #gaircraftTablerid tbody tr[data-status="inactive"] td {
+            background: var(--inactive-bg) !important;
+        }
+
+        #aircraftTable tbody tr[data-status="stale"],
+        #aircraftTablegrid tbody tr[data-status="stale"] td {
+            background: var(--stale-bg) !important;
+        }
+
+        table
+        {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td
+        {
+            border-bottom: 1px solid #ccc;
+            padding: .3rem .5rem;
+            text-align: left;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="/lib/signalr/signalr.min.js"></script>
+    <script src="/lib/signalr/signalr-protocol-msgpack.min.js"></script>
+    <script>
+        (function(){
+            const hubUrl = "@hubUrl";
+
+            // UI elements
+            const logEl = document.getElementById("log");
+            const tableBody = document.querySelector("#aircraftTable tbody");
+
+            // Define named statuses mapping to aircraft status value
+            const statusNames = ["active", "inactive", "stale"];
+
+            // Define the characters associated with aircraft behaviours
+            const behaviours = ["?", "=", "\u2191", "\u2193"];
+
+            // Track rows by ICAO for fast updates/removals
+            const rows = new Map();
+            let connection = null;
+            let stopping = false;
+
+            // Store the log lines as an array
+            let maxLogLines = parseInt(logEl?.dataset?.logMax || "100", 10);
+            const logBuffer = [];
+
+            // Function to log to the console
+            function log(msg, payload) {
+                // Construct the log message content, ensuring one line per entry (flatten payload just in case)
+                const t = new Date().toISOString();
+                const safePayload = payload ? " " + JSON.stringify(payload).replace(/\n+/g, " ") : "";
+                const line = `[${t}] ${msg}${safePayload}`;
+
+                // Add this message and drop the oldest, if necessary
+                logBuffer.push(line);
+                if (logBuffer.length > maxLogLines) {
+                    logBuffer.shift();
+                }
+
+                // Construct and apply the log content and scroll to the bottom
+                logEl.textContent = logBuffer.join("\n");
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+
+            // Function to add or insert a row containing aircraft data
+            function upsertRow(aircraft) {
+                // Find the row for the aircraft the event references
+                let tr = rows.get(aircraft.address);
+                if (!tr) {
+                    // Not found, so create a new row
+                    tr = document.createElement("tr");
+                    tr.innerHTML = "";
+                    for (i = 0; i < 13; i++) {
+                    tr.innerHTML += "<td></td>";
+                    }
+
+                    // Add the row to the map, indexed by aircraft address, and append the row to the table
+                    rows.set(aircraft.address, tr);
+                    tableBody.appendChild(tr);
+                    log("Added", aircraft);
+                }
+
+                // Get the children of the row (the cells) and update their content
+                const td = tr.children;
+                td[0].textContent = aircraft.address;
+                td[1].textContent = aircraft.callsign;
+                td[2].textContent = aircraft.squawk;
+                td[3].textContent = aircraft.altitude?.toFixed?.(0) ?? "";
+                td[4].textContent = aircraft.verticalRate?.toFixed?.(0) ?? "";
+                td[5].textContent = behaviours[aircraft.behaviour];
+                td[6].textContent = aircraft.groundSpeed?.toFixed?.(0) ?? "";
+                td[7].textContent = aircraft.track?.toFixed?.(0) ?? "";
+                td[8].textContent = aircraft.latitude?.toFixed?.(5) ?? "";
+                td[9].textContent = aircraft.longitude?.toFixed?.(5) ?? "";
+                td[10].textContent = aircraft.distance?.toFixed?.(5) ?? "";
+                td[11].textContent = aircraft.messages;
+                td[12].textContent = new Date(aircraft.lastSeen).toISOString().replace("T", " ").replace("Z", "");
+
+                // Set the styling appropriate to the aircraft state
+                tr.dataset.status = statusNames[aircraft.status];
+            }
+
+            // Function to remove an aircraft from the table
+            function removeRow(aircraft) {
+                const tr = rows.get(aircraft.address);
+                if (tr) {
+                    tr.remove();
+                    rows.delete(aircraft.address);
+                }
+            }
+
+            // Function to remove all rows from the table
+            function removeAllRows() {
+                for (const key of map.keys()) {
+                    removeRow(key);
+                }
+            }
+
+            // Function to build the connection to the Tracker Hub
+            function buildConnection() {
+                return new signalR.HubConnectionBuilder()
+                            .withUrl(hubUrl, {
+                                skipNegotiation: true,
+                                transport: signalR.HttpTransportType.WebSockets,
+                                withCredentials: false
+                            })
+                            .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+                            .configureLogging(signalR.LogLevel.Information)
+                            .build();
+            }
+
+            // Function to connect to the SignalR hub and start live tracking
+            async function start() {
+                if (connection) return;
+
+                stopping = false;
+                connection = buildConnection();
+
+                connection.on("snapshot", list => {
+                    const now = new Date();
+                    log("Snapshot", { list });
+                    removeAllRows();
+                    list.forEach(upsertRow);
+                });
+
+                connection.on("aircraftUpdate", aircraft => {
+                    upsertRow(aircraft);
+                });
+
+                connection.on("aircraftRemoved", aircraft => {
+                    removeRow(aircraft);
+                    log("Removed", { aircraft });
+                });
+
+                connection.onreconnecting(err => {
+                    log("Reconnecting", err ? { error: err.message } : null);
+                });
+
+                connection.onreconnected(id => {
+                    log("Reconnected", { connectionId: id });
+                });
+
+                connection.onclose(err => {
+                    log("Closed", err ? { error: err.message } : null);
+
+                    // If we didn"t intentionally stop, try to restart with jittered backoff
+                    if (!stopping) {
+                        retryLoop();
+                    }
+                });
+
+                try {
+                    log("Connecting ...");
+                    await connection.start();
+                    log("Connected", { connectionId: connection.connectionId });
+                } catch (err) {
+                    log("Initial connect failed", { error: err.message });
+                    await retryLoop();
+                }
+            }
+
+            // Function to stop live tracking
+            async function stop() {
+                stopping = true;
+                if (!connection) return;
+                disconnectBtn.disabled = true;
+                try {
+                    await connection.stop();
+                    log("Stopped");
+                } catch (err) {
+                    log("Stop error", { error: err.message });
+                } finally {
+                    connection = null;
+                    log("Disconnected");
+                    connectBtn.disabled = false;
+                }
+            }
+
+            // Connection retry loop
+            async function retryLoop() {
+                let delay = 1000;
+                while (!stopping) {
+                    try {
+                        log(`Reconnecting in ${Math.round(delay/1000)}s…`);
+                        await sleep(delay + Math.floor(Math.random()*500));
+
+                        log("Reconnecting ...");
+                        await connection.start();
+                        log("Reconnected after backoff", { connectionId: connection.connectionId });
+                        return;
+                    } catch (err) {
+                        log("Reconnect attempt failed", { error: err.message });
+                        delay = Math.min(delay * 2, 15000);
+                    }
+                }
+            }
+
+            function sleep(ms) {
+                return new Promise(r => setTimeout(r, ms));
+            }
+
+            // Graceful shutdown when navigating away/refreshing
+            window.addEventListener("beforeunload", () => {
+                stopping = true;
+                if (connection) {
+                    connection.stop();
+                }
+            });
+
+            // Optional: auto-connect on page load
+            start();
+        })();
+    </script>
+}
