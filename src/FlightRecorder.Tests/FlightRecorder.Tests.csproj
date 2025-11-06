@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <ReleaseVersion>1.21.0.0</ReleaseVersion>
+    <ReleaseVersion>1.23.0.0</ReleaseVersion>
     <NoWarn>NU1900</NoWarn>
   </PropertyGroup>
 

@@ -29,7 +29,6 @@ namespace FlightRecorder.Tests
         private const string TypeName = "Airbus A320";
         private const string ProductionLine = "Airbus A320";
         private const string Manufacturer = "Airbus";
-        private const string Age = "21";
         private const string MalformedResponse = "[{}]";
         private const string MalformedAgeResponse = "{ \"reg\": \"EI-DEA\", \"serial\": \"2191\", \"hexIcao\": \"4CA213\", \"model\": \"A320\", \"modelCode\": \"320-214\", \"registrationDate\": \"This is not a date\", \"typeName\": \"Airbus A320\", \"productionLine\": \"Airbus A320\" }";
         private const string Response = "{ \"reg\": \"EI-DEA\", \"serial\": \"2191\", \"hexIcao\": \"4CA213\", \"model\": \"A320\", \"modelCode\": \"320-214\", \"registrationDate\": \"2004-05-04\", \"typeName\": \"Airbus A320\", \"productionLine\": \"Airbus A320\" }";
@@ -101,6 +100,7 @@ namespace FlightRecorder.Tests
         {
             _client!.AddResponse(Response);
             var properties = Task.Run(() => _api.LookupAircraftByRegistration(Registration)).Result;
+            var expectedAge = (DateTime.Now.Year - 2004 + 1).ToString();
 
             Assert.IsNotNull(properties);
             Assert.AreEqual(Registration, properties[ApiPropertyType.AircraftRegistration]);
@@ -111,7 +111,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(RegistrationDate, properties[ApiPropertyType.AircraftRegistrationDate]);
             Assert.AreEqual(TypeName, properties[ApiPropertyType.AircraftType]);
             Assert.AreEqual(ProductionLine, properties[ApiPropertyType.AircraftProductionLine]);
-            Assert.AreEqual(Age, properties[ApiPropertyType.AircraftAge]);
+            Assert.AreEqual(expectedAge, properties[ApiPropertyType.AircraftAge]);
             Assert.AreEqual(Manufacturer, properties[ApiPropertyType.ManufacturerName]);
         }
 
@@ -120,6 +120,7 @@ namespace FlightRecorder.Tests
         {
             _client!.AddResponse(Response);
             var properties = Task.Run(() => _api.LookupAircraftByICAOAddress(ICAOAddress)).Result;
+            var expectedAge = (DateTime.Now.Year - 2004 + 1).ToString();
 
             Assert.IsNotNull(properties);
             Assert.AreEqual(Registration, properties[ApiPropertyType.AircraftRegistration]);
@@ -130,7 +131,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(RegistrationDate, properties[ApiPropertyType.AircraftRegistrationDate]);
             Assert.AreEqual(TypeName, properties[ApiPropertyType.AircraftType]);
             Assert.AreEqual(ProductionLine, properties[ApiPropertyType.AircraftProductionLine]);
-            Assert.AreEqual(Age, properties[ApiPropertyType.AircraftAge]);
+            Assert.AreEqual(expectedAge, properties[ApiPropertyType.AircraftAge]);
             Assert.AreEqual(Manufacturer, properties[ApiPropertyType.ManufacturerName]);
         }
     }
