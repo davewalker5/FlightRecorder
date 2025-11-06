@@ -8,14 +8,10 @@ namespace FlightRecorder.Mvc.Controllers
     [Authorize]
     public class TrackerHubController : FlightRecorderControllerBase
     {
-        private readonly FlightRecorderApplicationSettings _settings;
-
         public TrackerHubController(
-            FlightRecorderApplicationSettings settings,
             IPartialViewToStringRenderer renderer,
             ILogger<MyFlightsController> logger) : base(renderer, logger)
         {
-            _settings = settings;
         }
         
         /// <summary>
@@ -24,8 +20,8 @@ namespace FlightRecorder.Mvc.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            // Pass HubUrl to the view (avoids hardcoding)
-            ViewData["TrackerHubUrl"] = _settings.TrackerHubUrl;
+            // Get the value of the SignalR Hub URL from the environment and pass it to the view
+            ViewData["TrackerHubUrl"] = Environment.GetEnvironmentVariable("ADSB_TRACKER_HUB_URL");
             return View();
         }
     }

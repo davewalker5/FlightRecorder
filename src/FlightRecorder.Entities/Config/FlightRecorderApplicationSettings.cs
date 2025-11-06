@@ -15,7 +15,6 @@ namespace FlightRecorder.Entities.Config
         public List<ApiEndpoint> ApiEndpoints { get; set; }
         public List<ApiServiceKey> ApiServiceKeys { get; set; }
         public string ApiUrl { get; set; }
-        public string TrackerHubUrl { get; set; }
         public string ApiDateFormat { get; set; }
         public List<ApiRoute> ApiRoutes { get; set; }
         public int SearchPageSize { get; set; }

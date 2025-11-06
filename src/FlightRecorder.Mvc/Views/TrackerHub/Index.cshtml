@@ -226,6 +226,7 @@
 
             // Function to build the connection to the Tracker Hub
             function buildConnection() {
+                log("HubURL", hubUrl);
                 return new signalR.HubConnectionBuilder()
                             .withUrl(hubUrl, {
                                 skipNegotiation: true,
