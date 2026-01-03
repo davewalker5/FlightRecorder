@@ -100,7 +100,7 @@ namespace FlightRecorder.Tests
         {
             _client!.AddResponse(Response);
             var properties = Task.Run(() => _api.LookupAircraftByRegistration(Registration)).Result;
-            var expectedAge = (DateTime.Now.Year - 2004 + 1).ToString();
+            var expectedAge = (DateTime.Now.Year - 2004).ToString();
 
             Assert.IsNotNull(properties);
             Assert.AreEqual(Registration, properties[ApiPropertyType.AircraftRegistration]);
@@ -120,7 +120,7 @@ namespace FlightRecorder.Tests
         {
             _client!.AddResponse(Response);
             var properties = Task.Run(() => _api.LookupAircraftByICAOAddress(ICAOAddress)).Result;
-            var expectedAge = (DateTime.Now.Year - 2004 + 1).ToString();
+            var expectedAge = (DateTime.Now.Year - 2004).ToString();
 
             Assert.IsNotNull(properties);
             Assert.AreEqual(Registration, properties[ApiPropertyType.AircraftRegistration]);
