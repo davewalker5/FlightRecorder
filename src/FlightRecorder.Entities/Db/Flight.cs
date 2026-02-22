@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -35,6 +36,9 @@ namespace FlightRecorder.Entities.Db
 
         [NotMapped]
         public Airport DestinationAirport { get; set; }
+
+        [NotMapped]
+        public DateTime? LastSeen { get; set; }
 
         public virtual Airline Airline { get; set; }
 

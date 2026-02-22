@@ -356,5 +356,31 @@ namespace FlightRecorder.BusinessLogic.Database
 
             return sightings;
         }
+
+        /// <summary>
+        /// Assign the last seen date on a collection of flights
+        /// </summary>
+        /// <param name="flights"></param>
+        /// <returns></returns>
+        public async Task LoadSightingDetails(IEnumerable<Flight> flights)
+        {
+            // Get a list of flight IDs
+            var flightIds = flights.Select(x => x.Id).Distinct();
+
+            // Load matching sighting details
+            var sightings = await ListAsync(x => flightIds.Contains(x.FlightId), 1, int.MaxValue).ToListAsync();
+
+            // Map them into the flights
+            foreach (var flight in flights)
+            {
+                // Find the most recent sighting for this flight
+                var sighting = sightings.Where(s => s.FlightId == flight.Id)
+                    .OrderByDescending(s => s.Date)
+                    .FirstOrDefault();
+
+                // Set the last seen date on the flight from the sighting
+                flight.LastSeen = sighting.Date;
+            }
+        }
     }
 }
