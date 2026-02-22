@@ -21,5 +21,6 @@ namespace FlightRecorder.Entities.Interfaces
         Task<IAsyncEnumerable<Sighting>> ListByLocationAsync(string locationName, int pageNumber, int pageSize);
         Task<Sighting> UpdateAsync(long id, long altitude, DateTime date, long locationId, long flightId, long aircraftId, bool isMyFlight);
         Task DeleteAsync(long id);
+        Task LoadSightingDetails(IEnumerable<Flight> flights);
     }
 }

@@ -99,7 +99,8 @@ namespace FlightRecorder.Client.ApiClient
                 if (!string.IsNullOrEmpty(json))
                 {
                     flights = Deserialize<List<Flight>>(json)
-                                        ?.OrderBy(m => m.Airline.Name)
+                                        ?.OrderByDescending(m => m.LastSeen)
+                                        .ThenBy(m => m.Airline.Name)
                                         .ThenBy(m => m.Embarkation)
                                         .ThenBy(m => m.Destination)
                                         .ToList();

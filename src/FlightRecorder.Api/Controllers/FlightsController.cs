@@ -24,6 +24,7 @@ namespace FlightRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Retrieving list of flights by route {embarkation}-{destination} (page {pageNumber}, page size {pageSize})");
 
+            // Retrieve the matching list of flights
             string decodedEmbarkation = HttpUtility.UrlDecode(embarkation).ToUpper();
             string decodedDestination = HttpUtility.UrlDecode(destination).ToUpper();
             List<Flight> flights = await Factory.Flights
@@ -31,15 +32,16 @@ namespace FlightRecorder.Api.Controllers
                                                                  (f.Destination == decodedDestination), pageNumber, pageSize)
                                                  .ToListAsync();
 
-            LogMessage(Severity.Debug, $"Retrieved {flights.Count} flights(s)");
+            LogMessage(Severity.Debug, $"Retrieved {flights.Count} flight(s)");
 
             if (!flights.Any())
             {
                 return NoContent();
             }
 
-            // Assign airport details
+            // Assign airport  and sighting details
             await Factory.Airports.LoadAirportDetails(flights);
+            await Factory.Sightings.LoadSightingDetails(flights);
 
             return flights;
         }
@@ -54,15 +56,16 @@ namespace FlightRecorder.Api.Controllers
                                                  .ListAsync(f => f.AirlineId == airlineId, pageNumber, pageSize)
                                                  .ToListAsync();
 
-            LogMessage(Severity.Debug, $"Retrieved {flights.Count} flights(s)");
+            LogMessage(Severity.Debug, $"Retrieved {flights.Count} flight(s)");
 
             if (!flights.Any())
             {
                 return NoContent();
             }
 
-            // Assign airport details
+            // Assign airport  and sighting details
             await Factory.Airports.LoadAirportDetails(flights);
+            await Factory.Sightings.LoadSightingDetails(flights);
 
             return flights;
         }
@@ -78,15 +81,16 @@ namespace FlightRecorder.Api.Controllers
                                                  .ListAsync(f => f.Number == decodedNumber, pageNumber, pageSize)
                                                  .ToListAsync();
 
-            LogMessage(Severity.Debug, $"Retrieved {flights.Count} flights(s)");
+            LogMessage(Severity.Debug, $"Retrieved {flights.Count} flight(s)");
 
             if (!flights.Any())
             {
                 return NoContent();
             }
 
-            // Assign airport details
+            // Assign airport  and sighting details
             await Factory.Airports.LoadAirportDetails(flights);
+            await Factory.Sightings.LoadSightingDetails(flights);
 
             return flights;
         }
@@ -105,8 +109,9 @@ namespace FlightRecorder.Api.Controllers
                 return NotFound();
             }
 
-            // Assign airport details
+            // Assign airport  and sighting details
             await Factory.Airports.LoadAirportDetails([flight]);
+            await Factory.Sightings.LoadSightingDetails([flight]);
 
             return flight;
         }
@@ -123,8 +128,10 @@ namespace FlightRecorder.Api.Controllers
                                                     template.AirlineId);
             LogMessage(Severity.Debug, $"Added flight: {flight}");
 
-            // Assign airport details
+            // Assign airport  and sighting details
             await Factory.Airports.LoadAirportDetails([flight]);
+            await Factory.Sightings.LoadSightingDetails([flight]);
+
             return flight;
         }
 
@@ -141,8 +148,9 @@ namespace FlightRecorder.Api.Controllers
                 template.Destination,
                 template.AirlineId);
 
-            // Assign airport details
+            // Assign airport  and sighting details
             await Factory.Airports.LoadAirportDetails([flight]);
+            await Factory.Sightings.LoadSightingDetails([flight]);
 
             LogMessage(Severity.Debug, $"Flight updated: {flight}");
 
