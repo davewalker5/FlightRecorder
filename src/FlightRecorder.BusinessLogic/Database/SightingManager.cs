@@ -377,9 +377,12 @@ namespace FlightRecorder.BusinessLogic.Database
                 var sighting = sightings.Where(s => s.FlightId == flight.Id)
                     .OrderByDescending(s => s.Date)
                     .FirstOrDefault();
+                if (sighting != null)
+                {
+                    // Set the last seen date on the flight from the sighting
+                    flight.LastSeen = sighting.Date;
+                }
 
-                // Set the last seen date on the flight from the sighting
-                flight.LastSeen = sighting.Date;
             }
         }
     }
