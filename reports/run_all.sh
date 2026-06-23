@@ -12,7 +12,8 @@ declare -a exclusions=(
 )
 
 # Get a list of Jupyter Notebooks and iterate over them
-files=$(find `pwd` -name '*.ipynb')
+# files=$(find `pwd` -name '*.ipynb') <- This will find papermill test notebooks in the venv!
+files=$(find "$(pwd)" -path "$REPORTS_ROOT/venv" -prune -o -name '*.ipynb' -print)
 while IFS= read -r file; do
     # Get the notebook file name and extension without the path
     filename=$(basename -- "$file")

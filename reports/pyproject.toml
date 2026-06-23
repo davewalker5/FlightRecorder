@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flight-recorder-reports"
+version = "1.25.0"
+description = "Standalone Jupyter reporting suite for Flight Recorder data."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "ipykernel",
+    "matplotlib",
+    "numpy",
+    "openpyxl",
+    "pandas",
+    "papermill",
+    "scipy",
+    "seaborn",
+    "sqlparse",
+]
+
+[tool.setuptools]
+py-modules = []

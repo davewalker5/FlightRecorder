@@ -18,7 +18,7 @@ The following reports are currently available:
 
 ## Setting Up the Reporting Environment
 
-The reports have been written and tested using [Visual Studio Code](https://code.visualstudio.com/download) and the Jupyter extension from Microsoft using a Python virtual environment with the requirements listed in requirements.txt installed as the kernel for running the notebooks.
+The reports have been written and tested using [Visual Studio Code](https://code.visualstudio.com/download) and the Jupyter extension from Microsoft using a Python virtual environment with the dependencies listed in pyproject.toml installed as the kernel for running the notebooks.
 
 ### Set Environment Variables
 
