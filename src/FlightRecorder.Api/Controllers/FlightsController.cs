@@ -92,7 +92,11 @@ namespace FlightRecorder.Api.Controllers
             await Factory.Airports.LoadAirportDetails(flights);
             await Factory.Sightings.LoadSightingDetails(flights);
 
-            return flights;
+            return flights.OrderByDescending(f => f.LastSeen)
+                          .ThenBy(f => f.Airline.Name)
+                          .ThenBy(f => f.Embarkation)
+                          .ThenBy(f => f.Destination)
+                          .ToList();
         }
 
         [HttpGet]
@@ -122,7 +126,8 @@ namespace FlightRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Adding flight: {template}");
             Flight flight = await Factory.Flights
-                                          .AddAsync(template.Number,
+                                          .AddAsync(template.Callsign,
+                                                    template.Number,
                                                     template.Embarkation,
                                                     template.Destination,
                                                     template.AirlineId);
@@ -143,6 +148,7 @@ namespace FlightRecorder.Api.Controllers
 
             Flight flight = await Factory.Flights.UpdateAsync(
                 template.Id,
+                template.Callsign,
                 template.Number,
                 template.Embarkation,
                 template.Destination,

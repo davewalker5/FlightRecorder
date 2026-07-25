@@ -99,16 +99,18 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <summary>
         /// Add a new flight
         /// </summary>
+        /// <param name="callsign"></param>
         /// <param name="number"></param>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <param name="airlineId"></param>
         /// <returns></returns>
-        public async Task<Flight> AddAsync(string number, string embarkation, string destination, long airlineId)
+        public async Task<Flight> AddAsync(string callsign, string number, string embarkation, string destination, long airlineId)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Adding flight: Number = {number}, Route = {embarkation}-{destination}, Airline ID = {airlineId}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding flight: Callsign = {callsign}, Number = {number}, Route = {embarkation}-{destination}, Airline ID = {airlineId}");
 
             // Check the flight doesn't already exist
+            callsign = string.IsNullOrWhiteSpace(callsign) ? null : callsign.CleanString().ToUpper();
             number = number.CleanString().ToUpper();
             embarkation = embarkation.CleanString().ToUpper();
             destination = destination.CleanString().ToUpper();
@@ -122,6 +124,7 @@ namespace FlightRecorder.BusinessLogic.Database
             // Add the flight and save changes
             var flight = new Flight
             {
+                Callsign = callsign,
                 Number = number,
                 Embarkation = embarkation,
                 Destination = destination,
@@ -142,13 +145,15 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <summary>
         /// Add a named manufacturer, if it doesn't already exist
         /// </summary>
+        /// <param name="callsign"></param>
         /// <param name="number"></param>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <param name="airlineId"></param>
         /// <returns></returns>
-        public async Task<Flight> AddIfNotExistsAsync(string number, string embarkation, string destination, long airlineId)
+        public async Task<Flight> AddIfNotExistsAsync(string callsign, string number, string embarkation, string destination, long airlineId)
         {
+            callsign = string.IsNullOrWhiteSpace(callsign) ? null : callsign.CleanString().ToUpper();
             number = number.CleanString().ToUpper();
             embarkation = embarkation.CleanString().ToUpper();
             destination = destination.CleanString().ToUpper();
@@ -159,7 +164,12 @@ namespace FlightRecorder.BusinessLogic.Database
                                                 (a.AirlineId == airlineId));
             if (flight == null)
             {
-                flight = await AddAsync(number, embarkation, destination, airlineId);
+                flight = await AddAsync(callsign, number, embarkation, destination, airlineId);
+            }
+            else if (flight.Callsign != callsign)
+            {
+                flight.Callsign = callsign;
+                await _factory.Context.SaveChangesAsync();
             }
 
             return flight;
@@ -169,14 +179,15 @@ namespace FlightRecorder.BusinessLogic.Database
         /// Update a flight
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="callsign"></param>
         /// <param name="number"></param>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <param name="airlineId"></param>
         /// <returns></returns>
-        public async Task<Flight> UpdateAsync(long id, string number, string embarkation, string destination, long airlineId)
+        public async Task<Flight> UpdateAsync(long id, string callsign, string number, string embarkation, string destination, long airlineId)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Updating flight: ID = {id}, Number = {number}, Route = {embarkation}-{destination}, Airline ID = {airlineId}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating flight: ID = {id}, Callsign = {callsign}, Number = {number}, Route = {embarkation}-{destination}, Airline ID = {airlineId}");
 
             // Retrieve the flight
             var flight = await _factory.Context.Flights.FirstOrDefaultAsync(x => x.Id == id);
@@ -187,6 +198,7 @@ namespace FlightRecorder.BusinessLogic.Database
             }
 
             // Check the flight doesn't already exist
+            callsign = string.IsNullOrWhiteSpace(callsign) ? null : callsign.CleanString().ToUpper();
             number = number.CleanString().ToUpper();
             embarkation = embarkation.CleanString().ToUpper();
             destination = destination.CleanString().ToUpper();
@@ -198,6 +210,7 @@ namespace FlightRecorder.BusinessLogic.Database
             await _factory.Airports.CheckAirportExists(destination);
 
             // Update the flight properties and save changes
+            flight.Callsign = callsign;
             flight.Number = number;
             flight.Embarkation = embarkation;
             flight.Destination = destination;

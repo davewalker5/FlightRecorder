@@ -21,6 +21,9 @@ namespace FlightRecorder.Mvc.Models
         [DisplayName("My Flight")]
         public string MyFlightText { get { return IsMyFlight ? "Yes" : "No"; }}
 
+        [DisplayName("Callsign")]
+        public string Callsign { get; set; }
+
         [DisplayName("Flight Number")]
         public string FlightNumber { get; set; }
 

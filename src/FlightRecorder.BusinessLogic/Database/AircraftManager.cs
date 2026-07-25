@@ -130,17 +130,19 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <summary>
         /// Add an aircraft
         /// </summary>
+        /// <param name="address"></param>
         /// <param name="registration"></param>
         /// <param name="serialNumber"></param>
         /// <param name="yearOfManufacture"></param>
         /// <param name="model"></param>
         /// <param name="manufacturer"></param>
         /// <returns></returns>
-        public async Task<Aircraft> AddAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId)
+        public async Task<Aircraft> AddAsync(string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Adding aircraft: Registration = {registration}, Serial Number = {serialNumber}, Manufactured = {yearOfManufacture}, Model ID = {modelId}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Adding aircraft: Address = {address}, Registration = {registration}, Serial Number = {serialNumber}, Manufactured = {yearOfManufacture}, Model ID = {modelId}");
 
             // Check this isn't a duplicate
+            address = string.IsNullOrWhiteSpace(address) ? null : address.CleanString().ToUpper();
             registration = registration.CleanString().ToUpper();
             await CheckAircraftIsNotADuplicate(registration, 0);
 
@@ -157,6 +159,7 @@ namespace FlightRecorder.BusinessLogic.Database
 
             var aircraft = new Aircraft
             {
+                Address = address,
                 Registration = registration,
                 SerialNumber = haveSerialNumber ? cleanSerialNumber : null,
                 Manufactured = manufactured,
@@ -180,18 +183,25 @@ namespace FlightRecorder.BusinessLogic.Database
         /// <summary>
         /// Add an aircraft if it doesn't already exist
         /// </summary>
+        /// <param name="address"></param>
         /// <param name="registration"></param>
         /// <param name="serialNumber"></param>
         /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> AddIfNotExistsAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId)
+        public async Task<Aircraft> AddIfNotExistsAsync(string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId)
         {
+            address = string.IsNullOrWhiteSpace(address) ? null : address.CleanString().ToUpper();
             registration = registration.CleanString();
             var aircraft = await GetAsync(x => x.Registration == registration);
             if (aircraft == null)
             {
-                aircraft = await AddAsync(registration, serialNumber, yearOfManufacture, modelId);
+                aircraft = await AddAsync(address, registration, serialNumber, yearOfManufacture, modelId);
+            }
+            else if (aircraft.Address != address)
+            {
+                aircraft.Address = address;
+                await _factory.Context.SaveChangesAsync();
             }
             return aircraft;
         }
@@ -200,14 +210,15 @@ namespace FlightRecorder.BusinessLogic.Database
         /// Update an aircraft
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="address"></param>
         /// <param name="registration"></param>
         /// <param name="serialNumber"></param>
         /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> UpdateAsync(long id, string registration, string serialNumber, long? yearOfManufacture, long? modelId)
+        public async Task<Aircraft> UpdateAsync(long id, string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId)
         {
-            _factory.Logger.LogMessage(Severity.Debug, $"Updating aircraft: ID = {id}, Registration = {registration}, Serial Number = {serialNumber}, Manufactured = {yearOfManufacture}, Model ID = {modelId}");
+            _factory.Logger.LogMessage(Severity.Debug, $"Updating aircraft: ID = {id}, Address = {address}, Registration = {registration}, Serial Number = {serialNumber}, Manufactured = {yearOfManufacture}, Model ID = {modelId}");
 
             // Retrieve the aircraft
             var aircraft = await _factory.Context.Aircraft.FirstOrDefaultAsync(x => x.Id == id);
@@ -218,6 +229,7 @@ namespace FlightRecorder.BusinessLogic.Database
             }
 
             // Check we're not going to create a duplicate
+            address = string.IsNullOrWhiteSpace(address) ? null : address.CleanString().ToUpper();
             registration = registration.CleanString().ToUpper();
             await CheckAircraftIsNotADuplicate(registration, id);
 
@@ -230,6 +242,7 @@ namespace FlightRecorder.BusinessLogic.Database
             var haveSerialNumber = !string.IsNullOrEmpty(cleanSerialNumber);
 
             // Update the aircraft properties
+            aircraft.Address = address;
             aircraft.Registration = registration;
             aircraft.SerialNumber = haveSerialNumber ? cleanSerialNumber : null;
             aircraft.Manufactured = yearOfManufacture;

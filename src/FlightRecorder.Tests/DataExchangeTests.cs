@@ -21,12 +21,14 @@ namespace FlightRecorder.Tests
         private const string LocationName = "Murcia Corvera International Airport";
 
         private const string FlightNumber = "U28551";
+        private const string Callsign = "EZY8551";
         private const string Embarkation = "LGW";
         private const string Destination = "RMU";
         private const string AirlineName = "EasyJet";
 
         private const string ModelName = "A319-111";
         private const string ManufacturerName = "Airbus";
+        private const string AircraftAddress = "40622D";
         private const string Registration = "G-EZFY";
         private const string SerialNumber = "4418";
         private const string Age = "9";
@@ -49,8 +51,10 @@ namespace FlightRecorder.Tests
             Task.Run(() => _factory.Airports.AddAsync(Destination, "", _countryId)).Wait();
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(new FlattenedSighting
             {
+                Callsign = Callsign,
                 FlightNumber = FlightNumber,
                 Airline = AirlineName,
+                AircraftAddress = AircraftAddress,
                 Registration = Registration,
                 SerialNumber = SerialNumber,
                 Manufacturer = ManufacturerName,
@@ -78,6 +82,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(LocationName, sighting.Location.Name);
 
             Assert.IsNotNull(sighting.Flight);
+            Assert.AreEqual(Callsign, sighting.Flight.Callsign);
             Assert.AreEqual(FlightNumber, sighting.Flight.Number);
             Assert.AreEqual(Embarkation, sighting.Flight.Embarkation);
             Assert.AreEqual(Destination, sighting.Flight.Destination);
@@ -86,6 +91,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(AirlineName, sighting.Flight.Airline.Name);
 
             Assert.IsNotNull(sighting.Aircraft);
+            Assert.AreEqual(AircraftAddress, sighting.Aircraft.Address);
             Assert.AreEqual(Registration, sighting.Aircraft.Registration);
             Assert.AreEqual(SerialNumber, sighting.Aircraft.SerialNumber);
             Assert.AreEqual(DateTime.Now.Year - long.Parse(Age), sighting.Aircraft.Manufactured);
@@ -103,8 +109,10 @@ namespace FlightRecorder.Tests
             IEnumerable<Sighting> sightings = await _factory.Sightings.ListAsync(null, 1, 100).ToListAsync();
             IEnumerable<FlattenedSighting> flattened = sightings.Flatten();
             Assert.AreEqual(1, flattened.Count());
+            Assert.AreEqual(Callsign, flattened.First().Callsign);
             Assert.AreEqual(FlightNumber, flattened.First().FlightNumber);
             Assert.AreEqual(AirlineName, flattened.First().Airline);
+            Assert.AreEqual(AircraftAddress, flattened.First().AircraftAddress);
             Assert.AreEqual(Registration, flattened.First().Registration);
             Assert.AreEqual(SerialNumber, flattened.First().SerialNumber);
             Assert.AreEqual(ManufacturerName, flattened.First().Manufacturer);
@@ -171,9 +179,15 @@ namespace FlightRecorder.Tests
             Assert.IsNotNull(imported);
             Assert.AreEqual(sightings.Count, imported.Count);
             Assert.AreEqual(aircraft.Count(), importedAircraft.Count());
+            CollectionAssert.AreEquivalent(
+                aircraft.Select(x => x.Address.ToUpper()).ToList(),
+                importedAircraft.Select(x => x.Address).ToList());
             Assert.AreEqual(models.Count(), importedModels.Count());
             Assert.AreEqual(manufacturers.Count(), importedManufacturers.Count());
             Assert.AreEqual(flights.Count(), importedFlights.Count());
+            CollectionAssert.AreEquivalent(
+                flights.Select(x => x.Callsign.ToUpper()).ToList(),
+                importedFlights.Select(x => x.Callsign).ToList());
             Assert.AreEqual(locations.Count(), importedLocations.Count());
         }
 

@@ -115,7 +115,7 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 string number = model.FlightNumber;
-                await _flights.AddFlightAsync(number, model.Embarkation, model.Destination, model.AirlineId);
+                await _flights.AddFlightAsync(model.Callsign, number, model.Embarkation, model.Destination, model.AirlineId);
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Flight '{number}' added successfully";
@@ -159,7 +159,7 @@ namespace FlightRecorder.Mvc.Controllers
 
             if (ModelState.IsValid)
             {
-                await _flights.UpdateFlightAsync(model.Id, model.FlightNumber, model.Embarkation, model.Destination, model.AirlineId);
+                await _flights.UpdateFlightAsync(model.Id, model.Callsign, model.FlightNumber, model.Embarkation, model.Destination, model.AirlineId);
                 result = RedirectToAction("Index", new
                 {
                     airlineId = 0,

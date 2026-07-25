@@ -92,6 +92,22 @@
 
         <div class="row">
             <div class="col">
+                <strong>@Html.LabelFor(m => m.Callsign)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Callsign, new {
+                        @class = "form-control",
+                        style = "text-transform: uppercase;",
+                        oninput = "this.value = this.value.toUpperCase();"
+                    })
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col">
                 <strong>@Html.LabelFor(m => m.FlightNumber)</strong>
             </div>
             <div class="col">

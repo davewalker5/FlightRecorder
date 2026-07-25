@@ -37,13 +37,14 @@ namespace FlightRecorder.Mvc.Controllers
         /// <param name="modelId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index(int manufacturerId = 0, int modelId = 0)
+        public async Task<IActionResult> Index(int manufacturerId = 0, int modelId = 0, string address = "")
         {
             // Construct the model and assign the selected manufacturer and aircraft
             // model
             ListAircraftViewModel model = new ListAircraftViewModel();
             model.ManufacturerId = manufacturerId;
             model.ModelId = modelId;
+            model.Address = address;
 
             // Load the manufacturer list
             List<Manufacturer> manufacturers = await _manufacturers.GetManufacturersAsync(1, int.MaxValue);
@@ -96,6 +97,21 @@ namespace FlightRecorder.Mvc.Controllers
         }
 
         /// <summary>
+        /// Return the aircraft with the specified 24-bit ICAO address
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ListByAddress(string address)
+        {
+            List<Aircraft> viewModel = null;
+            Aircraft aircraft = await _aircraft.GetAircraftByAddressAsync(address);
+            if (aircraft != null)
+            {
+                viewModel = new List<Aircraft> { aircraft };
+            }
+            return PartialView("List", viewModel);
+        }
+
+        /// <summary>
         /// Serve the page to add an aircraft
         /// </summary>
         /// <returns></returns>
@@ -120,7 +136,7 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 int? manufactured = (model.Age != null) ? DateTime.Now.Year - model.Age : null;
-                Aircraft aircraft = await _aircraft.AddAircraftAsync(model.Registration, model.SerialNumber, manufactured, model.ModelId);
+                Aircraft aircraft = await _aircraft.AddAircraftAsync(model.Address, model.Registration, model.SerialNumber, manufactured, model.ModelId);
                 ModelState.Clear();
                 model.Clear();
                 model.Message = $"Aircraft '{aircraft.Registration}' added successfully";
@@ -165,8 +181,10 @@ namespace FlightRecorder.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 int? manufactured = (viewModel.Age != null) ? DateTime.Now.Year - viewModel.Age : null;
-                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ModelId);
-                result = RedirectToAction("Index", new { manufacturerId = viewModel.ManufacturerId, modelId = viewModel.ModelId });
+                await _aircraft.UpdateAircraftAsync(viewModel.Id, viewModel.Address, viewModel.Registration, viewModel.SerialNumber, manufactured, viewModel.ModelId);
+                result = !string.IsNullOrWhiteSpace(viewModel.Address)
+                    ? RedirectToAction("Index", new { address = viewModel.Address })
+                    : RedirectToAction("Index", new { manufacturerId = viewModel.ManufacturerId, modelId = viewModel.ModelId });
             }
             else
             {

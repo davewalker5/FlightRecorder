@@ -132,6 +132,7 @@ namespace FlightRecorder.Mvc.Wizard
                         LastSightingAdded = lastAdded,
                         Altitude = sighting.Altitude,
                         Date = sighting.Date,
+                        Callsign = sighting.Flight.Callsign,
                         FlightNumber = sighting.Flight.Number,
                         LocationId = sighting.LocationId,
                         Registration = sighting.Aircraft.Registration
@@ -195,7 +196,11 @@ namespace FlightRecorder.Mvc.Wizard
 
                 // Not cached, so create a new one, using the cached sighting details
                 // model to supply the flight number
-                model = new FlightDetailsViewModel{ FlightNumber = sighting.FlightNumber };
+                model = new FlightDetailsViewModel
+                {
+                    Callsign = sighting.Callsign,
+                    FlightNumber = sighting.FlightNumber
+                };
             }
 
             // Set the available airlines
@@ -265,6 +270,7 @@ namespace FlightRecorder.Mvc.Wizard
 
                 // It is, so assign the aircraft properties
                 model.AircraftId = aircraft.Id;
+                model.Address = aircraft.Address;
                 model.SerialNumber = aircraft.SerialNumber;
                 model.ManufacturerId = aircraft?.Model.ManufacturerId;
                 model.ModelId = aircraft.ModelId;
@@ -565,6 +571,18 @@ namespace FlightRecorder.Mvc.Wizard
                 {
                     _logger.LogDebug($"Retrieving aircraft with Id: {details.AircraftId}");
                     aircraft = await _aircraft.GetAircraftByIdAsync(details.AircraftId ?? 0);
+
+                    if (aircraft.Address != details.Address)
+                    {
+                        _logger.LogDebug($"Updating address for aircraft with Id {details.AircraftId}: {details.Address}");
+                        aircraft = await _aircraft.UpdateAircraftAsync(
+                            aircraft.Id,
+                            details.Address,
+                            aircraft.Registration,
+                            aircraft.SerialNumber,
+                            (int?)aircraft.Manufactured,
+                            aircraft.ModelId);
+                    }
                 }
                 else
                 {
@@ -597,7 +615,7 @@ namespace FlightRecorder.Mvc.Wizard
 
                     // Create the aircraft
                     long? manufactured = (details.Age != null) ? DateTime.Now.Year - details.Age : null;
-                    aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId);
+                    aircraft = await _aircraft.AddAircraftAsync(details.Address, details.Registration, details.SerialNumber, manufactured, details.ModelId);
                 }
             }
 
@@ -629,6 +647,21 @@ namespace FlightRecorder.Mvc.Wizard
                 {
                     _logger.LogDebug($"Retrieving flight with Id: {details.FlightId}");
                     flight = await _flights.GetFlightByIdAsync(details.FlightId);
+
+                    // The callsign is entered on the first page of the wizard. If an
+                    // existing flight was selected and its callsign has changed, save
+                    // that change before associating the flight with the sighting.
+                    if (flight.Callsign != details.Callsign)
+                    {
+                        _logger.LogDebug($"Updating callsign for flight with Id {details.FlightId}: {details.Callsign}");
+                        flight = await _flights.UpdateFlightAsync(
+                            flight.Id,
+                            details.Callsign,
+                            flight.Number,
+                            flight.Embarkation,
+                            flight.Destination,
+                            flight.AirlineId);
+                    }
                 }
                 else
                 {
@@ -642,7 +675,7 @@ namespace FlightRecorder.Mvc.Wizard
                     }
 
                     // Create the flight
-                    flight = await _flights.AddFlightAsync(details.FlightNumber, details.Embarkation, details.Destination, details.AirlineId);
+                    flight = await _flights.AddFlightAsync(details.Callsign, details.FlightNumber, details.Embarkation, details.Destination, details.AirlineId);
                 }
             }
 

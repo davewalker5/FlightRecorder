@@ -12,6 +12,7 @@
             Id = 0;
             ManufacturerId = 0;
             ModelId = 0;
+            Address = "";
             Registration = "";
             SerialNumber = "";
             Age = 0;

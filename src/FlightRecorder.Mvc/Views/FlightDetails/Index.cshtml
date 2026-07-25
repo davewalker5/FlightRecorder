@@ -9,6 +9,7 @@
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Callsign)
         @Html.HiddenFor(m => m.FlightNumber)
 
         <div class="row">
@@ -35,6 +36,18 @@
                 Sighting = Model.MostRecentSighting
             });
         }
+
+        <div class="row">
+            <div class="col">
+                <strong>@Html.LabelFor(m => m.Callsign)</strong>
+            </div>
+            <div class="col">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.Callsign, new { @class = "form-control", @disabled="" })
+                </div>
+            </div>
+        </div>
+        <br />
 
         <div class="row">
             <div class="col">
@@ -152,6 +165,7 @@
                 dataType: "json",
                 cache: false,
                 success: function (result) {
+                    $("input[name='Callsign']").val(result.callsign);
                     $("#Embarkation").val(result.embarkation);
                     $("#Destination").val(result.destination);
                     $("#AirlineId").val(result.airlineId);

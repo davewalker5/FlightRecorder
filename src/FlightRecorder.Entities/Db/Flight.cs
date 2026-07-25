@@ -21,6 +21,9 @@ namespace FlightRecorder.Entities.Db
         [Required(ErrorMessage = "You must provide a flight number")]
         public string Number { get; set; }
 
+        [DisplayName("Callsign")]
+        public string Callsign { get; set; }
+
         [IATACode]
         [DisplayName("Embarkation")]
         [Required(ErrorMessage = "You must provide a point of embarkation")]
