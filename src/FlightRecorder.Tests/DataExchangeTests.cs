@@ -28,6 +28,7 @@ namespace FlightRecorder.Tests
 
         private const string ModelName = "A319-111";
         private const string ManufacturerName = "Airbus";
+        private const string AircraftAddress = "40622D";
         private const string Registration = "G-EZFY";
         private const string SerialNumber = "4418";
         private const string Age = "9";
@@ -53,6 +54,7 @@ namespace FlightRecorder.Tests
                 Callsign = Callsign,
                 FlightNumber = FlightNumber,
                 Airline = AirlineName,
+                AircraftAddress = AircraftAddress,
                 Registration = Registration,
                 SerialNumber = SerialNumber,
                 Manufacturer = ManufacturerName,
@@ -89,6 +91,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(AirlineName, sighting.Flight.Airline.Name);
 
             Assert.IsNotNull(sighting.Aircraft);
+            Assert.AreEqual(AircraftAddress, sighting.Aircraft.Address);
             Assert.AreEqual(Registration, sighting.Aircraft.Registration);
             Assert.AreEqual(SerialNumber, sighting.Aircraft.SerialNumber);
             Assert.AreEqual(DateTime.Now.Year - long.Parse(Age), sighting.Aircraft.Manufactured);
@@ -109,6 +112,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(Callsign, flattened.First().Callsign);
             Assert.AreEqual(FlightNumber, flattened.First().FlightNumber);
             Assert.AreEqual(AirlineName, flattened.First().Airline);
+            Assert.AreEqual(AircraftAddress, flattened.First().AircraftAddress);
             Assert.AreEqual(Registration, flattened.First().Registration);
             Assert.AreEqual(SerialNumber, flattened.First().SerialNumber);
             Assert.AreEqual(ManufacturerName, flattened.First().Manufacturer);
@@ -175,6 +179,9 @@ namespace FlightRecorder.Tests
             Assert.IsNotNull(imported);
             Assert.AreEqual(sightings.Count, imported.Count);
             Assert.AreEqual(aircraft.Count(), importedAircraft.Count());
+            CollectionAssert.AreEquivalent(
+                aircraft.Select(x => x.Address.ToUpper()).ToList(),
+                importedAircraft.Select(x => x.Address).ToList());
             Assert.AreEqual(models.Count(), importedModels.Count());
             Assert.AreEqual(manufacturers.Count(), importedManufacturers.Count());
             Assert.AreEqual(flights.Count(), importedFlights.Count());

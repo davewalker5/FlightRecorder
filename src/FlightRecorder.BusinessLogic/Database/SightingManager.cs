@@ -173,7 +173,7 @@ namespace FlightRecorder.BusinessLogic.Database
 
             // Get the year of sighting and create the aircraft
             long? yearOfManufacture = !string.IsNullOrEmpty(flattened.Age) ? DateTime.Now.Year - long.Parse(flattened.Age) : null;
-            long aircraftId = (await _factory.Aircraft.AddIfNotExistsAsync(flattened.Registration, flattened.SerialNumber, yearOfManufacture, modelId)).Id;
+            long aircraftId = (await _factory.Aircraft.AddIfNotExistsAsync(flattened.AircraftAddress, flattened.Registration, flattened.SerialNumber, yearOfManufacture, modelId)).Id;
 
             // Add the airline and flight details
             long airlineId = (await _factory.Airlines.AddIfNotExistsAsync(flattened.Airline)).Id;

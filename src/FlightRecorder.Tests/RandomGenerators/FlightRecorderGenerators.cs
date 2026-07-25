@@ -75,6 +75,7 @@ namespace FlightRecorder.Tests.RandomGenerators
         {
             var aircraft = new Aircraft
             {
+                Address = StringGenerators.GenerateRandomNumericString(1, 999999, 6),
                 Registration = $"G-{StringGenerators.GenerateRandomWord(4)}",
                 SerialNumber = StringGenerators.GenerateRandomNumericString(1, 1000000, 7),
                 Manufactured = DateGenerators.GenerateRandomYear(2000, 23),

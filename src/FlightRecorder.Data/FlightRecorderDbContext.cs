@@ -58,6 +58,10 @@ namespace FlightRecorder.Data
 
                 entity.Property(e => e.ModelId).HasColumnName("model_id");
 
+                entity.Property(e => e.Address)
+                    .HasColumnName("address")
+                    .HasColumnType("VARCHAR(6)");
+
                 entity.Property(e => e.Registration)
                     .IsRequired()
                     .HasColumnName("registration")

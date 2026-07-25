@@ -7,7 +7,7 @@ namespace FlightRecorder.Entities.DataExchange
 {
     public class FlattenedSighting : FlightRecorderEntityBase
     {
-        public const string CsvRecordPattern = @"^""[a-zA-Z0-9-() \/']*"",(""[a-zA-Z0-9-() \/']+"",){6}""[0-9]+"",(""[a-zA-Z0-9-() \/']+"",){3}""[0-9]+\/[0-9]+\/[0-9]+"",""[a-zA-Z0-9-() \/']+"",""True|False""$";
+        public const string CsvRecordPattern = @"^""[a-zA-Z0-9-() \/']*"",(""[a-zA-Z0-9-() \/']+"",){2}""[a-fA-F0-9]*"",(""[a-zA-Z0-9-() \/']+"",){4}""[0-9]+"",(""[a-zA-Z0-9-() \/']+"",){3}""[0-9]+\/[0-9]+\/[0-9]+"",""[a-zA-Z0-9-() \/']+"",""True|False""$";
         private const string DateTimeFormat = "dd/MM/yyyy";
 
         [Export("Callsign", 1)]
@@ -19,37 +19,40 @@ namespace FlightRecorder.Entities.DataExchange
         [Export("Airline", 3)]
         public string Airline { get; set; }
 
-        [Export("Registration", 4)]
+        [Export("Aircraft Address", 4)]
+        public string AircraftAddress { get; set; }
+
+        [Export("Registration", 5)]
         public string Registration { get; set; }
 
-        [Export("Serial Number", 5)]
+        [Export("Serial Number", 6)]
         public string SerialNumber { get; set; }
 
-        [Export("Manufacturer", 6)]
+        [Export("Manufacturer", 7)]
         public string Manufacturer { get; set; }
 
-        [Export("Type", 7)]
+        [Export("Type", 8)]
         public string Model { get; set; }
 
-        [Export("Age", 8)]
+        [Export("Age", 9)]
         public string Age { get; set; }
 
-        [Export("From", 9)]
+        [Export("From", 10)]
         public string Embarkation { get; set; }
 
-        [Export("To", 10)]
+        [Export("To", 11)]
         public string Destination { get; set; }
 
-        [Export("Height", 11)]
+        [Export("Height", 12)]
         public long Altitude { get; set; }
 
-        [Export("Date", 12)]
+        [Export("Date", 13)]
         public DateTime Date { get; set; }
 
-        [Export("Location", 13)]
+        [Export("Location", 14)]
         public string Location  { get; set; }
 
-        [Export("My Flight", 14)]
+        [Export("My Flight", 15)]
         public bool IsMyFlight  { get; set; }
 
         public static FlattenedSighting FromCsv(string record)
@@ -60,17 +63,18 @@ namespace FlightRecorder.Entities.DataExchange
                 Callsign = words[0].Substring(1),
                 FlightNumber = words[1],
                 Airline = words[2],
-                Registration = words[3],
-                SerialNumber = words[4],
-                Manufacturer = words[5],
-                Model = words[6],
-                Age = words[7],
-                Embarkation = words[8],
-                Destination = words[9],
-                Altitude = long.Parse(words[10]),
-                Date = DateTime.ParseExact(words[11], DateTimeFormat, CultureInfo.CurrentCulture),
-                Location = words[12][..^1],
-                IsMyFlight = words[13].Equals("True", StringComparison.OrdinalIgnoreCase)
+                AircraftAddress = words[3],
+                Registration = words[4],
+                SerialNumber = words[5],
+                Manufacturer = words[6],
+                Model = words[7],
+                Age = words[8],
+                Embarkation = words[9],
+                Destination = words[10],
+                Altitude = long.Parse(words[11]),
+                Date = DateTime.ParseExact(words[12], DateTimeFormat, CultureInfo.CurrentCulture),
+                Location = words[13][..^1],
+                IsMyFlight = words[14].Equals("True", StringComparison.OrdinalIgnoreCase)
             };
         }
     }

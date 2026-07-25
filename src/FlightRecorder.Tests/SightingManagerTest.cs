@@ -56,7 +56,7 @@ namespace FlightRecorder.Tests
             _flightId = Task.Run(() => _factory.Flights.AddAsync(null, FlightNumber, Embarkation, Destination, _airlineId)).Result.Id;
             _manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
             _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, _manufacturerId)).Result.Id;
-            _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, _modelId)).Result.Id;
+            _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(null, Registration, SerialNumber, YearOfManufacture, _modelId)).Result.Id;
             _sightingId = Task.Run(() => _factory.Sightings.AddAsync(Altitude, SightingDate, _locationId, _flightId, _aircraftId, IsMyFlight)).Result.Id;
         }
 
@@ -127,7 +127,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListByAircraftWithNoSightingsAsyncTest()
         {
-            await _factory.Aircraft.AddAsync("G-EZEH", "2184", 2004, _modelId);
+            await _factory.Aircraft.AddAsync(null, "G-EZEH", "2184", 2004, _modelId);
             List<Sighting> sightings = await _factory.Sightings.ListByAircraftAsync("G-EZEH", 1, 100).Result.ToListAsync();
             Assert.AreEqual(0, sightings.Count);
         }

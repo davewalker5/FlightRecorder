@@ -14,6 +14,9 @@ namespace FlightRecorder.Entities.Db
         [DisplayName("Model")]
         public long? ModelId { get; set; }
 
+        [DisplayName("Aircraft Address")]
+        public string Address { get; set; }
+
         [DisplayName("Registration")]
         [Required(ErrorMessage = "You must provide a registration number")]
         public string Registration { get; set; }

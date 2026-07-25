@@ -8,15 +8,15 @@ namespace FlightRecorder.Entities.Interfaces
 {
     public interface IAircraftManager
     {
-        Task<Aircraft> AddAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId);
-        Task<Aircraft> AddIfNotExistsAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId);
+        Task<Aircraft> AddAsync(string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId);
+        Task<Aircraft> AddIfNotExistsAsync(string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId);
         Task DeleteAsync(long id);
         Task<Aircraft> GetAsync(Expression<Func<Aircraft, bool>> predicate);
         IAsyncEnumerable<Aircraft> ListAsync(Expression<Func<Aircraft, bool>> predicate, int pageNumber, int pageSize);
         Task<int> CountAsync();
         Task<IAsyncEnumerable<Aircraft>> ListByModelAsync(string modelName, int pageNumber, int pageSize);
         Task<IAsyncEnumerable<Aircraft>> ListByManufacturerAsync(string manufacturerName, int pageNumber, int pageSize);
-        Task<Aircraft> UpdateAsync(long id, string registration, string serialNumber, long? yearOfManufacture, long? modelId);
+        Task<Aircraft> UpdateAsync(long id, string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId);
         Task CheckAircraftExists(long aircraftId);
     }
 }

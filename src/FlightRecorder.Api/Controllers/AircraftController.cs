@@ -104,7 +104,8 @@ namespace FlightRecorder.Api.Controllers
 
             long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             Aircraft aircraft = await Factory.Aircraft
-                                                .AddAsync(template.Registration,
+                                                .AddAsync(template.Address,
+                                                          template.Registration,
                                                           template.SerialNumber,
                                                           manufactured,
                                                           template.ModelId);
@@ -122,6 +123,7 @@ namespace FlightRecorder.Api.Controllers
             long? manufactured = (template.Manufactured > 0) ? template.Manufactured : null;
             Aircraft aircraft = await Factory.Aircraft.UpdateAsync(
                 template.Id,
+                template.Address,
                 template.Registration,
                 template.SerialNumber,
                 manufactured,
