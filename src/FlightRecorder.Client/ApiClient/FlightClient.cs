@@ -134,12 +134,13 @@ namespace FlightRecorder.Client.ApiClient
         /// <summary>
         /// Add a new flight
         /// </summary>
+        /// <param name="callsign"></param>
         /// <param name="number"></param>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <param name="airlineId"></param>
         /// <returns></returns>
-        public async Task<Flight> AddFlightAsync(string number, string embarkation, string destination, long airlineId)
+        public async Task<Flight> AddFlightAsync(string callsign, string number, string embarkation, string destination, long airlineId)
         {
             // Adding a flight changes cached lists of flights by number, route and
             // airline - just clear the lot!
@@ -147,6 +148,7 @@ namespace FlightRecorder.Client.ApiClient
 
             dynamic template = new
             {
+                Callsign = callsign,
                 Number = number,
                 Embarkation = embarkation,
                 Destination = destination,
@@ -164,12 +166,13 @@ namespace FlightRecorder.Client.ApiClient
         /// Update an existing flight
         /// </summary>
         /// <param name="flightId"></param>
+        /// <param name="callsign"></param>
         /// <param name="number"></param>
         /// <param name="embarkation"></param>
         /// <param name="destination"></param>
         /// <param name="airlineId"></param>
         /// <returns></returns>
-        public async Task<Flight> UpdateFlightAsync(long flightId, string number, string embarkation, string destination, long airlineId)
+        public async Task<Flight> UpdateFlightAsync(long flightId, string callsign, string number, string embarkation, string destination, long airlineId)
         {
             // Updating a flight changes cached lists of flights by number, route and
             // airline - just clear the lot!
@@ -178,6 +181,7 @@ namespace FlightRecorder.Client.ApiClient
             dynamic template = new
             {
                 Id = flightId,
+                Callsign = callsign,
                 Number = number,
                 Embarkation = embarkation,
                 Destination = destination,

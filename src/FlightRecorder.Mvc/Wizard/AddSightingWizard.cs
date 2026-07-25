@@ -132,6 +132,7 @@ namespace FlightRecorder.Mvc.Wizard
                         LastSightingAdded = lastAdded,
                         Altitude = sighting.Altitude,
                         Date = sighting.Date,
+                        Callsign = sighting.Flight.Callsign,
                         FlightNumber = sighting.Flight.Number,
                         LocationId = sighting.LocationId,
                         Registration = sighting.Aircraft.Registration
@@ -195,7 +196,11 @@ namespace FlightRecorder.Mvc.Wizard
 
                 // Not cached, so create a new one, using the cached sighting details
                 // model to supply the flight number
-                model = new FlightDetailsViewModel{ FlightNumber = sighting.FlightNumber };
+                model = new FlightDetailsViewModel
+                {
+                    Callsign = sighting.Callsign,
+                    FlightNumber = sighting.FlightNumber
+                };
             }
 
             // Set the available airlines
@@ -642,7 +647,7 @@ namespace FlightRecorder.Mvc.Wizard
                     }
 
                     // Create the flight
-                    flight = await _flights.AddFlightAsync(details.FlightNumber, details.Embarkation, details.Destination, details.AirlineId);
+                    flight = await _flights.AddFlightAsync(details.Callsign, details.FlightNumber, details.Embarkation, details.Destination, details.AirlineId);
                 }
             }
 

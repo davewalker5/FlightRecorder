@@ -37,6 +37,7 @@ namespace FlightRecorder.Mvc.Configuration
             CreateMap<Flight, EditFlightViewModel>()
                 .ForMember(m => m.AirlineId, x => x.MapFrom(m => m.AirlineId))
                 .ForMember(m => m.Airlines, x => x.Ignore())
+                .ForMember(m => m.Callsign, x => x.MapFrom(m => m.Callsign))
                 .ForMember(m => m.Destination, x => x.MapFrom(m => m.Destination))
                 .ForMember(m => m.Embarkation, x => x.MapFrom(m => m.Embarkation))
                 .ForMember(m => m.FlightNumber, x => x.MapFrom(m => m.Number))
@@ -48,6 +49,7 @@ namespace FlightRecorder.Mvc.Configuration
                 .ForMember(m => m.IsMyFlight, x => x.MapFrom(m => m.IsMyFlight));
 
             CreateMap<FlightDetailsViewModel, ConfirmDetailsViewModel>()
+                .ForMember(m => m.Callsign, x => x.MapFrom(m => m.Callsign))
                 .ForMember(m => m.FlightNumber, x => x.MapFrom(m => m.FlightNumber))
                 .ForMember(m => m.Embarkation, x => x.MapFrom(m => m.Embarkation))
                 .ForMember(m => m.Destination, x => x.MapFrom(m => m.Destination));

@@ -25,6 +25,9 @@ namespace FlightRecorder.Mvc.Models
         [DisplayName("New Location")]
         public string NewLocation { get; set; }
 
+        [DisplayName("Callsign")]
+        public string Callsign { get; set; }
+
         [DisplayName("Flight Number")]
         [Required(ErrorMessage = "You must provide a flight number")]
         public string FlightNumber { get; set; }

@@ -8,6 +8,9 @@ namespace FlightRecorder.Mvc.Models
 {
     public class FlightDetailsViewModel : FlightRecorderEntityBase
     {
+        [DisplayName("Callsign")]
+        public string Callsign { get; set; }
+
         [DisplayName("Flight Number")]
         public string FlightNumber { get; set; }
 

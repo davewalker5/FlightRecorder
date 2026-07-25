@@ -15,6 +15,7 @@
             <tr>
                 <th>Last Seen</th>
                 <th>Location</th>
+                <th>Callsign</th>
                 <th>Flight</th>
                 <th>Route</th>
                 <th>Aircraft</th>
@@ -27,6 +28,7 @@
             <tr>
                 <td>@Model.Sighting.Date.ToShortDateString()</td>
                 <td>@Model.Sighting.Location.Name</td>
+                <td>@Model.Sighting.Flight.Callsign</td>
                 <td>@Model.Sighting.Flight.Number</td>
                 <td>@Model.Sighting.Flight.Route</td>
                 <td>@Model.Sighting.Aircraft.Registration</td>
