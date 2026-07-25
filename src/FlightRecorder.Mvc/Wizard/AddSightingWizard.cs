@@ -634,6 +634,21 @@ namespace FlightRecorder.Mvc.Wizard
                 {
                     _logger.LogDebug($"Retrieving flight with Id: {details.FlightId}");
                     flight = await _flights.GetFlightByIdAsync(details.FlightId);
+
+                    // The callsign is entered on the first page of the wizard. If an
+                    // existing flight was selected and its callsign has changed, save
+                    // that change before associating the flight with the sighting.
+                    if (flight.Callsign != details.Callsign)
+                    {
+                        _logger.LogDebug($"Updating callsign for flight with Id {details.FlightId}: {details.Callsign}");
+                        flight = await _flights.UpdateFlightAsync(
+                            flight.Id,
+                            details.Callsign,
+                            flight.Number,
+                            flight.Embarkation,
+                            flight.Destination,
+                            flight.AirlineId);
+                    }
                 }
                 else
                 {
