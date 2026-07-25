@@ -5,7 +5,7 @@
     <PackageId>FlightRecorder.DataExchange</PackageId>
     <PackageVersion>1.25.0.0</PackageVersion>
     <Authors>Dave Walker</Authors>
-    <Copyright>Copyright (c) Dave Walker 2020, 2021, 2022, 2023, 2024, 2025</Copyright>
+    <Copyright>Copyright (c) Dave Walker 2020-2026</Copyright>
     <Owners>Dave Walker</Owners>
     <Summary>Flight Recorder Data Exchange Tools</Summary>
     <PackageTags>FlightRecorder data exchange CSV</PackageTags>
