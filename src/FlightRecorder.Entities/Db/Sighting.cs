@@ -28,6 +28,7 @@ namespace FlightRecorder.Entities.Db
         {
             return new FlattenedSighting
             {
+                Callsign = Flight.Callsign ?? "",
                 FlightNumber = Flight.Number,
                 Airline = Flight.Airline.Name,
                 Registration = Aircraft.Registration,

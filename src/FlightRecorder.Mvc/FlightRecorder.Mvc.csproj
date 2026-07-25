@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <ReleaseVersion>1.24.1.0</ReleaseVersion>
-    <FileVersion>1.24.1.0</FileVersion>
-    <ProductVersion>1.24.1</ProductVersion>
+    <ReleaseVersion>1.25.0.0</ReleaseVersion>
+    <FileVersion>1.25.0.0</FileVersion>
+    <ProductVersion>1.25.0</ProductVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <NoWarn>NU1900</NoWarn>
@@ -47,7 +47,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.7" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="AutoMapper" Version="15.1.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>

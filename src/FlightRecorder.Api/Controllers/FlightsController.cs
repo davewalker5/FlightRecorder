@@ -122,7 +122,8 @@ namespace FlightRecorder.Api.Controllers
         {
             LogMessage(Severity.Debug, $"Adding flight: {template}");
             Flight flight = await Factory.Flights
-                                          .AddAsync(template.Number,
+                                          .AddAsync(template.Callsign,
+                                                    template.Number,
                                                     template.Embarkation,
                                                     template.Destination,
                                                     template.AirlineId);
@@ -143,6 +144,7 @@ namespace FlightRecorder.Api.Controllers
 
             Flight flight = await Factory.Flights.UpdateAsync(
                 template.Id,
+                template.Callsign,
                 template.Number,
                 template.Embarkation,
                 template.Destination,

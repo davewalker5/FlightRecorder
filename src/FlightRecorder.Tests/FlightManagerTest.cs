@@ -14,6 +14,7 @@ namespace FlightRecorder.Tests
     public class FlightManagerTest
     {
         private const string FlightNumber = "U28551";
+        private const string Callsign = "EZY8551";
         private const string Embarkation = "LGW";
         private const string Destination = "RMU";
         private const string AirlineName = "EasyJet";
@@ -30,13 +31,13 @@ namespace FlightRecorder.Tests
             long countryId = Task.Run(() => _factory.Countries.AddAsync("")).Result.Id;
             Task.Run(() => _factory.Airports.AddAsync(Embarkation, "", countryId)).Wait();
             Task.Run(() => _factory.Airports.AddAsync(Destination, "", countryId)).Wait();
-            Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId)).Wait();
+            Task.Run(() => _factory.Flights.AddAsync(Callsign, FlightNumber, Embarkation, Destination, _airlineId)).Wait();
         }
 
         [TestMethod]
         [ExpectedException(typeof(FlightExistsException))]
         public async Task CannotAddDuplicateAsyncTest()
-            => await _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId);
+            => await _factory.Flights.AddAsync(Callsign, FlightNumber, Embarkation, Destination, _airlineId);
 
         [TestMethod]
         public async Task AddAndGetAsyncTest()
@@ -46,12 +47,31 @@ namespace FlightRecorder.Tests
             Assert.IsNotNull(flight);
             Assert.IsTrue(flight.Id > 0);
             Assert.AreEqual(FlightNumber, flight.Number);
+            Assert.AreEqual(Callsign, flight.Callsign);
             Assert.AreEqual(Embarkation, flight.Embarkation);
             Assert.AreEqual(Destination, flight.Destination);
 
             Assert.IsNotNull(flight.Airline);
             Assert.IsTrue(flight.Airline.Id > 0);
             Assert.AreEqual(AirlineName, flight.Airline.Name);
+        }
+
+        [TestMethod]
+        public async Task AddWithoutCallsignAsyncTest()
+        {
+            Flight flight = await _factory.Flights.AddAsync(null, "U28552", Embarkation, Destination, _airlineId);
+
+            Assert.IsNull(flight.Callsign);
+        }
+
+        [TestMethod]
+        public async Task UpdateCallsignAsyncTest()
+        {
+            Flight existing = await _factory.Flights.GetAsync(a => a.Number == FlightNumber);
+            Flight updated = await _factory.Flights.UpdateAsync(
+                existing.Id, "  ezY8552  ", FlightNumber, Embarkation, Destination, _airlineId);
+
+            Assert.AreEqual("EZY8552", updated.Callsign);
         }
 
         [TestMethod]

@@ -177,7 +177,7 @@ namespace FlightRecorder.BusinessLogic.Database
 
             // Add the airline and flight details
             long airlineId = (await _factory.Airlines.AddIfNotExistsAsync(flattened.Airline)).Id;
-            long flightId = (await _factory.Flights.AddIfNotExistsAsync(flattened.FlightNumber, flattened.Embarkation, flattened.Destination, airlineId)).Id;
+            long flightId = (await _factory.Flights.AddIfNotExistsAsync(flattened.Callsign, flattened.FlightNumber, flattened.Embarkation, flattened.Destination, airlineId)).Id;
             long locationId = (await _factory.Locations.AddIfNotExistsAsync(flattened.Location)).Id;
 
             // Finally, add the sighting

@@ -53,7 +53,7 @@ namespace FlightRecorder.Tests
             Task.Run(() => _factory.Airports.AddAsync("LHR", "", countryId)).Wait();
             Task.Run(() => _factory.Airports.AddAsync("YYZ", "", countryId)).Wait();
             Task.Run(() => _factory.Airports.AddAsync("MAN", "", countryId)).Wait();
-            _flightId = Task.Run(() => _factory.Flights.AddAsync(FlightNumber, Embarkation, Destination, _airlineId)).Result.Id;
+            _flightId = Task.Run(() => _factory.Flights.AddAsync(null, FlightNumber, Embarkation, Destination, _airlineId)).Result.Id;
             _manufacturerId = Task.Run(() => _factory.Manufacturers.AddAsync(ManufacturerName)).Result.Id;
             _modelId = Task.Run(() => _factory.Models.AddAsync(ModelName, _manufacturerId)).Result.Id;
             _aircraftId = Task.Run(() => _factory.Aircraft.AddAsync(Registration, SerialNumber, YearOfManufacture, _modelId)).Result.Id;
@@ -152,7 +152,7 @@ namespace FlightRecorder.Tests
         [TestMethod]
         public async Task ListByRouteWithNoSightingsAsyncTest()
         {
-            await _factory.Flights.AddAsync("BA92", "YYZ", "LHR", _airlineId);
+            await _factory.Flights.AddAsync(null, "BA92", "YYZ", "LHR", _airlineId);
             List<Sighting> sightings = await _factory.Sightings.ListByRouteAsync("YYZ", "LHR", 1, 100).Result.ToListAsync();
             Assert.AreEqual(0, sightings.Count);
         }

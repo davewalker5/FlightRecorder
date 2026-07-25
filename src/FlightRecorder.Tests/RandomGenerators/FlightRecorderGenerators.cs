@@ -95,6 +95,7 @@ namespace FlightRecorder.Tests.RandomGenerators
 
             var flight = new Flight
             {
+                Callsign = $"{StringGenerators.GenerateRandomWord(3)}{suffix}",
                 Number = $"{prefix}{suffix}",
                 Embarkation = StringGenerators.GenerateRandomWord(3),
                 Destination = StringGenerators.GenerateRandomWord(3),

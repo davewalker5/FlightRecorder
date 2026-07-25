@@ -127,6 +127,10 @@ namespace FlightRecorder.Data
 
                 entity.Property(e => e.AirlineId).HasColumnName("airline_id");
 
+                entity.Property(e => e.Callsign)
+                    .HasColumnName("callsign")
+                    .HasColumnType("VARCHAR(50)");
+
                 entity.Property(e => e.Destination)
                     .IsRequired()
                     .HasColumnName("destination")
