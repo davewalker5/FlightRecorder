@@ -18,6 +18,7 @@ namespace FlightRecorder.Mvc.Models
         [Required(ErrorMessage = "You must provide a flight number")]
         public string FlightNumber { get; set; }
 
+        [DisplayName("Callsign")]
         public string Callsign { get; set; }
 
         [IATACode]

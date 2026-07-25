@@ -11,6 +11,7 @@
         {
             Id = 0;
             AirlineId = 0;
+            Callsign = "";
             FlightNumber = "";
             Embarkation = "";
             Destination = "";
