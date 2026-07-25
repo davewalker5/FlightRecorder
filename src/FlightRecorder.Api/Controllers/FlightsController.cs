@@ -92,7 +92,11 @@ namespace FlightRecorder.Api.Controllers
             await Factory.Airports.LoadAirportDetails(flights);
             await Factory.Sightings.LoadSightingDetails(flights);
 
-            return flights;
+            return flights.OrderByDescending(f => f.LastSeen)
+                          .ThenBy(f => f.Airline.Name)
+                          .ThenBy(f => f.Embarkation)
+                          .ThenBy(f => f.Destination)
+                          .ToList();
         }
 
         [HttpGet]

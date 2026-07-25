@@ -12,6 +12,7 @@ namespace FlightRecorder.Client.ApiClient
     public class SightingClient : FlightRecorderClientBase, ISightingClient
     {
         private const string RouteKey = "Sightings";
+        private const string FlightsCacheKeyPrefix = "Flights";
 
         public SightingClient(
             IFlightRecorderHttpClient client,
@@ -61,6 +62,7 @@ namespace FlightRecorder.Client.ApiClient
             string data = Serialize(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Post);
             Sighting sighting = Deserialize<Sighting>(json);
+            ClearCachedFlights();
             return sighting;
         }
 
@@ -91,6 +93,7 @@ namespace FlightRecorder.Client.ApiClient
             string data = Serialize(template);
             string json = await SendIndirectAsync(RouteKey, data, HttpMethod.Put);
             Sighting sighting = Deserialize<Sighting>(json);
+            ClearCachedFlights();
             return sighting;
         }
 
@@ -104,6 +107,20 @@ namespace FlightRecorder.Client.ApiClient
         {
             string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/{id}/";
             _ = await SendDirectAsync(route, null, HttpMethod.Delete);
+            ClearCachedFlights();
+        }
+
+        /// <summary>
+        /// Flight list ordering depends on each flight's most recent sighting.
+        /// Any sighting mutation therefore invalidates all cached flight lists.
+        /// </summary>
+        private void ClearCachedFlights()
+        {
+            var keys = Cache.GetKeys().Where(k => k.StartsWith(FlightsCacheKeyPrefix));
+            foreach (string key in keys)
+            {
+                Cache.Remove(key);
+            }
         }
     }
 }

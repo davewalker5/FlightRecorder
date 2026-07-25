@@ -56,7 +56,11 @@ namespace FlightRecorder.Mvc.Models
             // Add the airlines retrieved from the service
             if (flights != null)
             {
-                Flights.AddRange(flights.Select(x =>
+                Flights.AddRange(flights.OrderByDescending(x => x.LastSeen)
+                                        .ThenBy(x => x.Airline.Name)
+                                        .ThenBy(x => x.Embarkation)
+                                        .ThenBy(x => x.Destination)
+                                        .Select(x =>
                                     new SelectListItem
                                     {
                                         Value = x.Id.ToString(),
