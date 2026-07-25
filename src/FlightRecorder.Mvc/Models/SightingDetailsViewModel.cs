@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FlightRecorder.Mvc.Models
 {
-    public class SightingDetailsViewModel : FlightRecorderEntityBase
+    public class SightingDetailsViewModel : FlightRecorderEntityBase, IValidatableObject
     {
         public long? SightingId { get; set; }
 
@@ -29,7 +29,6 @@ namespace FlightRecorder.Mvc.Models
         public string Callsign { get; set; }
 
         [DisplayName("Flight Number")]
-        [Required(ErrorMessage = "You must provide a flight number")]
         public string FlightNumber { get; set; }
 
         [DisplayName("Aircraft Registration")]
@@ -43,6 +42,19 @@ namespace FlightRecorder.Mvc.Models
         public string LocationErrorMessage { get; set; }
         public string Action { get; set; }
         public List<SelectListItem> Locations { get; set; }
+
+        /// <summary>
+        /// Require at least one flight identifier.
+        /// </summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (string.IsNullOrWhiteSpace(Callsign) && string.IsNullOrWhiteSpace(FlightNumber))
+            {
+                yield return new ValidationResult(
+                    "You must provide a callsign or flight number",
+                    [nameof(FlightNumber)]);
+            }
+        }
 
         /// <summary>
         /// Set the options for the locations drop-down list

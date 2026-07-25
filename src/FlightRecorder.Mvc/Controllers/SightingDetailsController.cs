@@ -42,6 +42,13 @@ namespace FlightRecorder.Mvc.Controllers
         public async Task<IActionResult> Index(SightingDetailsViewModel model)
         {
             IActionResult result;
+            model.Callsign = (model.Callsign ?? "").Trim().ToUpper();
+            model.FlightNumber = (model.FlightNumber ?? "").Trim().ToUpper();
+            if (string.IsNullOrEmpty(model.FlightNumber) && !string.IsNullOrEmpty(model.Callsign))
+            {
+                model.FlightNumber = model.Callsign;
+            }
+
             string newLocation = (model.NewLocation ?? "").Trim();
             bool haveLocation = (model.LocationId > 0) || !string.IsNullOrEmpty(newLocation);
 
