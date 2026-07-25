@@ -19,7 +19,7 @@ namespace FlightRecorder.Entities.DataExchange
         [Export("Airline", 3)]
         public string Airline { get; set; }
 
-        [Export("Aircraft Address", 4)]
+        [Export("Address", 4)]
         public string AircraftAddress { get; set; }
 
         [Export("Registration", 5)]

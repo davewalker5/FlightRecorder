@@ -61,6 +61,27 @@ namespace FlightRecorder.Client.ApiClient
         }
 
         /// <summary>
+        /// Return the aircraft with the specified 24-bit ICAO address
+        /// </summary>
+        public async Task<Aircraft> GetAircraftByAddressAsync(string address)
+        {
+            Aircraft aircraft = FindCachedAircraft(a => a.Address == address);
+            if (aircraft == null)
+            {
+                string route = @$"{Settings.ApiRoutes.First(r => r.Name == RouteKey).Route}/address/{address}/";
+                string json = await SendDirectAsync(route, null, HttpMethod.Get);
+                aircraft = Deserialize<Aircraft>(json);
+            }
+
+            if ((aircraft != null) && (aircraft.Manufactured == 0))
+            {
+                aircraft.Manufactured = null;
+            }
+
+            return aircraft;
+        }
+
+        /// <summary>
         /// Return the aircraft with the specified registration number
         /// </summary>
         /// <param name="registration"></param>
@@ -113,18 +134,20 @@ namespace FlightRecorder.Client.ApiClient
         /// <summary>
         /// Create a new aircraft
         /// </summary>
+        /// <param name="address"></param>
         /// <param name="registration"></param>
         /// <param name="serialNumber"></param>
         /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> AddAircraftAsync(string registration, string serialNumber, long? yearOfManufacture, long? modelId)
+        public async Task<Aircraft> AddAircraftAsync(string address, string registration, string serialNumber, long? yearOfManufacture, long? modelId)
         {
             string key = $"{CacheKeyPrefix}.{modelId}";
             Cache.Remove(key);
 
             dynamic template = new
             {
+                Address = address,
                 Registration = registration,
                 SerialNumber = serialNumber ?? "",
                 Manufactured = (yearOfManufacture != null) ? yearOfManufacture : 0,
@@ -147,12 +170,13 @@ namespace FlightRecorder.Client.ApiClient
         /// Update an existing aircraft
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="address"></param>
         /// <param name="registration"></param>
         /// <param name="serialNumber"></param>
         /// <param name="yearOfManufacture"></param>
         /// <param name="modelId"></param>
         /// <returns></returns>
-        public async Task<Aircraft> UpdateAircraftAsync(long id, string registration, string serialNumber, int? yearOfManufacture, long modelId)
+        public async Task<Aircraft> UpdateAircraftAsync(long id, string address, string registration, string serialNumber, int? yearOfManufacture, long? modelId)
         {
             // We might've changed the model, so not only do we need to clear the
             // current model's cached model list but we also need to identify the
@@ -171,6 +195,7 @@ namespace FlightRecorder.Client.ApiClient
             dynamic template = new
             {
                 Id = id,
+                Address = address,
                 ModelId = modelId,
                 Registration = registration,
                 SerialNumber = serialNumber ?? "",

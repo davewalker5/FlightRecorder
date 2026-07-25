@@ -79,6 +79,24 @@ namespace FlightRecorder.Api.Controllers
         }
 
         [HttpGet]
+        [Route("address/{address}")]
+        public async Task<ActionResult<Aircraft>> GetAircraftByAddressAsync(string address)
+        {
+            string decodedAddress = HttpUtility.UrlDecode(address).ToUpper();
+            LogMessage(Severity.Debug, $"Retrieving aircraft with address {address}");
+            Aircraft aircraft = await Factory.Aircraft.GetAsync(a => a.Address == decodedAddress);
+
+            if (aircraft == null)
+            {
+                LogMessage(Severity.Debug, $"Aircraft with address {address} not found");
+                return NotFound();
+            }
+
+            LogMessage(Severity.Debug, $"Aircraft retrieved: {aircraft}");
+            return aircraft;
+        }
+
+        [HttpGet]
         [Route("{id}")]
         public async Task<ActionResult<Aircraft>> GetAircraftByIdAsync(int id)
         {

@@ -15,6 +15,7 @@ namespace FlightRecorder.Mvc.Configuration
             CreateMap<Model, EditModelViewModel>();
 
             CreateMap<Aircraft, AddAircraftViewModel>()
+                .ForMember(m => m.Address, x => x.MapFrom(m => m.Address))
                 .ForMember(m => m.Age, x => x.MapFrom(m => DateTime.Now.Year - m.Manufactured))
                 .ForMember(m => m.Id, x => x.MapFrom(m => m.Id))
                 .ForMember(m => m.ManufacturerId, x => x.MapFrom(m => m.Model.ManufacturerId))
@@ -25,6 +26,7 @@ namespace FlightRecorder.Mvc.Configuration
                 .ForMember(m => m.SerialNumber, x => x.MapFrom(m => m.SerialNumber));
 
             CreateMap<Aircraft, EditAircraftViewModel>()
+                .ForMember(m => m.Address, x => x.MapFrom(m => m.Address))
                 .ForMember(m => m.Age, x => x.MapFrom(m => DateTime.Now.Year - m.Manufactured))
                 .ForMember(m => m.Id, x => x.MapFrom(m => m.Id))
                 .ForMember(m => m.ManufacturerId, x => x.MapFrom(m => m.Model.ManufacturerId))

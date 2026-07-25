@@ -270,6 +270,7 @@ namespace FlightRecorder.Mvc.Wizard
 
                 // It is, so assign the aircraft properties
                 model.AircraftId = aircraft.Id;
+                model.Address = aircraft.Address;
                 model.SerialNumber = aircraft.SerialNumber;
                 model.ManufacturerId = aircraft?.Model.ManufacturerId;
                 model.ModelId = aircraft.ModelId;
@@ -570,6 +571,18 @@ namespace FlightRecorder.Mvc.Wizard
                 {
                     _logger.LogDebug($"Retrieving aircraft with Id: {details.AircraftId}");
                     aircraft = await _aircraft.GetAircraftByIdAsync(details.AircraftId ?? 0);
+
+                    if (aircraft.Address != details.Address)
+                    {
+                        _logger.LogDebug($"Updating address for aircraft with Id {details.AircraftId}: {details.Address}");
+                        aircraft = await _aircraft.UpdateAircraftAsync(
+                            aircraft.Id,
+                            details.Address,
+                            aircraft.Registration,
+                            aircraft.SerialNumber,
+                            (int?)aircraft.Manufactured,
+                            aircraft.ModelId);
+                    }
                 }
                 else
                 {
@@ -602,7 +615,7 @@ namespace FlightRecorder.Mvc.Wizard
 
                     // Create the aircraft
                     long? manufactured = (details.Age != null) ? DateTime.Now.Year - details.Age : null;
-                    aircraft = await _aircraft.AddAircraftAsync(details.Registration, details.SerialNumber, manufactured, details.ModelId);
+                    aircraft = await _aircraft.AddAircraftAsync(details.Address, details.Registration, details.SerialNumber, manufactured, details.ModelId);
                 }
             }
 

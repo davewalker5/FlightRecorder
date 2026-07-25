@@ -19,6 +19,9 @@ namespace FlightRecorder.Mvc.Models
         [Range(1, int.MaxValue, ErrorMessage = "You must provide a model")]
         public int ModelId { get; set; }
 
+        [DisplayName("Address")]
+        public string Address { get; set; }
+
         [DisplayName("Registration")]
         [Required(ErrorMessage = "You must provide a registration number")]
         public string Registration { get; set; }

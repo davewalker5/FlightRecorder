@@ -9,6 +9,9 @@ namespace FlightRecorder.Mvc.Models
     {
         public long? AircraftId { get; set; }
 
+        [DisplayName("Address")]
+        public string Address { get; set; }
+
         [DisplayName("Aircraft Registration")]
         [Required(ErrorMessage = "You must provide an aircraft registration")]
         public string Registration { get; set; }

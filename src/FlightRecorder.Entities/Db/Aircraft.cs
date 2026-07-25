@@ -14,7 +14,7 @@ namespace FlightRecorder.Entities.Db
         [DisplayName("Model")]
         public long? ModelId { get; set; }
 
-        [DisplayName("Aircraft Address")]
+        [DisplayName("Address")]
         public string Address { get; set; }
 
         [DisplayName("Registration")]
