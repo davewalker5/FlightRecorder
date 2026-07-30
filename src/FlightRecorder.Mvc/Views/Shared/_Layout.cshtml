@@ -12,30 +12,36 @@
     <script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
 </head>
 <body>
-    <div style="width: 90%; margin: 0 auto;">
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Flight Recorder</a>
+    <div class="app-shell">
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="app-container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Flight Recorder home">
+                        <span class="brand-mark" aria-hidden="true"><i class="fas fa-plane"></i></span>
+                        <span class="brand-copy">
+                            <strong>Flight Recorder</strong>
+                            <small>Personal aviation log</small>
+                        </span>
+                    </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                        <ul class="navbar-nav">
+                    <div class="navbar-collapse collapse">
+                        <ul class="navbar-nav ml-auto">
                             @if (User?.Identity?.IsAuthenticated == true)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Log Sighting</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Log Sighting</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="TrackerHub" asp-action="Index">Live Tracker</a>
+                                    <a class="nav-link" asp-area="" asp-controller="TrackerHub" asp-action="Index">Live Tracker</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="sightingSearchMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Sighting Search
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="sightingSearchMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByRoute" asp-action="Index">Sightings By Route</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByFlight" asp-action="Index">Sightings By Flight</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="SearchSightingsByAirline" asp-action="Index">Sightings By Airline</a>
@@ -44,10 +50,10 @@
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="reportsMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Reports
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="reportsMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="SightingStatistics" asp-action="Index">Sighting Statistics</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="AirlineStatistics" asp-action="Index">Airline Statistics</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="FlightsByMonth" asp-action="Index">Flights By Month</a>
@@ -59,10 +65,10 @@
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="maintenanceMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Data Maintenance
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu" aria-labelledby="maintenanceMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="Manufacturers" asp-action="Index">Manufacturers</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Models" asp-action="Index">Models</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Aircraft" asp-action="Index">Aircraft</a>
@@ -79,23 +85,23 @@
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle" href="#" id="exportMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Export
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="exportMenu">
                                         <a class="dropdown-item" asp-area="" asp-controller="Export" asp-action="Sightings">Sightings</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Export" asp-action="Airports">Airports</a>
                                         <a class="dropdown-item" asp-area="" asp-controller="Export" asp-action="Reports">Reports</a>
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LogOut">Log Out</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="LogOut">Log Out</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Log In</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Login" asp-action="Index">Log In</a>
                                 </li>
                             }
                         </ul>
@@ -103,16 +109,23 @@
                 </div>
             </nav>
         </header>
-        <div class="container-fluid">
-            <main role="main" class="pb-3">
+        <div class="app-container app-content">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">Flight Recorder</p>
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+            </div>
+            <main role="main">
                 @RenderBody()
                 @await Html.PartialAsync("_AjaxModalDialog")
             </main>
         </div>
 
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                Flight Recorder @ViewData["Version"] &copy; 2020-2026 - David Walker
+        <footer class="app-footer">
+            <div class="app-container footer-content">
+                <span><i class="fas fa-plane" aria-hidden="true"></i> Flight Recorder @ViewData["Version"]</span>
+                <span>&copy; 2020-2026 David Walker</span>
             </div>
         </footer>
     </div>

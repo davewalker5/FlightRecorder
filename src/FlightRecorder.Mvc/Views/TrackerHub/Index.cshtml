@@ -42,8 +42,8 @@
 @section Styles {
     <style>
         :root {
-            --inactive-bg: #fff7cc;
-            --stale-bg:    #ffd6d6;
+            --inactive-bg: rgba(248, 189, 89, .06);
+            --stale-bg:    rgba(255, 113, 134, .07);
             --visible-rows: 20;
             --row-h: 1.3em;
             --header-h: 1.5em;
@@ -53,15 +53,14 @@
             max-width: 100%;
             max-height: calc(var(--header-h) + var(--visible-rows) * var(--row-h) + var(--row-h));
             overflow: auto;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            background: #fff;
-            font-family: system-ui, sans-serif;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
             font-size: 0.85em;
         }
 
         #log {
-            font-family: system-ui, sans-serif;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             font-size: 0.85em;
         }
 
@@ -77,8 +76,8 @@
             z-index: 1;
             height: var(--header-h);
             line-height: var(--header-h);
-            background: #f0f0f0;
-            color: #black;
+            background: #0a1727;
+            color: var(--muted);
             text-align: left;
             padding: 0 .5rem;
         }
@@ -87,7 +86,7 @@
             height: var(--row-h);
             line-height: var(--row-h);
             padding: 0 .5rem;
-            border-top: 1px solid #e6e6e6;
+            border-top: 1px solid rgba(33, 55, 80, .65);
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -119,7 +118,7 @@
 
         th, td
         {
-            border-bottom: 1px solid #ccc;
+            border-bottom: 1px solid var(--line);
             padding: .3rem .5rem;
             text-align: left;
         }
