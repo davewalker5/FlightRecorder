@@ -57,7 +57,7 @@ namespace FlightRecorder.Mvc
             services.AddControllersWithViews();
 
             // Configure automapper
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(_ => { }, typeof(Startup));
 
             // Set up the configuration reader
             IConfiguration configuration = new ConfigurationBuilder()
