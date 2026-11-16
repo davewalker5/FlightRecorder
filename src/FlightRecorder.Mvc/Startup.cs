@@ -13,7 +13,6 @@ using FlightRecorder.Entities.Attributes;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using FlightRecorder.Mvc.Interfaces;
 using FlightRecorder.Mvc.Services;
 
@@ -102,7 +101,6 @@ namespace FlightRecorder.Mvc
             services.AddScoped<AddSightingWizard>();
 
             // Modal dialog support
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IPartialViewToStringRenderer, PartialViewToStringRenderer>();
 
             // Configure session state for token storage

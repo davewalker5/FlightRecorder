@@ -26,9 +26,8 @@ namespace FlightRecorder.DataExchange.Import
             using (StreamReader reader = new StreamReader(file, Encoding.UTF8))
             {
                 int count = 0;
-                while (!reader.EndOfStream)
+                while (await reader.ReadLineAsync() is string line)
                 {
-                    string line = reader.ReadLine();
                     count++;
 
                     if (count > 1)

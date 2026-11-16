@@ -2,6 +2,7 @@
 using FlightRecorder.Data;
 using FlightRecorder.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,7 +35,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(_statusId, status.Id);
             Assert.AreEqual(Name, status.Name);
             Assert.AreEqual(Parameters, status.Parameters);
-            Assert.IsNotNull(status.Start);
+            Assert.AreNotEqual(default(DateTime), status.Start);
             Assert.IsNull(status.End);
             Assert.IsNull(status.Error);
         }
@@ -49,7 +50,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(_statusId, statuses[0].Id);
             Assert.AreEqual(Name, statuses[0].Name);
             Assert.AreEqual(Parameters, statuses[0].Parameters);
-            Assert.IsNotNull(statuses[0].Start);
+            Assert.AreNotEqual(default(DateTime), statuses[0].Start);
             Assert.IsNull(statuses[0].End);
             Assert.IsNull(statuses[0].Error);
         }
@@ -64,7 +65,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(_statusId, statuses[0].Id);
             Assert.AreEqual(Name, statuses[0].Name);
             Assert.AreEqual(Parameters, statuses[0].Parameters);
-            Assert.IsNotNull(statuses[0].Start);
+            Assert.AreNotEqual(default(DateTime), statuses[0].Start);
             Assert.IsNull(statuses[0].End);
             Assert.IsNull(statuses[0].Error);
         }
@@ -78,7 +79,7 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(_statusId, status.Id);
             Assert.AreEqual(Name, status.Name);
             Assert.AreEqual(Parameters, status.Parameters);
-            Assert.IsNotNull(status.Start);
+            Assert.AreNotEqual(default(DateTime), status.Start);
             Assert.IsNotNull(status.End);
             Assert.AreEqual(Error, status.Error);
         }

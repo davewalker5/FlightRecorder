@@ -17,16 +17,19 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
         private readonly string _baseAddress;
         private readonly string _host;
         private readonly string _key;
+        private readonly TimeProvider _timeProvider;
 
         public AeroDataBoxAircraftApi(
             IFlightRecorderLogger logger,
             IExternalApiHttpClient client,
             string url,
-            string key)
+            string key,
+            TimeProvider timeProvider = null)
             : base(logger, client)
         {
             _baseAddress = url;
             _key = key;
+            _timeProvider = timeProvider ?? TimeProvider.System;
 
             // The URL contains the protocol, host and base route (if any), but we need to extract the host name only
             // to pass in the headers as the RapidAPI host, so capture the host and the full URL
@@ -126,15 +129,15 @@ namespace FlightRecorder.BusinessLogic.Api.AeroDataBox
         /// </summary>
         /// <param name="yearOfRegistration"></param>
         /// <returns></returns>
-        private static int? CalculateAircraftAge(string yearOfRegistration)
+        private int? CalculateAircraftAge(string yearOfRegistration)
         {
             int? age = null;
 
             try
             {
-                // Convert the registration date string to a date then calculate the number of years between then and now
+                // Round elapsed years to the nearest whole year (rather than counting completed birthdays)
                 var registered = DateTime.ParseExact(yearOfRegistration, DateFormat, null);
-                age = (int)Math.Round((DateTime.Now - registered).TotalDays / DaysPerYear, 0, MidpointRounding.AwayFromZero);
+                age = (int)Math.Round((_timeProvider.GetLocalNow().DateTime - registered).TotalDays / DaysPerYear, 0, MidpointRounding.AwayFromZero);
             }
             catch
             {

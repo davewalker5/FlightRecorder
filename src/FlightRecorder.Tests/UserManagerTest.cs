@@ -29,10 +29,10 @@ namespace FlightRecorder.Tests
             _user = Task.Run(() => _factory.Users.AddUserAsync(UserName, Password)).Result;
         }
 
-        [TestMethod, ExpectedException(typeof(UserExistsException))]
+        [TestMethod]
         public async Task AddExistingUserAsyncTest()
         {
-            await _factory.Users.AddUserAsync(UserName, Password);
+            await Assert.ThrowsExactlyAsync<UserExistsException>(() => _factory.Users.AddUserAsync(UserName, Password));
         }
 
         [TestMethod]
@@ -51,10 +51,10 @@ namespace FlightRecorder.Tests
             Assert.AreNotEqual(Password, user.Password);
         }
 
-        [TestMethod, ExpectedException(typeof(UserNotFoundException))]
+        [TestMethod]
         public async Task GetMissingUserByIdAsyncTest()
         {
-            await _factory.Users.GetUserAsync(-1);
+            await Assert.ThrowsExactlyAsync<UserNotFoundException>(() => _factory.Users.GetUserAsync(-1));
         }
 
         [TestMethod]

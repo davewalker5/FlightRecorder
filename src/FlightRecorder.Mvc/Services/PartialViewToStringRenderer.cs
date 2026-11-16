@@ -1,5 +1,6 @@
 using FlightRecorder.Mvc.Interfaces;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,16 +12,16 @@ namespace FlightRecorder.Mvc.Services
     {
         private readonly IRazorViewEngine _viewEngine;
         private readonly ITempDataProvider _tempDataProvider;
-        private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PartialViewToStringRenderer(
             IRazorViewEngine viewEngine,
             ITempDataProvider tempDataProvider,
-            IActionContextAccessor actionContextAccessor)
+            IHttpContextAccessor httpContextAccessor)
         {
             _viewEngine = viewEngine;
             _tempDataProvider = tempDataProvider;
-            _actionContextAccessor = actionContextAccessor;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -32,7 +33,11 @@ namespace FlightRecorder.Mvc.Services
         /// <exception cref="InvalidDataException"></exception>
         public async Task<string> RenderPartialViewToStringAsync(string viewName, object model)
         {
-            var actionContext = _actionContextAccessor.ActionContext;
+            var httpContext = _httpContextAccessor.HttpContext
+                ?? throw new InvalidOperationException("Rendering a partial view requires an active HTTP request.");
+            var actionDescriptor = httpContext.GetEndpoint()?.Metadata.GetMetadata<ActionDescriptor>()
+                ?? throw new InvalidOperationException("Rendering a partial view requires an MVC action endpoint.");
+            var actionContext = new ActionContext(httpContext, httpContext.GetRouteData(), actionDescriptor);
 
             using var sw = new StringWriter();
             var viewResult = _viewEngine.FindView(actionContext, viewName, isMainPage: false);

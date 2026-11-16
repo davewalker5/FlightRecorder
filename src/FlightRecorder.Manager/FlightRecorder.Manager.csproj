@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ReleaseVersion>1.27.0.0</ReleaseVersion>
-    <FileVersion>1.27.0.0</FileVersion>
-    <ProductVersion>1.27.0.0</ProductVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <ReleaseVersion>1.28.0.0</ReleaseVersion>
+    <FileVersion>1.28.0.0</FileVersion>
+    <ProductVersion>1.28.0.0</ProductVersion>
     <Configurations>Release;Debug</Configurations>
     <NoWarn>NU1900</NoWarn>
   </PropertyGroup>
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

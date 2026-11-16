@@ -26,9 +26,8 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ManufacturerExistsException))]
         public async Task CannotAddDuplicateAsyncTest()
-            => await _factory.Manufacturers.AddAsync(EntityName);
+            => await Assert.ThrowsExactlyAsync<ManufacturerExistsException>(() => _factory.Manufacturers.AddAsync(EntityName));
 
         [TestMethod]
         public async Task AddAndGetAsyncTest()

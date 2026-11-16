@@ -42,7 +42,8 @@ namespace FlightRecorder.Tests
             // Create the logger, mock client and API wrappers
             var logger = new MockFileLogger();
             _client = new MockExternalApiHttpClient();
-            _api = new AeroDataBoxAircraftApi(logger, _client, EndpointBaseUrl, "");
+            _api = new AeroDataBoxAircraftApi(logger, _client, EndpointBaseUrl, "",
+                new FixedTimeProvider(new DateTimeOffset(2026, 11, 16, 12, 0, 0, TimeSpan.Zero)));
         }
 
         [TestMethod]
@@ -96,11 +97,16 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void LookupAircraftByRegistrationTest()
+        [DataRow(5, 3, "22")]
+        [DataRow(11, 2, "22")]
+        [DataRow(11, 3, "23")]
+        [DataRow(11, 16, "23")]
+        public void LookupAircraftByRegistrationTest(int month, int day, string expectedAge)
         {
+            _api = new AeroDataBoxAircraftApi(new MockFileLogger(), _client, EndpointBaseUrl, "",
+                new FixedTimeProvider(new DateTimeOffset(2026, month, day, 12, 0, 0, TimeSpan.Zero)));
             _client!.AddResponse(Response);
             var properties = Task.Run(() => _api.LookupAircraftByRegistration(Registration)).Result;
-            var expectedAge = (DateTime.Now.Year - 2004).ToString();
 
             Assert.IsNotNull(properties);
             Assert.AreEqual(Registration, properties[ApiPropertyType.AircraftRegistration]);
@@ -116,11 +122,16 @@ namespace FlightRecorder.Tests
         }
 
         [TestMethod]
-        public void LookupAircraftByICAOAddressTest()
+        [DataRow(5, 3, "22")]
+        [DataRow(11, 2, "22")]
+        [DataRow(11, 3, "23")]
+        [DataRow(11, 16, "23")]
+        public void LookupAircraftByICAOAddressTest(int month, int day, string expectedAge)
         {
+            _api = new AeroDataBoxAircraftApi(new MockFileLogger(), _client, EndpointBaseUrl, "",
+                new FixedTimeProvider(new DateTimeOffset(2026, month, day, 12, 0, 0, TimeSpan.Zero)));
             _client!.AddResponse(Response);
             var properties = Task.Run(() => _api.LookupAircraftByICAOAddress(ICAOAddress)).Result;
-            var expectedAge = (DateTime.Now.Year - 2004).ToString();
 
             Assert.IsNotNull(properties);
             Assert.AreEqual(Registration, properties[ApiPropertyType.AircraftRegistration]);
@@ -133,6 +144,13 @@ namespace FlightRecorder.Tests
             Assert.AreEqual(ProductionLine, properties[ApiPropertyType.AircraftProductionLine]);
             Assert.AreEqual(expectedAge, properties[ApiPropertyType.AircraftAge]);
             Assert.AreEqual(Manufacturer, properties[ApiPropertyType.ManufacturerName]);
+        }
+
+        // Keep lookup tests independent of the machine's date and time zone.
+        private sealed class FixedTimeProvider(DateTimeOffset now) : TimeProvider
+        {
+            public override DateTimeOffset GetUtcNow() => now;
+            public override TimeZoneInfo LocalTimeZone => TimeZoneInfo.Utc;
         }
     }
 }
